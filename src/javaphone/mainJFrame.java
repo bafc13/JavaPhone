@@ -43,12 +43,15 @@ public class mainJFrame extends javax.swing.JFrame {
         jFrame1 = new javax.swing.JFrame();
         jFrame2 = new javax.swing.JFrame();
         buttonGroup1 = new javax.swing.ButtonGroup();
-        settingButton = new javax.swing.JButton();
-        exitButtton = new javax.swing.JButton();
+        jMenuItem1 = new javax.swing.JMenuItem();
+        jMenu3 = new javax.swing.JMenu();
+        jMenu4 = new javax.swing.JMenu();
+        jMenuItem2 = new javax.swing.JMenuItem();
         friendPanel = new javax.swing.JScrollPane();
         connectionPanel = new javax.swing.JPanel();
         connectButton = new javax.swing.JButton();
         createInterfaceButton = new javax.swing.JButton();
+        jTextField1 = new javax.swing.JTextField();
         serverScrollPanel = new javax.swing.JScrollPane();
         serverPanel = new javax.swing.JPanel();
         serverButton1 = new javax.swing.JButton();
@@ -60,6 +63,9 @@ public class mainJFrame extends javax.swing.JFrame {
         chatPannel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
+        jToolBar1 = new javax.swing.JToolBar();
+        settingsButton = new javax.swing.JButton();
+        exitButton = new javax.swing.JButton();
 
         javax.swing.GroupLayout jFrame1Layout = new javax.swing.GroupLayout(jFrame1.getContentPane());
         jFrame1.getContentPane().setLayout(jFrame1Layout);
@@ -83,25 +89,16 @@ public class mainJFrame extends javax.swing.JFrame {
             .addGap(0, 300, Short.MAX_VALUE)
         );
 
+        jMenuItem1.setText("jMenuItem1");
+
+        jMenu3.setText("jMenu3");
+
+        jMenu4.setText("jMenu4");
+
+        jMenuItem2.setText("jMenuItem2");
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setSize(new java.awt.Dimension(1600, 900));
-
-        settingButton.setBackground(new java.awt.Color(204, 204, 255));
-        settingButton.setText("settings");
-        settingButton.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        settingButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                settingButtonActionPerformed(evt);
-            }
-        });
-
-        exitButtton.setBackground(new java.awt.Color(204, 204, 255));
-        exitButtton.setText("exit");
-        exitButtton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                exitButttonActionPerformed(evt);
-            }
-        });
 
         connectButton.setBackground(new java.awt.Color(204, 204, 255));
         connectButton.setText("connect");
@@ -119,6 +116,13 @@ public class mainJFrame extends javax.swing.JFrame {
             }
         });
 
+        jTextField1.setText("198.9.1.2:2888     Erjan228");
+        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout connectionPanelLayout = new javax.swing.GroupLayout(connectionPanel);
         connectionPanel.setLayout(connectionPanelLayout);
         connectionPanelLayout.setHorizontalGroup(
@@ -129,15 +133,17 @@ public class mainJFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(createInterfaceButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(70, 70, 70))
+            .addComponent(jTextField1)
         );
         connectionPanelLayout.setVerticalGroup(
             connectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, connectionPanelLayout.createSequentialGroup()
-                .addGap(183, 183, 183)
+                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 171, Short.MAX_VALUE)
                 .addGroup(connectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(connectButton)
                     .addComponent(createInterfaceButton))
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         friendPanel.setViewportView(connectionPanel);
@@ -192,7 +198,7 @@ public class mainJFrame extends javax.swing.JFrame {
                 .addComponent(serverButton2)
                 .addGap(18, 18, 18)
                 .addComponent(serverButton3)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(453, Short.MAX_VALUE))
         );
 
         serverScrollPanel.setViewportView(serverPanel);
@@ -215,39 +221,49 @@ public class mainJFrame extends javax.swing.JFrame {
         );
         chatPannelLayout.setVerticalGroup(
             chatPannelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 304, Short.MAX_VALUE)
         );
+
+        jToolBar1.setRollover(true);
+
+        settingsButton.setText("settings");
+        settingsButton.setFocusable(false);
+        settingsButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        settingsButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(settingsButton);
+
+        exitButton.setText("exit");
+        exitButton.setFocusable(false);
+        exitButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        exitButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        exitButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exitButtonActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(exitButton);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(settingButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(exitButtton)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(serverScrollPanel))
+                .addComponent(serverScrollPanel)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(chatPannel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(friendPanel))
                 .addGap(10, 10, 10))
+            .addComponent(jToolBar1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(serverScrollPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(settingButton)
-                            .addComponent(exitButtton))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(serverScrollPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 566, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
                         .addComponent(friendPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(chatPannel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
@@ -265,15 +281,6 @@ public class mainJFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_connectButtonActionPerformed
 
-    private void settingButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_settingButtonActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_settingButtonActionPerformed
-
-    private void exitButttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitButttonActionPerformed
-        // TODO add your handling code here:\
-        this.dispose();
-    }//GEN-LAST:event_exitButttonActionPerformed
-
     private void serverButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverButton1ActionPerformed
         // TODO add your handling code here:
         JOptionPane.showMessageDialog(null, "Connecting...", "InfoBox:", JOptionPane.INFORMATION_MESSAGE);
@@ -288,6 +295,15 @@ public class mainJFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         JOptionPane.showMessageDialog(null, "Connecting...", "InfoBox:", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_serverButton3ActionPerformed
+
+    private void exitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitButtonActionPerformed
+        // TODO add your handling code here:
+        this.dispose();
+    }//GEN-LAST:event_exitButtonActionPerformed
+
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField1ActionPerformed
     /**
      * @param args the command line arguments
      */
@@ -330,21 +346,27 @@ public class mainJFrame extends javax.swing.JFrame {
     private javax.swing.JButton connectButton;
     private javax.swing.JPanel connectionPanel;
     private javax.swing.JButton createInterfaceButton;
-    private javax.swing.JButton exitButtton;
+    private javax.swing.JButton exitButton;
     private javax.swing.JScrollPane friendPanel;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JFrame jFrame1;
     private javax.swing.JFrame jFrame2;
+    private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenu jMenu4;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JTextField jTextField1;
+    private javax.swing.JToolBar jToolBar1;
     private javax.swing.JButton serverButton1;
     private javax.swing.JButton serverButton2;
     private javax.swing.JButton serverButton3;
     private javax.swing.JPanel serverPanel;
     private javax.swing.JScrollPane serverScrollPanel;
-    private javax.swing.JButton settingButton;
+    private javax.swing.JButton settingsButton;
     // End of variables declaration//GEN-END:variables
 }
 
