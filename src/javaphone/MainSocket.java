@@ -7,6 +7,8 @@ package javaphone;
 
 import java.io.*;
 import java.net.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  *
  * @author Andrey
@@ -14,26 +16,30 @@ import java.net.*;
 public class MainSocket extends Thread {
     public static final int PORT = 666;
     ServerSocket main_sock;
-    
+
     public MainSocket() throws IOException
     {
         main_sock = new ServerSocket(PORT);
     }
-    
+
     @Override
-    public void run() 
+    public void run()
     {
-//        try 
-//        {
-//            while(true)
-//            {
-//                Socket sock = main_sock.accept();
-//            }
-//        }
-//        catch (Exception e)
-//        {
-//            
-//            main_sock.close();
-//        }
+        try
+        {
+            while(true)
+            {
+                Socket sock = main_sock.accept();
+            }
+        }
+        catch (IOException e)
+        {
+
+            try {
+                main_sock.close();
+            } catch (IOException ex) {
+                Logger.getLogger(MainSocket.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 }
