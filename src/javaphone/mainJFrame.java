@@ -18,7 +18,10 @@ import javax.swing.JTextField;
  * @author bafc13
  */
 public class mainJFrame extends javax.swing.JFrame {
-
+    
+    // TODO: some kind of event listener handle_dm(Boolean is_sender, Socket sock, String msg)
+    // To write messages to db and show on screen
+    
     /**
      * Creates new form mainJFrame
      */
