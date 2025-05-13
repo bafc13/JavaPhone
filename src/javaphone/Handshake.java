@@ -4,19 +4,19 @@
  */
 package javaphone;
 
+import java.net.*;
+
 /**
  *
  * @author Andrey
  */
 public class Handshake {
     public String message;
-    public String address;
-    public Integer port;
+    public Socket sock;
     
-    public Handshake(String m, String a, Integer p)
+    public Handshake(String m, Socket s)
     {
         message = m;
-        address = a;
-        port = p;
+        sock = s;
     }
 }
