@@ -16,13 +16,11 @@ import java.util.logging.Logger;
 public class MainSocket extends Thread {
     public static final int PORT = 666;
     private final ServerSocket main_sock;
-    private Socket send_request;
     
 
     public MainSocket() throws IOException
     {
         main_sock = new ServerSocket(PORT);
-        send_request = null;
     }
 
     @Override
@@ -54,15 +52,17 @@ public class MainSocket extends Thread {
     
     public Boolean call(String addr, String purpose)
     {
+        Socket sock;
         try {
-            send_request = new Socket(addr, PORT);
+            sock = new Socket(addr, PORT);
         } catch (IOException ex) {
             Logger.getLogger(MainSocket.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
         
         try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(send_request.getInputStream()));
-            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(send_request.getOutputStream()));
+            BufferedReader in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
             
             out.write(purpose);
             out.flush();
