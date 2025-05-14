@@ -7,6 +7,7 @@ package javaphone;
 
 import java.io.*;
 import java.net.*;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 /**
@@ -16,13 +17,20 @@ import java.util.logging.Logger;
 public class MainSocket extends Thread {
     public static final int PORT = 666;
     private final ServerSocket main_sock;
+    private List<JavaPhoneEvents> listeners;
     
 
     public MainSocket() throws IOException
     {
+        listeners = new ArrayList<JavaPhoneEvents>();
         main_sock = new ServerSocket(PORT);
     }
-
+    
+    public void addListener(JavaPhoneEvents to_add)
+    {
+        listeners.add(to_add);
+    }
+    
     @Override
     public void run()
     {
@@ -37,6 +45,11 @@ public class MainSocket extends Thread {
                 Handshake hs = new Handshake(in.readLine(), sock);
                 out.write("OK");
                 out.flush();
+                
+                for (JavaPhoneEvents l : listeners)
+                {
+                    l.callRecieved(hs);
+                }
             }
         }
         catch (IOException e)

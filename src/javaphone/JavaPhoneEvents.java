@@ -10,5 +10,5 @@ package javaphone;
  */
 public interface JavaPhoneEvents {
     void callRecieved(Handshake hs);
-    
+    void handleDM_text(int dm_id, String address, String text);
 }
