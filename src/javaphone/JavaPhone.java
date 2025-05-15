@@ -15,6 +15,7 @@ public class JavaPhone {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        DBManager test = new DBManager();
         mainJFrame frame = new mainJFrame();
 //        frame.setVisible(true);
     }
