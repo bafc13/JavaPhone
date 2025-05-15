@@ -42,7 +42,7 @@ public class MainSocket extends Thread {
                 BufferedReader in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
                 BufferedWriter out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
                 
-                Handshake hs = new Handshake(in.readLine(), sock);
+                Handshake hs = new Handshake(in.readLine(), in.readLine(), sock);
                 out.write("OK");
                 out.flush();
                 
@@ -63,7 +63,7 @@ public class MainSocket extends Thread {
         }
     }
     
-    public Boolean call(String addr, String purpose)
+    public Boolean call(String addr, String name, String purpose)
     {
         Socket sock;
         try {
@@ -77,6 +77,7 @@ public class MainSocket extends Thread {
             BufferedReader in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
             
+            out.write(name + "\n");
             out.write(purpose);
             out.flush();
             

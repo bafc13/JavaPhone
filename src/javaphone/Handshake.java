@@ -11,11 +11,13 @@ import java.net.*;
  * @author Andrey
  */
 public class Handshake {
+    public String name;
     public String message;
     public Socket sock;
     
-    public Handshake(String m, Socket s)
+    public Handshake(String n, String m, Socket s)
     {
+        name = n;
         message = m;
         sock = s;
     }
