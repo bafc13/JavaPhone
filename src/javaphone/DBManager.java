@@ -151,4 +151,9 @@ public class DBManager implements JavaPhoneEvents {
             return -1;
         }
     }
+
+    @Override
+    public void handleVoiceRecieved(String dm_address, String address, byte[] audioChunk) {
+        // Not db business
+    }
 }

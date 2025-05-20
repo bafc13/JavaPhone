@@ -44,6 +44,8 @@ public class AudioCapture {
         return audioQueue.take();
     }
     
+    
+    
     public void stopCapture() {
         isRecording = false;
         if (microphone != null) {

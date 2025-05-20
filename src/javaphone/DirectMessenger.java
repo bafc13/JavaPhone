@@ -137,6 +137,7 @@ public class DirectMessenger extends Thread {
     
     public void sendFile(String path, String fname) throws Exception
     {
+        out.writeInt(type_file);
         int bytes = 0;
         // Open the File where he located in your pc
         File file = new File(path + "/" + fname);
