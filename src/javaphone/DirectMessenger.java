@@ -43,12 +43,53 @@ public class DirectMessenger extends Thread {
         listeners.add(to_add);
     }
     
+    private String readTextMessage() 
+    {
+        try {
+            int msg_size = in.readInt();
+            byte[] b = new byte[msg_size];
+            int bytes_read = in.read(b, 0, msg_size);
+            
+            return new String(b);
+        } catch (IOException ex) {
+            Logger.getLogger(DirectMessenger.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
+    private String readFile()
+    {
+        try {
+            int msg_size = in.readInt();
+            byte[] b = new byte[msg_size];
+            int bytes_read = in.read(b, 0, msg_size);
+            String fname = new String(b);
+            
+            long size = in.readLong();
+            int bytes = 0;
+            FileOutputStream fs = new FileOutputStream("files/" + fname);
+            
+            byte[] buffer = new byte[4 * 1024];
+            while (size > 0 && (bytes = in.read(buffer, 0, (int)Math.min(buffer.length, size))) != -1) {
+                
+                fs.write(buffer, 0, bytes);
+                size -= bytes;
+            }
+            fs.close();
+            
+            return fname;
+        } catch (IOException ex) {
+            Logger.getLogger(DirectMessenger.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return null;
+    }
+    
     @Override
     public void run() 
     {
         int msg_type;
-        int msg_size;
-        int bytes_read;
+
         byte[] b;
         String msg;        
         try 
@@ -58,10 +99,7 @@ public class DirectMessenger extends Thread {
                 msg_type = in.readInt();
                 if (msg_type == type_text)
                 {
-                    msg_size = in.readInt();
-                    b = new byte[msg_size];
-                    bytes_read = in.read(b, 0, msg_size);
-                    msg = new String(b);
+                    msg = readTextMessage();
                     for (JavaPhoneEvents l : listeners)
                     {
                         l.handleDM_text(source.getInetAddress().toString(), source.getInetAddress().toString(), msg);
@@ -69,26 +107,10 @@ public class DirectMessenger extends Thread {
                 }
                 else if (msg_type == type_file)
                 {
-                    msg_size = in.readInt();
-                    b = new byte[msg_size];
-                    bytes_read = in.read(b, 0, msg_size);
-                    String fname = new String(b);
-                    
-                    long size = in.readLong();
-                    int bytes = 0;
-                    FileOutputStream fs = new FileOutputStream("files/" + fname);
-                    
-                    byte[] buffer = new byte[4 * 1024];
-                    while (size > 0 && (bytes = in.read(buffer, 0, (int)Math.min(buffer.length, size))) != -1) {
-                     
-                        fs.write(buffer, 0, bytes);
-                        size -= bytes;
-                    }
-                    fs.close();
-                    
-                    for (JavaPhoneEvents l : listeners)
+                    msg = readFile();                   
+                    for (JavaPhoneEvents l : listeners)                  
                     {
-                        l.handleDM_file(source.getInetAddress().toString(), source.getInetAddress().toString(), fname);
+                        l.handleDM_file(source.getInetAddress().toString(), source.getInetAddress().toString(), msg);
                     }
                 }
             }
