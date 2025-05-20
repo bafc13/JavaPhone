@@ -21,10 +21,10 @@ public class DirectMessenger extends Thread {
        
     private final Boolean is_host;
     private final Socket source;
-    private final BufferedReader in;
-    private final BufferedWriter out;
-    public static String type_text = "text\n";
-    public static String type_image = "image\n";
+    private final DataInputStream in;
+    private final DataOutputStream out;
+    public static int type_text = 100;
+    public static int type_file = 200;
     public int dm_id;
       
     private List<JavaPhoneEvents> listeners;
@@ -34,8 +34,8 @@ public class DirectMessenger extends Thread {
         dm_id = id; // TODO: recieve id from database
         this.is_host = is_host;
         source = s;
-        in = new BufferedReader(new InputStreamReader(s.getInputStream()));
-        out = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
+        in = new DataInputStream(s.getInputStream());
+        out = new DataOutputStream(s.getOutputStream());
     }
     
     public void addListener(JavaPhoneEvents to_add)
@@ -46,18 +46,49 @@ public class DirectMessenger extends Thread {
     @Override
     public void run() 
     {
-        String msg_type, msg;        
+        int msg_type;
+        int msg_size;
+        int bytes_read;
+        byte[] b;
+        String msg;        
         try 
         {
             while(true)
             {
-                msg_type = in.readLine();
-                if (msg_type.equals(type_text))
+                msg_type = in.readInt();
+                if (msg_type == type_text)
                 {
-                    msg = in.readLine();
+                    msg_size = in.readInt();
+                    b = new byte[msg_size];
+                    bytes_read = in.read(b, 0, msg_size);
+                    msg = new String(b);
                     for (JavaPhoneEvents l : listeners)
                     {
-                        l.handleDM_text(dm_id, source.getInetAddress().toString(), msg);
+                        l.handleDM_text(source.getInetAddress().toString(), source.getInetAddress().toString(), msg);
+                    }
+                }
+                else if (msg_type == type_file)
+                {
+                    msg_size = in.readInt();
+                    b = new byte[msg_size];
+                    bytes_read = in.read(b, 0, msg_size);
+                    String fname = new String(b);
+                    
+                    long size = in.readLong();
+                    int bytes = 0;
+                    FileOutputStream fs = new FileOutputStream("files/" + fname);
+                    
+                    byte[] buffer = new byte[4 * 1024];
+                    while (size > 0 && (bytes = in.read(buffer, 0, (int)Math.min(buffer.length, size))) != -1) {
+                     
+                        fs.write(buffer, 0, bytes);
+                        size -= bytes;
+                    }
+                    fs.close();
+                    
+                    for (JavaPhoneEvents l : listeners)
+                    {
+                        l.handleDM_file(source.getInetAddress().toString(), source.getInetAddress().toString(), fname);
                     }
                 }
             }
@@ -70,13 +101,37 @@ public class DirectMessenger extends Thread {
     
     public void sendText(String msg) throws IOException
     {
-        out.write(type_text);
+        out.writeInt(type_text);
+        out.writeLong(msg.length());
+        out.writeBytes(msg);
         
-        out.write(msg);
         out.flush();        
+        
         for (JavaPhoneEvents l : listeners)
         {
-            l.handleDM_text(dm_id, "localhost", msg);
+            l.handleDM_text(source.getInetAddress().toString(), "localhost", msg);
         }
+    }
+    
+    public void sendFile(String path, String fname) throws Exception
+    {
+        int bytes = 0;
+        // Open the File where he located in your pc
+        File file = new File(path + "/" + fname);
+        FileInputStream fs = new FileInputStream(file);
+        
+        out.writeInt(fname.length());
+        out.writeBytes(fname);
+        // Here we send the File to Server
+        out.writeLong(file.length());
+        // Here we  break file into chunks
+        byte[] buffer = new byte[4 * 1024];
+        while ((bytes = fs.read(buffer))
+               != -1) {
+            out.write(buffer, 0, bytes);
+            out.flush();
+        }
+        // close the file here
+        fs.close();
     }
 }

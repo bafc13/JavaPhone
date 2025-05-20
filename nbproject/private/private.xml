@@ -12,6 +12,12 @@
             <file>file:/C:/prog/javaphone/src/javaphone/Handshake.java</file>
             <file>file:/C:/prog/javaphone/src/images/image2.png</file>
             <file>file:/C:/prog/javaphone/src/javaphone/JavaPhoneEvents.java</file>
+            <file>file:/C:/prog/javaphone/build.xml</file>
+            <file>file:/C:/prog/javaphone/src/javaphone/DBManager.java</file>
+            <file>file:/C:/prog/javaphone/src/com/example/OpenCVInitializer.java</file>
+            <file>file:/C:/prog/javaphone/src/com/livesubtitles/audio/AudioCapture.java</file>
+            <file>file:/C:/prog/javaphone/src/com/livesubtitles/audio/AudioConfig.java</file>
+            <file>file:/C:/prog/javaphone/src/com/livesubtitles/core/ApplicationController.java</file>
         </group>
     </open-files>
 </project-private>
