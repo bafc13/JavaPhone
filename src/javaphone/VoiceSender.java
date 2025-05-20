@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 public class VoiceSender extends Thread {
     private final Socket source;
     private final DataOutputStream out;
-
+    private List<JavaPhoneEvents> listeners;
     private final int chunk_size;
     
     private AudioCapture mic;
@@ -31,6 +31,11 @@ public class VoiceSender extends Thread {
         out = new DataOutputStream(s.getOutputStream());
     }
     
+    public void addListener(JavaPhoneEvents to_add)
+    {
+        listeners.add(to_add);
+    }
+    
     @Override
     public void run()
     {
@@ -40,6 +45,11 @@ public class VoiceSender extends Thread {
             try {
                 chunk = mic.getAudioChunk();
                 out.write(chunk);
+                
+                for (JavaPhoneEvents l : listeners)                  
+                {
+                    l.handleVoiceSent(source.getInetAddress().toString(), source.getInetAddress().toString(), chunk);
+                }
                 
             } catch (Exception ex) {
                 Logger.getLogger(VoiceReciever.class.getName()).log(Level.SEVERE, null, ex);

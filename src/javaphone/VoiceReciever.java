@@ -28,6 +28,11 @@ public class VoiceReciever extends Thread {
         in = new DataInputStream(s.getInputStream());
     }
     
+    public void addListener(JavaPhoneEvents to_add)
+    {
+        listeners.add(to_add);
+    }
+    
     @Override
     public void run()
     {

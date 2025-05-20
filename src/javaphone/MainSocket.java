@@ -82,7 +82,16 @@ public class MainSocket extends Thread {
             out.flush();
             
             if (in.readLine().equals("OK"))
+            {
+                Handshake hs = new Handshake(name, purpose, sock);
+                
+                for (JavaPhoneEvents l : listeners)
+                {
+                    l.callSent(hs);
+                }
+                
                 return true;
+            }
             
         } catch (IOException ex) {
             Logger.getLogger(MainSocket.class.getName()).log(Level.SEVERE, null, ex);

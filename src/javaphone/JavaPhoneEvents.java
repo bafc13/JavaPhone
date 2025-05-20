@@ -10,8 +10,11 @@ package javaphone;
  */
 public interface JavaPhoneEvents {
     void callRecieved(Handshake hs);
+    void callSent(Handshake hs);
+    
     void handleDM_text(String dm_address, String address, String text);
     void handleDM_file(String dm_address, String address, String fname);
     
     void handleVoiceRecieved(String dm_address, String address, byte[] audioChunk);
+    void handleVoiceSent(String dm_address, String address, byte[] audioChunk);
 }

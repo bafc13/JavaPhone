@@ -156,4 +156,14 @@ public class DBManager implements JavaPhoneEvents {
     public void handleVoiceRecieved(String dm_address, String address, byte[] audioChunk) {
         // Not db business
     }
+
+    @Override
+    public void callSent(Handshake hs) {
+        // Not db business
+    }
+
+    @Override
+    public void handleVoiceSent(String dm_address, String address, byte[] audioChunk) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }
