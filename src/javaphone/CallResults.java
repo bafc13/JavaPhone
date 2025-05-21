@@ -10,4 +10,5 @@ package javaphone;
  */
 public interface CallResults {
     void dm_created(DirectMessenger dm);
+    void voice_created(VoiceSender vs, VoiceReciever vr);
 }
