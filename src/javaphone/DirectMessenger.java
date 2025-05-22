@@ -124,7 +124,7 @@ public class DirectMessenger extends Thread {
     public void sendText(String msg) throws IOException
     {
         out.writeInt(type_text);
-        out.writeLong(msg.length());
+        out.writeInt(msg.length());
         out.writeBytes(msg);
         
         out.flush();        

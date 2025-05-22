@@ -4,6 +4,8 @@
  */
 package javaphone;
 
+import java.awt.image.BufferedImage;
+
 /**
  *
  * @author Andrey
@@ -17,4 +19,7 @@ public interface JavaPhoneEvents {
     
     void handleVoiceRecieved(String dm_address, String address, byte[] audioChunk);
     void handleVoiceSent(String dm_address, String address, byte[] audioChunk);
+    
+    void handleCameraFrameRecieved(String dm_address, String address, BufferedImage frame);
+    void handleCameraFrameSent(String dm_address, String address, BufferedImage frame);
 }

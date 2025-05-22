@@ -5,6 +5,7 @@
 package javaphone;
 
 import com.livesubtitles.audio.AudioConfig;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
@@ -111,6 +112,16 @@ public class BasicCallHandler implements JavaPhoneEvents {
 
     @Override
     public void handleVoiceSent(String dm_address, String address, byte[] audioChunk) {
+        // Has nothing to do with calls
+    }
+
+    @Override
+    public void handleCameraFrameRecieved(String dm_address, String address, BufferedImage frame) {
+        // Has nothing to do with calls
+    }
+
+    @Override
+    public void handleCameraFrameSent(String dm_address, String address, BufferedImage frame) {
         // Has nothing to do with calls
     }
     
