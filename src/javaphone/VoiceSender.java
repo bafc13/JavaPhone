@@ -11,49 +11,37 @@ import java.net.Socket;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javaphone.EventInterfaces.VoiceHandler;
 
 /**
  *
  * @author Andrey
  */
-public class VoiceSender extends Thread {
+public class VoiceSender implements VoiceHandler {
+
     private final Socket source;
     private final DataOutputStream out;
-    private List<JavaPhoneEvents> listeners;
     private final int chunk_size;
-    
-    private AudioCapture mic;
-    
-    public VoiceSender(Socket s, int cs) throws IOException
-    {
+
+    public VoiceSender(Socket s, int cs) throws IOException {
         chunk_size = cs;
         source = s;
         out = new DataOutputStream(s.getOutputStream());
     }
-    
-    public void addListener(JavaPhoneEvents to_add)
-    {
-        listeners.add(to_add);
-    }
-    
+
     @Override
-    public void run()
-    {
-        byte[] chunk;
-        while (true)
-        {
-            try {
-                chunk = mic.getAudioChunk();
-                out.write(chunk);
-                
-                for (JavaPhoneEvents l : listeners)                  
-                {
-                    l.handleVoiceSent(source.getInetAddress().toString(), source.getInetAddress().toString(), chunk);
-                }
-                
-            } catch (Exception ex) {
-                Logger.getLogger(VoiceReciever.class.getName()).log(Level.SEVERE, null, ex);
-            }
+    public void HandleVoiceRecieved(String dm_address, String address, byte[] audioChunk) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void HandleVoiceRecorded(byte[] audioChunk) {
+        try {
+            out.write(audioChunk);
+            out.flush();
+
+        } catch (Exception ex) {
+            Logger.getLogger(VoiceReciever.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

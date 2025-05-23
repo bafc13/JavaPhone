@@ -10,21 +10,23 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javaphone.EventInterfaces.CallHandler;
+import javaphone.EventInterfaces.CallResultHandler;
 
 /**
  *
  * @author Andrey
  */
-public class BasicCallHandler implements JavaPhoneEvents {
+public class BasicCallHandler implements CallHandler {
     private DBManager dbm;
-    private List<CallResults> listeners;
+    private List<CallResultHandler> listeners;
     
     public BasicCallHandler(DBManager dbm)
     {
         this.dbm = dbm;
     }
     
-    public void addListener(CallResults to_add)
+    public void addListener(CallResultHandler to_add)
     {
         listeners.add(to_add);
     }
@@ -38,9 +40,9 @@ public class BasicCallHandler implements JavaPhoneEvents {
             try {
                 DirectMessenger dm = new DirectMessenger(id, true, hs.sock);
                 
-                for (CallResults cr : listeners)
+                for (CallResultHandler cr : listeners)
                 {
-                    cr.dm_created(dm);
+                    cr.DMCreated(dm);
                 }
             } catch (IOException ex) {
                 Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -52,9 +54,9 @@ public class BasicCallHandler implements JavaPhoneEvents {
                 VoiceSender vs = new VoiceSender(hs.sock, AudioConfig.CHUNK_SIZE);
                 VoiceReciever vr = new VoiceReciever(hs.sock, AudioConfig.CHUNK_SIZE);
                 
-                for (CallResults cr : listeners)
+                for (CallResultHandler cr : listeners)
                 {
-                    cr.voice_created(vs, vr);
+                    cr.VoiceCreated(vs, vr);
                 }
             } catch (IOException ex) {
                 Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -71,9 +73,9 @@ public class BasicCallHandler implements JavaPhoneEvents {
             try {
                 DirectMessenger dm = new DirectMessenger(id, false, hs.sock);
                 
-                for (CallResults cr : listeners)
+                for (CallResultHandler cr : listeners)
                 {
-                    cr.dm_created(dm);
+                    cr.DMCreated(dm);
                 }
             } catch (IOException ex) {
                 Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -85,44 +87,13 @@ public class BasicCallHandler implements JavaPhoneEvents {
                 VoiceSender vs = new VoiceSender(hs.sock, AudioConfig.CHUNK_SIZE);
                 VoiceReciever vr = new VoiceReciever(hs.sock, AudioConfig.CHUNK_SIZE);
                 
-                for (CallResults cr : listeners)
+                for (CallResultHandler cr : listeners)
                 {
-                    cr.voice_created(vs, vr);
+                    cr.VoiceCreated(vs, vr);
                 }
             } catch (IOException ex) {
                 Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-    }
-
-    @Override
-    public void handleDM_text(String dm_address, String address, String text) {
-        // Has nothing to do with calls
-    }
-
-    @Override
-    public void handleDM_file(String dm_address, String address, String fname) {
-        // Has nothing to do with calls
-    }
-
-    @Override
-    public void handleVoiceRecieved(String dm_address, String address, byte[] audioChunk) {
-        // Has nothing to do with calls
-    }
-
-    @Override
-    public void handleVoiceSent(String dm_address, String address, byte[] audioChunk) {
-        // Has nothing to do with calls
-    }
-
-    @Override
-    public void handleCameraFrameRecieved(String dm_address, String address, BufferedImage frame) {
-        // Has nothing to do with calls
-    }
-
-    @Override
-    public void handleCameraFrameSent(String dm_address, String address, BufferedImage frame) {
-        // Has nothing to do with calls
-    }
-    
+    }   
 }

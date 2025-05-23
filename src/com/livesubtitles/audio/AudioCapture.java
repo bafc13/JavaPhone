@@ -1,16 +1,27 @@
 package com.livesubtitles.audio;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.sound.sampled.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import javaphone.EventInterfaces.VoiceHandler;
 
 public class AudioCapture {
     private TargetDataLine microphone;
     private BlockingQueue<byte[]> audioQueue;
     private volatile boolean isRecording;
     
+    private List<VoiceHandler> listeners;
+    
+    public void addListener(VoiceHandler to_add)
+    {
+        listeners.add(to_add);
+    }
+    
     public AudioCapture() {
         this.audioQueue = new LinkedBlockingQueue<>();
+        listeners = new ArrayList<>();
     }
     
     public void startCapture() throws LineUnavailableException {
@@ -35,6 +46,10 @@ public class AudioCapture {
         while (isRecording) {
             int bytesRead = microphone.read(buffer, 0, buffer.length);
             if (bytesRead > 0) {
+                for (VoiceHandler vh : listeners)
+                {
+                    vh.HandleVoiceRecorded(buffer);
+                }
                 audioQueue.add(buffer.clone());
             }
         }

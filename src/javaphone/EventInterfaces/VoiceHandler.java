@@ -2,13 +2,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package javaphone;
+package javaphone.EventInterfaces;
 
 /**
  *
  * @author Andrey
  */
-public interface CallResults {
-    void dm_created(DirectMessenger dm);
-    void voice_created(VoiceSender vs, VoiceReciever vr);
+public interface VoiceHandler {
+    void HandleVoiceRecieved(String dm_address, String address, byte[] audioChunk);
+    void HandleVoiceRecorded(byte[] audioChunk);
 }

@@ -10,6 +10,7 @@ import java.net.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javaphone.EventInterfaces.CallHandler;
 /**
  *
  * @author Andrey
@@ -17,16 +18,16 @@ import java.util.logging.Logger;
 public class MainSocket extends Thread {
     public static final int PORT = 666;
     private final ServerSocket main_sock;
-    private List<JavaPhoneEvents> listeners;
+    private List<CallHandler> listeners;
     
 
     public MainSocket() throws IOException
     {
-        listeners = new ArrayList<JavaPhoneEvents>();
+        listeners = new ArrayList<CallHandler>();
         main_sock = new ServerSocket(PORT);
     }
     
-    public void addListener(JavaPhoneEvents to_add)
+    public void addListener(CallHandler to_add)
     {
         listeners.add(to_add);
     }
@@ -46,7 +47,7 @@ public class MainSocket extends Thread {
                 out.write("OK");
                 out.flush();
                 
-                for (JavaPhoneEvents l : listeners)
+                for (CallHandler l : listeners)
                 {
                     l.callRecieved(hs);
                 }
@@ -85,7 +86,7 @@ public class MainSocket extends Thread {
             {
                 Handshake hs = new Handshake(name, purpose, sock);
                 
-                for (JavaPhoneEvents l : listeners)
+                for (CallHandler l : listeners)
                 {
                     l.callSent(hs);
                 }

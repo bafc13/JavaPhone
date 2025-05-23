@@ -2,14 +2,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package javaphone;
+package javaphone.EventInterfaces;
 
 /**
  *
  * @author Andrey
  */
-public class CallCodes {
-    public static final String dm = "dm";
-    public static final String voiceCall = "voice";
-    public static final String videoCall = "video";
+public interface DMHandler {
+    void HandleDMText(String dm_address, String address, String text);
+    void HandleDMFile(String dm_address, String address, String fname);
 }

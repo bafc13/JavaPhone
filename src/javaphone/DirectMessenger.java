@@ -10,6 +10,7 @@ import java.net.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javaphone.EventInterfaces.DMHandler;
 
 
 /**
@@ -27,7 +28,7 @@ public class DirectMessenger extends Thread {
     public static int type_file = 200;
     public int dm_id;
       
-    private List<JavaPhoneEvents> listeners;
+    private List<DMHandler> listeners;
     
     public DirectMessenger(int id, Boolean is_host, Socket s) throws IOException
     {
@@ -38,7 +39,7 @@ public class DirectMessenger extends Thread {
         out = new DataOutputStream(s.getOutputStream());
     }
     
-    public void addListener(JavaPhoneEvents to_add)
+    public void addListener(DMHandler to_add)
     {
         listeners.add(to_add);
     }
@@ -100,17 +101,17 @@ public class DirectMessenger extends Thread {
                 if (msg_type == type_text)
                 {
                     msg = readTextMessage();
-                    for (JavaPhoneEvents l : listeners)
+                    for (DMHandler l : listeners)
                     {
-                        l.handleDM_text(source.getInetAddress().toString(), source.getInetAddress().toString(), msg);
+                        l.HandleDMText(source.getInetAddress().toString(), source.getInetAddress().toString(), msg);
                     }
                 }
                 else if (msg_type == type_file)
                 {
                     msg = readFile();                   
-                    for (JavaPhoneEvents l : listeners)                  
+                    for (DMHandler l : listeners)                  
                     {
-                        l.handleDM_file(source.getInetAddress().toString(), source.getInetAddress().toString(), msg);
+                        l.HandleDMFile(source.getInetAddress().toString(), source.getInetAddress().toString(), msg);
                     }
                 }
             }
@@ -129,9 +130,9 @@ public class DirectMessenger extends Thread {
         
         out.flush();        
         
-        for (JavaPhoneEvents l : listeners)
+        for (DMHandler l : listeners)
         {
-            l.handleDM_text(source.getInetAddress().toString(), "localhost", msg);
+            l.HandleDMText(source.getInetAddress().toString(), "localhost", msg);
         }
     }
     

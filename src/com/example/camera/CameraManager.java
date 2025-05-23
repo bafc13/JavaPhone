@@ -8,13 +8,23 @@ import org.opencv.videoio.VideoCapture;
 import org.opencv.imgproc.Imgproc;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
+import javaphone.EventInterfaces.VideoHandler;
 
 public class CameraManager {
 
     private VideoCapture camera;
     private boolean isCameraActive = false;
     public static int StyleCount = 0;
+    
+    private List<VideoHandler> listeners = new ArrayList<>();
 
+    public void addListener(VideoHandler to_add)
+    {
+        listeners.add(to_add);
+    }
+    
     public void startCamera() {
         if (!isCameraActive) {
             camera = new VideoCapture(0); // 0 - индекс камеры по умолчанию
@@ -72,7 +82,14 @@ public class CameraManager {
             // Возвращаем обратно к исходному размеру, создавая эффект пикселей
             Imgproc.resize(temp, frame, frame.size(), 0, 0, Imgproc.INTER_NEAREST);
         }
-        return matToBufferedImage(frame);
+        BufferedImage result = matToBufferedImage(frame);
+        
+        for (VideoHandler vh : listeners)
+        {
+            vh.HandleCameraFrameRecorded(result);
+        }
+        
+        return result;
     }
 
     private BufferedImage matToBufferedImage(Mat mat) {

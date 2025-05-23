@@ -4,15 +4,17 @@
  */
 package javaphone;
 
+import java.awt.image.BufferedImage;
 import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javaphone.EventInterfaces.*;
 
 /**
  *
  * @author Andrey
  */
-public class DBManager implements JavaPhoneEvents {
+public class DBManager implements CallHandler, DMHandler {
 
     private Connection c;
 
@@ -89,7 +91,7 @@ public class DBManager implements JavaPhoneEvents {
     }
 
     @Override
-    public void handleDM_text(String dm_address, String address, String text) {
+    public void HandleDMText(String dm_address, String address, String text) {
         try {
             int dm_id = get_dm_id(dm_address);
             
@@ -107,7 +109,7 @@ public class DBManager implements JavaPhoneEvents {
     }
     
     @Override
-    public void handleDM_file(String dm_address, String address, String fname) {
+    public void HandleDMFile(String dm_address, String address, String fname) {
         try {
             int dm_id = get_dm_id(dm_address);
             
@@ -153,17 +155,7 @@ public class DBManager implements JavaPhoneEvents {
     }
 
     @Override
-    public void handleVoiceRecieved(String dm_address, String address, byte[] audioChunk) {
-        // Not db business
-    }
-
-    @Override
     public void callSent(Handshake hs) {
-        // Not db business
-    }
-
-    @Override
-    public void handleVoiceSent(String dm_address, String address, byte[] audioChunk) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

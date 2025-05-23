@@ -13,53 +13,27 @@ import java.net.Socket;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javaphone.EventInterfaces.VideoHandler;
 import javax.imageio.ImageIO;
 
 /**
  *
  * @author Andrey
  */
-public class VideoSender extends Thread {
+public class VideoSender implements VideoHandler {
+
     public static final int w = 1280;
     public static final int h = 720;
-    
+    private int sentSize;
     private final Socket source;
     private final DataOutputStream out;
-
-    private CameraManager cam;
-
-    private List<JavaPhoneEvents> listeners;
 
     public VideoSender(Socket s, int cs) throws IOException {
         source = s;
         out = new DataOutputStream(s.getOutputStream());
     }
 
-    public void addListener(JavaPhoneEvents to_add) {
-        listeners.add(to_add);
-    }
-
-    @Override
-    public void run() {
-        byte[] chunk;
-        BufferedImage frame = cam.getCurrentFrame();
-        while (true) {
-            try {
-                chunk = convertToSend(frame);
-                out.write(chunk);
-
-                for (JavaPhoneEvents l : listeners) {
-                    l.handleCameraFrameSent(source.getInetAddress().toString(), source.getInetAddress().toString(), frame);
-                }
-
-            } catch (Exception ex) {
-                Logger.getLogger(VoiceReciever.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
-
-    private byte[] convertToSend(BufferedImage frame) throws IOException 
-    {
+    private byte[] convertToSend(BufferedImage frame) throws IOException {
         BufferedImage img
                 = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
         int x, y;
@@ -76,9 +50,27 @@ public class VideoSender extends Thread {
                 img.setRGB(x, y, col);
             }
         }
-        
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write(img, "jpg", baos);
         return baos.toByteArray();
+    }
+
+    @Override
+    public void HandleCameraFrameRecieved(String dm_address, String address, BufferedImage frame) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void HandleCameraFrameRecorded(BufferedImage frame) {
+        try {
+            byte[] chunk = convertToSend(frame);
+            sentSize = chunk.length;
+            out.writeInt(sentSize);
+            out.write(chunk);
+            out.flush();
+        } catch (Exception ex) {
+            Logger.getLogger(VoiceReciever.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

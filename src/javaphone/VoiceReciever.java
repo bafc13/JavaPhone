@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javaphone.EventInterfaces.VoiceHandler;
 
 /**
  *
@@ -18,7 +19,7 @@ import java.util.logging.Logger;
 public class VoiceReciever extends Thread {
     private final Socket source;
     private final DataInputStream in;
-    private List<JavaPhoneEvents> listeners;
+    private List<VoiceHandler> listeners;
     private final int chunk_size;
     
     public VoiceReciever(Socket s, int cs) throws IOException
@@ -28,7 +29,7 @@ public class VoiceReciever extends Thread {
         in = new DataInputStream(s.getInputStream());
     }
     
-    public void addListener(JavaPhoneEvents to_add)
+    public void addListener(VoiceHandler to_add)
     {
         listeners.add(to_add);
     }
@@ -43,9 +44,9 @@ public class VoiceReciever extends Thread {
             try {
                 bytes_read = in.read(chunk);
                 
-                for (JavaPhoneEvents l : listeners)                  
+                for (VoiceHandler l : listeners)                  
                 {
-                    l.handleVoiceRecieved(source.getInetAddress().toString(), source.getInetAddress().toString(), chunk);
+                    l.HandleVoiceRecieved(source.getInetAddress().toString(), source.getInetAddress().toString(), chunk);
                 }
             } catch (IOException ex) {
                 Logger.getLogger(VoiceReciever.class.getName()).log(Level.SEVERE, null, ex);
