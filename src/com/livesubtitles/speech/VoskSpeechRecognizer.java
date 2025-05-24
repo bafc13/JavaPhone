@@ -17,14 +17,16 @@ public class VoskSpeechRecognizer implements SpeechRecognizer {
     private SpeechRecognitionListener listener;
     private volatile boolean isRunning;
     private PrintWriter textFileWriter;
-    
+
     public VoskSpeechRecognizer() throws IOException {
         LibVosk.setLogLevel(LogLevel.INFO);
         //String modelPath = "C:\\Users\\paravozik\\Desktop\\java_phone\\audioMan\\audiocapture\\models\\vosk-model-small-en-in-0.4";
-        String modelPath = "C:\\Users\\paravozik\\Desktop\\java_phone\\audioMan\\audiocapture\\models\\vosk-model-small-ru-0.22";
+//        String modelPath = "C:\\Users\\paravozik\\Desktop\\java_phone\\audioMan\\audiocapture\\models\\vosk-model-small-ru-0.22";
+//        String modelPath = "C:\\Users\\bafc13\\Documents\\NetBeansProjects\\javaPhone\\models\\vosk-model-small-ru-0.22";
+        String modelPath = ".\\models\\vosk-model-small-ru-0.22";
         this.model = new Model(modelPath);
         this.recognizer = new Recognizer(model, AudioConfig.SAMPLE_RATE);
-        
+
         // Инициализация файлового писателя
         try {
             this.textFileWriter = new PrintWriter(
@@ -37,21 +39,21 @@ public class VoskSpeechRecognizer implements SpeechRecognizer {
             throw e;
         }
     }
-    
+
     private String fixEncoding(String input) {
         return input;
     }
-    
+
     @Override
     public void startRecognition(SpeechRecognitionListener listener) {
         this.listener = listener;
         this.isRunning = true;
     }
-    
+
     @Override
     public void processAudioChunk(byte[] audioChunk) {
         if (!isRunning || listener == null) return;
-        
+
         try {
             if (recognizer.acceptWaveForm(audioChunk, audioChunk.length)) {
                 String result = recognizer.getResult();
@@ -69,14 +71,14 @@ public class VoskSpeechRecognizer implements SpeechRecognizer {
             listener.onError(e);
         }
     }
-    
+
     private void writeToFile(String text) {
         if (textFileWriter != null) {
             textFileWriter.println(text);
             textFileWriter.flush(); // Сбрасываем буфер после каждой записи
         }
     }
-    
+
     private String parseResult(String json) {
         try {
             String text = json.replaceAll(".*\"text\"\\s*:\\s*\"([^\"]*)\".*", "$1");
@@ -86,7 +88,7 @@ public class VoskSpeechRecognizer implements SpeechRecognizer {
             return "Ошибка распознавания";
         }
     }
-    
+
     private String parsePartial(String json) {
         try {
             String partial = json.replaceAll(".*\"partial\"\\s*:\\s*\"([^\"]*)\".*", "$1");
@@ -96,7 +98,7 @@ public class VoskSpeechRecognizer implements SpeechRecognizer {
             return "...";
         }
     }
-    
+
     @Override
     public void stopRecognition() {
         isRunning = false;

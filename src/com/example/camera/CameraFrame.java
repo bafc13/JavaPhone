@@ -23,7 +23,7 @@ public class CameraFrame {
         // Настройка основного окна
         frame = new JFrame("Camera Application");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 600);
+        frame.setSize(1024, 768);
 
         // Панель для отображения камеры
         cameraScreen = new JLabel();
@@ -38,19 +38,19 @@ public class CameraFrame {
 
     private void addControlPanel() {
         JPanel panel = new JPanel();
-        
+
         JButton startBtn = new JButton("Start Camera");
         JButton stopBtn = new JButton("Stop Camera");
         JButton maskBtn = new JButton("Next Filter");
-        
+
         startBtn.addActionListener(e -> startCamera());
         stopBtn.addActionListener(e -> stopCamera());
         maskBtn.addActionListener(e -> nextStyle());
-        
+
         panel.add(startBtn);
         panel.add(stopBtn);
         panel.add(maskBtn);
-        
+
         frame.add(panel, BorderLayout.SOUTH);
     }
 

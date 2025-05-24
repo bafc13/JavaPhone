@@ -13,13 +13,13 @@ public class SubtitleDisplay {
     public SubtitleDisplay() {
         panel = new JPanel(new BorderLayout());
         panel.setBackground(inactiveColor);
-        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        
+        panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
         subtitleLabel = new JLabel("", SwingConstants.CENTER);
         subtitleLabel.setFont(new Font("Arial Unicode MS", Font.BOLD, 36));
         subtitleLabel.setForeground(Color.WHITE);
-        
-        panel.add(subtitleLabel, BorderLayout.CENTER);
+
+        panel.add(subtitleLabel, BorderLayout.NORTH);
     }
 
     public JPanel getView() {
@@ -32,7 +32,7 @@ public class SubtitleDisplay {
             panel.setBackground(inactiveColor);
             return;
         }
-        
+
         subtitleLabel.setText(text);
         if (isFinal) {
             panel.setBackground(finalResultColor);

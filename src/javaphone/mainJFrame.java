@@ -1,11 +1,17 @@
 package javaphone;
 
 //import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 //import javax.swing.Icon;
 
 /*
@@ -18,14 +24,18 @@ import javax.swing.JTextField;
  * @author bafc13
  */
 public class mainJFrame extends javax.swing.JFrame {
-    
+
     // TODO: some kind of event listener handle_dm(Boolean is_sender, Socket sock, String msg)
     // To write messages to db and show on screen
-    
+
+     DBManager db;
+     MainSocket mainSock;
+
+
     /**
      * Creates new form mainJFrame
      */
-    public mainJFrame() {
+    public mainJFrame() throws IOException {
         initComponents();
         this.setTitle("JavaPhone");
 //        ImageIcon imageIcon = new ImageIcon("src/");
@@ -33,6 +43,13 @@ public class mainJFrame extends javax.swing.JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
         this.setVisible(true);
+
+
+        db = new DBManager();
+        mainSock = new MainSocket();
+
+
+
     }
 
     /**
@@ -127,7 +144,7 @@ public class mainJFrame extends javax.swing.JFrame {
             .addGroup(connectionPanelLayout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(connectButton, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(18, 18, Short.MAX_VALUE)
                 .addComponent(createInterfaceButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
@@ -148,6 +165,11 @@ public class mainJFrame extends javax.swing.JFrame {
         serverButton1.setText("study server");
         serverButton1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         serverButton1.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/images/image2.png"))); // NOI18N
+        serverButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                serverButton1MouseReleased(evt);
+            }
+        });
         serverButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 serverButton1ActionPerformed(evt);
@@ -178,11 +200,11 @@ public class mainJFrame extends javax.swing.JFrame {
             serverPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(serverPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(serverPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(serverPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(serverButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)
                     .addComponent(serverButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(serverButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(serverButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 519, Short.MAX_VALUE))
-                .addGap(10, 10, 10))
+                    .addComponent(serverButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(79, Short.MAX_VALUE))
         );
         serverPanelLayout.setVerticalGroup(
             serverPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -219,13 +241,13 @@ public class mainJFrame extends javax.swing.JFrame {
         chatPannel.setLayout(chatPannelLayout);
         chatPannelLayout.setHorizontalGroup(
             chatPannelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTextField1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
+            .addComponent(jTextField1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 333, Short.MAX_VALUE)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
         chatPannelLayout.setVerticalGroup(
             chatPannelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, chatPannelLayout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 114, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -256,10 +278,10 @@ public class mainJFrame extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(serverScrollPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 534, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(serverScrollPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 504, Short.MAX_VALUE)
+                .addGap(5, 5, 5)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(friendPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(friendPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 333, Short.MAX_VALUE)
                     .addComponent(chatPannel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(10, 10, 10))
             .addComponent(jToolBar1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -274,7 +296,7 @@ public class mainJFrame extends javax.swing.JFrame {
                         .addComponent(serverScrollPanel)
                         .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(friendPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
+                        .addComponent(friendPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 305, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(chatPannel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
@@ -287,16 +309,23 @@ public class mainJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_createInterfaceButtonActionPerformed
 
     private void connectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectButtonActionPerformed
-        // TODO add your handling code here:
+         try {
+             // TODO add your handling code here:
+//        if(serverPanel.)
+            CallFrame cf = new CallFrame();
+//            cf.setExtendedState(JFrame.MAXIMIZED_BOTH);
+         } catch (IOException ex) {
+             Logger.getLogger(mainJFrame.class.getName()).log(Level.SEVERE, null, ex);
+         }
     }//GEN-LAST:event_connectButtonActionPerformed
 
     private void serverButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverButton1ActionPerformed
         // TODO add your handling code here:
 //        JOptionPane.showMessageDialog(null, "Connecting...", "InfoBox:", JOptionPane.INFORMATION_MESSAGE);
-        JTextField jt = new JTextField();
-        jt.setText("198.9.1.2:2888     Erjan228");
+//        JTextField jt = new JTextField();
+//        jt.setText("198.9.1.2:2888     Erjan228");
 
-        connectionPanel.add(jt);
+//        connectionPanel.add(jt);
     }//GEN-LAST:event_serverButton1ActionPerformed
 
     private void serverButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverButton2ActionPerformed
@@ -317,6 +346,10 @@ public class mainJFrame extends javax.swing.JFrame {
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField1ActionPerformed
+
+    private void serverButton1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_serverButton1MouseReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_serverButton1MouseReleased
     /**
      * @param args the command line arguments
      */
@@ -348,7 +381,11 @@ public class mainJFrame extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new mainJFrame().setVisible(true);
+                try {
+                    new mainJFrame().setVisible(true);
+                } catch (IOException ex) {
+                    Logger.getLogger(mainJFrame.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
@@ -383,6 +420,17 @@ public class mainJFrame extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 }
 
+
+//JButton button = new JButton("Нажми меня");
+
+        // Добавляем обработчик нажатия
+//        button.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                // Устанавливаем фокус на кнопку после нажатия
+//                button.requestFocusInWindow();
+//            }
+//        });
 
 //сервера можно реализовать так:
 //первый кто сервера типо есть в закрепе, то есть можно по нажатии открыть сервак и порт на этом конкретно адресе,

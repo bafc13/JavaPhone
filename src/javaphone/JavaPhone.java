@@ -4,6 +4,8 @@
  */
 package javaphone;
 
+import java.io.IOException;
+
 /**
  *
  * @author bafc13
@@ -13,9 +15,8 @@ public class JavaPhone {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         // TODO code application logic here
-        DBManager test = new DBManager();
         mainJFrame frame = new mainJFrame();
 //        frame.setVisible(true);
     }
