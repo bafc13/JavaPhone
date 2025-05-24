@@ -1,16 +1,20 @@
 package javaphone;
 
 //import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 //import javax.swing.Icon;
 
@@ -30,6 +34,10 @@ public class mainJFrame extends javax.swing.JFrame {
 
      DBManager db;
      MainSocket mainSock;
+
+     private String ip;
+     private String nick;
+     private JLabel resultLabel;
 
 
     /**
@@ -305,8 +313,61 @@ public class mainJFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void createInterfaceButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createInterfaceButtonActionPerformed
+
+        resultLabel = new JLabel("Данные не введены");
+        resultLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+
+            CustomDialog dialog = new CustomDialog(this);
+            dialog.setVisible(true);
+
+            // После закрытия диалога получаем данные
+            ip = dialog.getField1Value();
+            nick = dialog.getField2Value();
+
+            // Обновляем интерфейс
+            System.out.println("huy" + ip + "chlen" + nick);
         // TODO add your handling code here:
     }//GEN-LAST:event_createInterfaceButtonActionPerformed
+
+    class CustomDialog extends JDialog {
+    private JTextField field1;
+    private JTextField field2;
+
+    public CustomDialog(JFrame parent) {
+        super(parent, "Ввод данных", true); // Модальное окно
+        setLayout(new GridLayout(3, 2, 5, 5));
+        setSize(300, 150);
+        setLocationRelativeTo(parent);
+
+        // Создаем компоненты
+        JLabel label1 = new JLabel("Поле 1:");
+        JLabel label2 = new JLabel("Поле 2:");
+        field1 = new JTextField();
+        field2 = new JTextField();
+        JButton okButton = new JButton("OK");
+
+        // Добавляем обработчик кнопки
+        okButton.addActionListener(e -> dispose());
+
+        // Добавляем компоненты на форму
+        add(label1);
+        add(field1);
+        add(label2);
+        add(field2);
+        add(new JLabel()); // Пустая ячейка
+        add(okButton);
+    }
+
+    // Геттеры для получения значений
+    public String getField1Value() {
+        return field1.getText();
+    }
+
+    public String getField2Value() {
+        return field2.getText();
+    }
+}
 
     private void connectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectButtonActionPerformed
          try {
