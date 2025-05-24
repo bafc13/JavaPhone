@@ -55,7 +55,7 @@ public class mainJFrame extends javax.swing.JFrame {
 
         db = new DBManager();
         mainSock = new MainSocket();
-
+        mainSock.start();
 
 
     }
@@ -324,6 +324,8 @@ public class mainJFrame extends javax.swing.JFrame {
             // После закрытия диалога получаем данные
             ip = dialog.getField1Value();
             nick = dialog.getField2Value();
+            
+            mainSock.call(ip, nick, CallCodes.dm);
 
             // Обновляем интерфейс
             System.out.println("huy" + ip + "chlen" + nick);

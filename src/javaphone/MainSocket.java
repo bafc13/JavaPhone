@@ -44,6 +44,9 @@ public class MainSocket extends Thread {
                 BufferedWriter out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
                 
                 Handshake hs = new Handshake(in.readLine(), in.readLine(), sock);
+                System.out.println("Zvonit huesos");
+                System.out.println(hs.message);
+                System.out.println(hs.name);
                 out.write("OK");
                 out.flush();
                 
@@ -84,6 +87,7 @@ public class MainSocket extends Thread {
             
             if (in.readLine().equals("OK"))
             {
+                System.out.println("Otvetili");
                 Handshake hs = new Handshake(name, purpose, sock);
                 
                 for (CallHandler l : listeners)
@@ -92,6 +96,10 @@ public class MainSocket extends Thread {
                 }
                 
                 return true;
+            }
+            else
+            {
+                System.out.println("Ne otvechaet pidoras");
             }
             
         } catch (IOException ex) {
