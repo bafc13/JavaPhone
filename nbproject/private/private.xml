@@ -4,19 +4,12 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/bafc13/Documents/NetBeansProjects/javaPhone/src/com/example/camera/CameraManager.java</file>
-            <file>file:/C:/Users/bafc13/Documents/NetBeansProjects/javaPhone/src/javaphone/mainJFrame.java</file>
-            <file>file:/C:/Users/bafc13/Documents/NetBeansProjects/javaPhone/src/com/example/Main.java</file>
+            <file>file:/C:/Users/bafc13/Documents/NetBeansProjects/javaPhone/src/javaphone/MainSocket.java</file>
             <file>file:/C:/Users/bafc13/Documents/NetBeansProjects/javaPhone/src/com/livesubtitles/ui/SubtitleDisplay.java</file>
-            <file>file:/C:/Users/bafc13/Documents/NetBeansProjects/javaPhone/src/javaphone/DirectMessenger.java</file>
-            <file>file:/C:/Users/bafc13/Documents/NetBeansProjects/javaPhone/src/com/livesubtitles/audio/AudioCapture.java</file>
-            <file>file:/C:/Users/bafc13/Documents/NetBeansProjects/javaPhone/src/com/livesubtitles/speech/VoskSpeechRecognizer.java</file>
-            <file>file:/C:/Users/bafc13/Documents/NetBeansProjects/javaPhone/src/javaphone/CallFrame.java</file>
-            <file>file:/C:/Users/bafc13/Documents/NetBeansProjects/javaPhone/src/com/livesubtitles/core/ApplicationController.java</file>
-            <file>file:/C:/Users/bafc13/Documents/NetBeansProjects/javaPhone/src/javaphone/JavaPhone.java</file>
+            <file>file:/C:/Users/bafc13/Documents/NetBeansProjects/javaPhone/src/javaphone/RoundedBorder.java</file>
             <file>file:/C:/Users/bafc13/Documents/NetBeansProjects/javaPhone/src/com/example/OpenCVInitializer.java</file>
-            <file>file:/C:/Users/bafc13/Documents/NetBeansProjects/javaPhone/src/javaphone/VideoReciever.java</file>
             <file>file:/C:/Users/bafc13/Documents/NetBeansProjects/javaPhone/src/com/example/camera/CameraFrame.java</file>
-            <file>file:/C:/Users/bafc13/Documents/NetBeansProjects/javaPhone/src/com/livesubtitles/Main.java</file>
+            <file>file:/C:/Users/bafc13/Documents/NetBeansProjects/javaPhone/src/javaphone/CallFrame.java</file>
             <file>file:/C:/Users/bafc13/Documents/NetBeansProjects/javaPhone/src/com/livesubtitles/ui/MainWindow.java</file>
         </group>
     </open-files>

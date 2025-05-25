@@ -5,7 +5,7 @@ import java.awt.*;
 
 public class SubtitleDisplay {
     private final JPanel panel;
-    private final JLabel subtitleLabel;
+    private final JTextArea subtitleArea;
     private final Color activeColor = new Color(0, 100, 0, 255);
     private final Color inactiveColor = new Color(0, 0, 0, 255);
     private final Color finalResultColor = new Color(0, 0, 100, 255);
@@ -13,13 +13,14 @@ public class SubtitleDisplay {
     public SubtitleDisplay() {
         panel = new JPanel(new BorderLayout());
         panel.setBackground(inactiveColor);
-        panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-        subtitleLabel = new JLabel("", SwingConstants.CENTER);
-        subtitleLabel.setFont(new Font("Arial Unicode MS", Font.BOLD, 36));
-        subtitleLabel.setForeground(Color.WHITE);
+        subtitleArea = new JTextArea();
+        subtitleArea.setFont(new Font("Arial Unicode MS", Font.BOLD, 28));
+        subtitleArea.setEditable(false);
+        subtitleArea.setLineWrap(true);
 
-        panel.add(subtitleLabel, BorderLayout.NORTH);
+
+        panel.add(subtitleArea, BorderLayout.CENTER);
     }
 
     public JPanel getView() {
@@ -28,18 +29,16 @@ public class SubtitleDisplay {
 
     public void updateText(String text, boolean isFinal) {
         if (text == null || text.isEmpty()) {
-            subtitleLabel.setText("");
+            subtitleArea.setText("");
             panel.setBackground(inactiveColor);
             return;
         }
 
-        subtitleLabel.setText(text);
+        subtitleArea.setText(text);
         if (isFinal) {
             panel.setBackground(finalResultColor);
-            subtitleLabel.setForeground(Color.WHITE);
         } else {
             panel.setBackground(activeColor);
-            subtitleLabel.setForeground(Color.YELLOW);
         }
     }
 }
