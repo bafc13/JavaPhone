@@ -52,9 +52,6 @@ class CustomDialog extends JDialog {
         }
     }
 
-
-
-
     public String getField1Value() {
         return field1.getText();
     }

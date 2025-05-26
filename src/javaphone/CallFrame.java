@@ -11,10 +11,14 @@ import com.example.camera.CameraManager;
 import com.livesubtitles.core.ApplicationController;
 import com.livesubtitles.speech.VoskSpeechRecognizer;
 import com.livesubtitles.ui.SubtitleDisplay;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 import javax.swing.Timer;
@@ -39,12 +43,12 @@ public final class CallFrame extends javax.swing.JFrame {
     private CameraManager cameraManager;
     private JPanel horizontalPanel;
     private JPanel chatUserPanel;
-    private JScrollPane chatPane;
-    private JScrollPane userPane;
-    private JTextArea chatArea;
-    private JPanel chatPanel;
-    private JTextArea userArea;
-    private JTextField inputField;
+    ChatArea chatArea;
+
+    private boolean isCall = false;
+    private int horizontalPanelSize;
+    private int chatPanelSize;
+    private Dimension screenSize;
 
     private int camerasCount = 0;
     /**
@@ -52,46 +56,32 @@ public final class CallFrame extends javax.swing.JFrame {
      * @throws java.io.IOException
      */
     public CallFrame() throws IOException {
+
         cameras = new Vector<>();
 
         this.setTitle("Call");
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setUndecorated(true);
         this.setResizable(true);
 
+        screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setSize(screenSize.width, screenSize.height);
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        this.setSize(screenSize.width, screenSize.height);
         this.setLocationRelativeTo(null);
         this.setLayout(new BorderLayout());
 
+        horizontalPanelSize = (screenSize.height / 2) + 100;
+        chatPanelSize = screenSize.height - horizontalPanelSize;
 
-        //добавление панели для всех камер
-        horizontalPanel = new JPanel();
-        horizontalPanel.setLayout(new BoxLayout(horizontalPanel, BoxLayout.X_AXIS));
-        horizontalPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        horizontalPanel.setMinimumSize(new Dimension(1920,550));
-        horizontalPanel.setPreferredSize(new Dimension(1920,550));
-        horizontalPanel.setMaximumSize(new Dimension(1920,550));
-        this.add(horizontalPanel, BorderLayout.NORTH);
-
-        addChatUserPanel();
-
-        OpenCVInitializer.init();
-        subtitleDisplay = new SubtitleDisplay();
-        addMyCamera();
-
-
-        this.recognizer = new VoskSpeechRecognizer();
-        controller = new ApplicationController(recognizer, subtitleDisplay);
-        this.setController(controller);
-
-
-        controller.start();
+        if(isCall == false){
+            initChat();
+        } else {
+            initCall();
+        }
         this.setVisible(true);
-
+        this.setSize(screenSize.width, screenSize.height);
         initComponents();
+
     }
 
     public CallFrame(String ip, String nick) throws IOException {
@@ -103,83 +93,98 @@ public final class CallFrame extends javax.swing.JFrame {
 
     public void setController(ApplicationController controller) {
         this.controller = controller;
+    }
 
+    private void initCall() throws IOException {
+        this.setLayout(new BorderLayout());
+
+        addCameraPanel();
+        addChatUserPanel();
+
+
+        OpenCVInitializer.init();
+        subtitleDisplay = new SubtitleDisplay();
+        addMyCamera();
+
+
+
+
+        this.recognizer = new VoskSpeechRecognizer();
+        controller = new ApplicationController(recognizer, subtitleDisplay);
+        this.setController(controller);
+        controller.start();
+    }
+
+    private void initChat() {
+        addChatUserPanel();
+
+        JButton callButton = new JButton();
+        callButton.setText("Начать звонок");
+        callButton.setSize(200,75);
+        callButton.setMaximumSize(new Dimension(200,75));
+        callButton.setPreferredSize(new Dimension(200,75));
+        callButton.setAlignmentY(Component.CENTER_ALIGNMENT);
+        callButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        callButton.addActionListener((ActionEvent e) -> {
+            isCall = true;
+            chatUserPanel.removeAll();
+            this.getContentPane().removeAll();
+            CallFrame.this.repaint();
+            CallFrame.this.revalidate();
+            try {
+                initCall();
+            } catch (IOException ex) {
+                Logger.getLogger(CallFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        this.add(callButton, BorderLayout.NORTH);
+    }
+
+    private void addCameraPanel(){
+        //добавление панели для всех камер
+        horizontalPanel = new JPanel();
+        horizontalPanel.setLayout(new BoxLayout(horizontalPanel, BoxLayout.X_AXIS));
+        horizontalPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        horizontalPanel.setSize(screenSize.width, horizontalPanelSize);
+        horizontalPanel.setMinimumSize(new Dimension(screenSize.width, horizontalPanelSize));
+        horizontalPanel.setPreferredSize(new Dimension(screenSize.width, horizontalPanelSize));
+        horizontalPanel.setMaximumSize(new Dimension(screenSize.width, horizontalPanelSize));
+        this.add(horizontalPanel, BorderLayout.NORTH);
     }
 
     private void addChatUserPanel() {
+        //
+        ///
+        ///
+        ///
+        //
+        //тут надо размеры порасставлять
+        ///
+        ///
+        ///
+        ///
+        //
+
         chatUserPanel = new JPanel();
         chatUserPanel.setLayout(new BoxLayout(chatUserPanel, BoxLayout.X_AXIS));
-        chatUserPanel.setBorder(BorderFactory.createEmptyBorder(0, 350, 0, 5));
+        chatUserPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
         chatUserPanel.setMinimumSize(new Dimension(1920,312));
         chatUserPanel.setPreferredSize(new Dimension(1920,312));
         chatUserPanel.setMaximumSize(new Dimension(1920,312));
+        chatUserPanel.setSize(screenSize.width, chatPanelSize);
 
-
-        chatPanel = new JPanel();
-        chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
-        chatPanel.setMinimumSize(new Dimension(500, 300));
-        chatPanel.setPreferredSize(new Dimension(500,300));
-        chatPanel.setMaximumSize(new Dimension(500,300));
-        chatPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-
-
-        chatArea = new JTextArea("");
-        chatArea.setEditable(false);
-        chatArea.setFont(new Font("Arial Unicode MS", Font.BOLD, 16));
-        chatArea.setLineWrap(true);
-        chatArea.setWrapStyleWord(true);
-        chatPane = new JScrollPane(chatArea);
-        chatPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        chatPane.setMinimumSize(new Dimension(500, 270));
-        chatPane.setPreferredSize(new Dimension(500,270));
-        chatPane.setMaximumSize(new Dimension(500,270));
-        chatPane.setBorder(new RoundedBorder(5));
-
-        inputField = new JTextField();
-        inputField.setFont(new Font("Arial Unicode MS", Font.PLAIN, 18));
-        inputField.addActionListener(e -> messageWritten());
-
-        chatPane.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-
-        chatPanel.add(chatPane,BorderLayout.CENTER);
-        chatPanel.add(inputField);
-
-
-
-        userArea = new JTextArea("");
-        userArea.setEditable(false);
-        userArea.setFont(new Font("Arial Unicode MS", Font.BOLD, 20));
-        userArea.setLineWrap(true);
-        userArea.setWrapStyleWord(true);
-        userPane = new JScrollPane(userArea);
-        userPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        userPane.setMinimumSize(new Dimension(360, 300));
-        userPane.setPreferredSize(new Dimension(360, 300));
-        userPane.setMaximumSize(new Dimension(360, 300));
-        userArea.append("bafc13\n");
-        userArea.append("kuz`ma\n");
-        userArea.append("danilka!\n");
-        userArea.append("alprexxxxxxx\n");
-        userArea.setAlignmentX(Component.CENTER_ALIGNMENT);
-        userPane.setBorder(new RoundedBorder(5));
-
-        chatUserPanel.add(chatPanel, BorderLayout.CENTER);
-        chatUserPanel.add(Box.createHorizontalStrut(10));
-        chatUserPanel.add(userPane, BorderLayout.CENTER);
+        chatArea = new ChatArea(screenSize, isCall);
+        chatUserPanel.add(chatArea, BorderLayout.SOUTH);
 
         this.add(chatUserPanel, BorderLayout.SOUTH);
         chatUserPanel.repaint();
         chatUserPanel.revalidate();
+
+        this.repaint();
+        this.revalidate();
     }
 
-    private void messageWritten(){
-        if(inputField.getText() != "") {
-            chatArea.append(inputField.getText() + "\n");
-            inputField.setText("");
-        }
-    }
+
 
     private void addMyCamera() {
         //панель для своей камеры
@@ -204,7 +209,7 @@ public final class CallFrame extends javax.swing.JFrame {
         myCameraPanel.add(cameraScreen);
 
 
-        subtitleDisplay.getView().setMaximumSize(new Dimension(550,50));
+        subtitleDisplay.getView().setMaximumSize(new Dimension(400,50));
 
         southPanel.add(subtitleDisplay.getView());
         addControlPanel(southPanel);
@@ -240,7 +245,7 @@ public final class CallFrame extends javax.swing.JFrame {
 
 
             subtitleDisplay = new SubtitleDisplay();
-            subtitleDisplay.getView().setMaximumSize(new Dimension(550,50));
+            subtitleDisplay.getView().setMaximumSize(new Dimension(400,50));
 
             southPanel.add(subtitleDisplay.getView());
             addControlPanel(southPanel);
@@ -264,7 +269,7 @@ public final class CallFrame extends javax.swing.JFrame {
 
 
             subtitleDisplay = new SubtitleDisplay();
-            subtitleDisplay.getView().setMaximumSize(new Dimension(550,50));
+            subtitleDisplay.getView().setMaximumSize(new Dimension(400,50));
 
             southPanel.add(subtitleDisplay.getView());
             addControlPanel(southPanel);
