@@ -1,22 +1,15 @@
 package javaphone;
 
 //import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.Font;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
+import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-//import javax.swing.Icon;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -29,9 +22,6 @@ import javax.swing.SwingUtilities;
  */
 public class mainJFrame extends javax.swing.JFrame {
 
-    // TODO: some kind of event listener handle_dm(Boolean is_sender, Socket sock, String msg)
-    // To write messages to db and show on screen
-
      DBManager db;
      MainSocket mainSock;
 
@@ -39,25 +29,36 @@ public class mainJFrame extends javax.swing.JFrame {
      private String nick;
      private JLabel resultLabel;
 
-
     /**
      * Creates new form mainJFrame
      */
     public mainJFrame() throws IOException {
         initComponents();
         this.setTitle("JavaPhone");
-//        ImageIcon imageIcon = new ImageIcon("src/");
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
         this.setVisible(true);
-
 
         db = new DBManager();
         mainSock = new MainSocket();
         mainSock.start();
 
 
+        inputChatField.setFont(new Font("Arial Unicode MS", Font.PLAIN, 18));
+        inputChatField.addActionListener(e -> messageWritten());
+
+        mainChatArea.setEditable(false);
+        mainChatArea.setFont(new Font("Arial Unicode MS", Font.BOLD, 16));
+        mainChatArea.setLineWrap(true);
+        mainChatArea.setWrapStyleWord(true);
+        chatPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        chatPane.setBorder(new RoundedBorder(3));
+
+        mainChatArea.setBorder(new RoundedBorder(3));
+        inputChatField.setBorder(new RoundedBorder(3));
+        serverPanel.setBorder(new RoundedBorder(3));
+        connectionPanel.setBorder(new RoundedBorder(3));
     }
 
     /**
@@ -79,7 +80,7 @@ public class mainJFrame extends javax.swing.JFrame {
         friendPanel = new javax.swing.JScrollPane();
         connectionPanel = new javax.swing.JPanel();
         connectButton = new javax.swing.JButton();
-        createInterfaceButton = new javax.swing.JButton();
+        createConferenceButton = new javax.swing.JButton();
         serverScrollPanel = new javax.swing.JScrollPane();
         serverPanel = new javax.swing.JPanel();
         serverButton1 = new javax.swing.JButton();
@@ -89,9 +90,10 @@ public class mainJFrame extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         chatPannel = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
-        jTextField1 = new javax.swing.JTextField();
+        inputChatField = new javax.swing.JTextField();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        chatPane = new javax.swing.JScrollPane();
+        mainChatArea = new javax.swing.JTextArea();
         jToolBar1 = new javax.swing.JToolBar();
         settingsButton = new javax.swing.JButton();
         exitButton = new javax.swing.JButton();
@@ -137,11 +139,11 @@ public class mainJFrame extends javax.swing.JFrame {
             }
         });
 
-        createInterfaceButton.setBackground(new java.awt.Color(204, 204, 255));
-        createInterfaceButton.setText("create conference");
-        createInterfaceButton.addActionListener(new java.awt.event.ActionListener() {
+        createConferenceButton.setBackground(new java.awt.Color(204, 204, 255));
+        createConferenceButton.setText("create conference");
+        createConferenceButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                createInterfaceButtonActionPerformed(evt);
+                createConferenceButtonActionPerformed(evt);
             }
         });
 
@@ -153,7 +155,7 @@ public class mainJFrame extends javax.swing.JFrame {
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(connectButton, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, Short.MAX_VALUE)
-                .addComponent(createInterfaceButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(createConferenceButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         connectionPanelLayout.setVerticalGroup(
@@ -162,7 +164,7 @@ public class mainJFrame extends javax.swing.JFrame {
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addGroup(connectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(connectButton)
-                    .addComponent(createInterfaceButton))
+                    .addComponent(createConferenceButton))
                 .addContainerGap())
         );
 
@@ -172,6 +174,8 @@ public class mainJFrame extends javax.swing.JFrame {
 
         serverButton1.setText("study server");
         serverButton1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        serverButton1.setMaximumSize(new java.awt.Dimension(32767, 32767));
+        serverButton1.setMinimumSize(new java.awt.Dimension(0, 0));
         serverButton1.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/images/image2.png"))); // NOI18N
         serverButton1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
@@ -186,6 +190,8 @@ public class mainJFrame extends javax.swing.JFrame {
 
         serverButton2.setText("chill server");
         serverButton2.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        serverButton2.setMaximumSize(new java.awt.Dimension(32767, 32767));
+        serverButton2.setMinimumSize(new java.awt.Dimension(0, 0));
         serverButton2.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/images/image1.png"))); // NOI18N
         serverButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -195,6 +201,8 @@ public class mainJFrame extends javax.swing.JFrame {
 
         serverButton3.setText("gaming server");
         serverButton3.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        serverButton3.setMaximumSize(new java.awt.Dimension(32767, 32767));
+        serverButton3.setMinimumSize(new java.awt.Dimension(0, 0));
         serverButton3.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/images/image0.png"))); // NOI18N
         serverButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -209,21 +217,21 @@ public class mainJFrame extends javax.swing.JFrame {
             .addGroup(serverPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(serverPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(serverButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)
-                    .addComponent(serverButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(serverButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(79, Short.MAX_VALUE))
+                    .addComponent(serverButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(serverButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 639, Short.MAX_VALUE)
+                    .addComponent(serverButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         serverPanelLayout.setVerticalGroup(
             serverPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, serverPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(serverButton1)
+                .addComponent(serverButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(serverButton2)
+                .addComponent(serverButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(serverButton3)
-                .addGap(0, 0, 0))
+                .addComponent(serverButton3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(242, 242, 242))
         );
 
         serverScrollPanel.setViewportView(serverPanel);
@@ -234,30 +242,32 @@ public class mainJFrame extends javax.swing.JFrame {
 
         jButton4.setText("jButton4");
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jTextArea1.setMaximumSize(new java.awt.Dimension(212, 84));
-        jScrollPane1.setViewportView(jTextArea1);
-
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        inputChatField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                inputChatFieldActionPerformed(evt);
             }
         });
+
+        mainChatArea.setColumns(20);
+        mainChatArea.setRows(5);
+        mainChatArea.setMaximumSize(new java.awt.Dimension(212, 84));
+        chatPane.setViewportView(mainChatArea);
+
+        jScrollPane2.setViewportView(chatPane);
 
         javax.swing.GroupLayout chatPannelLayout = new javax.swing.GroupLayout(chatPannel);
         chatPannel.setLayout(chatPannelLayout);
         chatPannelLayout.setHorizontalGroup(
             chatPannelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTextField1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 333, Short.MAX_VALUE)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+            .addComponent(inputChatField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 483, Short.MAX_VALUE)
+            .addComponent(jScrollPane2)
         );
         chatPannelLayout.setVerticalGroup(
             chatPannelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, chatPannelLayout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 114, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 232, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(inputChatField, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -286,10 +296,10 @@ public class mainJFrame extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(serverScrollPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 504, Short.MAX_VALUE)
+                .addComponent(serverScrollPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 653, Short.MAX_VALUE)
                 .addGap(5, 5, 5)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(friendPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 333, Short.MAX_VALUE)
+                    .addComponent(friendPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 483, Short.MAX_VALUE)
                     .addComponent(chatPannel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(10, 10, 10))
             .addComponent(jToolBar1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -304,114 +314,101 @@ public class mainJFrame extends javax.swing.JFrame {
                         .addComponent(serverScrollPanel)
                         .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(friendPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 305, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(friendPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 263, Short.MAX_VALUE)
+                        .addGap(5, 5, 5)
                         .addComponent(chatPannel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void createInterfaceButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createInterfaceButtonActionPerformed
+    private void createConferenceButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createConferenceButtonActionPerformed
+        try {
+            CallFrame cf = new CallFrame();
+        } catch (IOException ex) {
+             Logger.getLogger(mainJFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_createConferenceButtonActionPerformed
 
+    private void connectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectButtonActionPerformed
         resultLabel = new JLabel("Данные не введены");
         resultLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
+        CustomDialog dialog = new CustomDialog(this);
+        dialog.setVisible(true);
 
-            CustomDialog dialog = new CustomDialog(this);
-            dialog.setVisible(true);
+        ip = dialog.getField1Value();
+        nick = dialog.getField2Value();
 
-            // После закрытия диалога получаем данные
-            ip = dialog.getField1Value();
-            nick = dialog.getField2Value();
-            
-            mainSock.call(ip, nick, CallCodes.dm);
 
-            // Обновляем интерфейс
-            System.out.println("huy" + ip + "chlen" + nick);
-        // TODO add your handling code here:
-    }//GEN-LAST:event_createInterfaceButtonActionPerformed
 
-    class CustomDialog extends JDialog {
-    private JTextField field1;
-    private JTextField field2;
-
-    public CustomDialog(JFrame parent) {
-        super(parent, "Ввод данных", true); // Модальное окно
-        setLayout(new GridLayout(3, 2, 5, 5));
-        setSize(300, 150);
-        setLocationRelativeTo(parent);
-
-        // Создаем компоненты
-        JLabel label1 = new JLabel("Поле 1:");
-        JLabel label2 = new JLabel("Поле 2:");
-        field1 = new JTextField();
-        field2 = new JTextField();
-        JButton okButton = new JButton("OK");
-
-        // Добавляем обработчик кнопки
-        okButton.addActionListener(e -> dispose());
-
-        // Добавляем компоненты на форму
-        add(label1);
-        add(field1);
-        add(label2);
-        add(field2);
-        add(new JLabel()); // Пустая ячейка
-        add(okButton);
-    }
-
-    // Геттеры для получения значений
-    public String getField1Value() {
-        return field1.getText();
-    }
-
-    public String getField2Value() {
-        return field2.getText();
-    }
-}
-
-    private void connectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectButtonActionPerformed
-         try {
-             // TODO add your handling code here:
-//        if(serverPanel.)
-            CallFrame cf = new CallFrame();
-//            cf.setExtendedState(JFrame.MAXIMIZED_BOTH);
-         } catch (IOException ex) {
-             Logger.getLogger(mainJFrame.class.getName()).log(Level.SEVERE, null, ex);
-         }
+        if (ip.equals("CLOSE") && nick.equals("OPER"))
+        {
+            System.out.println("HUY BLYAT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        } else if(!ip.equals("") && !nick.equals("")){
+            System.out.println("\nhuy " + ip + " chlen " + nick + "\n");
+            try {
+                CallFrame cf = new CallFrame(ip, nick);
+            } catch (IOException ex) {
+                Logger.getLogger(mainJFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            //
+            //      NETCODE
+            //
+            //        mainSock.call(ip, nick, CallCodes.dm);
+            //
+            //      NETCODE
+            //
+        } else {
+            try {
+                System.out.println("pizdec");
+                CallFrame cf = new CallFrame();
+            } catch (IOException ex) {
+                Logger.getLogger(mainJFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }//GEN-LAST:event_connectButtonActionPerformed
 
     private void serverButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverButton1ActionPerformed
-        // TODO add your handling code here:
-//        JOptionPane.showMessageDialog(null, "Connecting...", "InfoBox:", JOptionPane.INFORMATION_MESSAGE);
-//        JTextField jt = new JTextField();
-//        jt.setText("198.9.1.2:2888     Erjan228");
 
-//        connectionPanel.add(jt);
+
+
     }//GEN-LAST:event_serverButton1ActionPerformed
 
     private void serverButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverButton2ActionPerformed
-        // TODO add your handling code here:
-        JOptionPane.showMessageDialog(null, "Connecting...", "InfoBox:", JOptionPane.INFORMATION_MESSAGE);
+
+
+
     }//GEN-LAST:event_serverButton2ActionPerformed
 
     private void serverButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverButton3ActionPerformed
-        // TODO add your handling code here:
-        JOptionPane.showMessageDialog(null, "Connecting...", "InfoBox:", JOptionPane.INFORMATION_MESSAGE);
+
+
+
     }//GEN-LAST:event_serverButton3ActionPerformed
 
     private void exitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitButtonActionPerformed
-        // TODO add your handling code here:
-        this.dispose();
+        this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
     }//GEN-LAST:event_exitButtonActionPerformed
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    private void inputChatFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputChatFieldActionPerformed
+
+
+
+
+    }//GEN-LAST:event_inputChatFieldActionPerformed
+
+    private void messageWritten(){
+        if(inputChatField.getText() != "") {
+            mainChatArea.append(inputChatField.getText() + "\n");
+            inputChatField.setText("");
+        }
+    }
 
     private void serverButton1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_serverButton1MouseReleased
-        // TODO add your handling code here:
+
+
+
     }//GEN-LAST:event_serverButton1MouseReleased
     /**
      * @param args the command line arguments
@@ -455,12 +452,14 @@ public class mainJFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.JScrollPane chatPane;
     private javax.swing.JPanel chatPannel;
     private javax.swing.JButton connectButton;
     private javax.swing.JPanel connectionPanel;
-    private javax.swing.JButton createInterfaceButton;
+    private javax.swing.JButton createConferenceButton;
     private javax.swing.JButton exitButton;
     private javax.swing.JScrollPane friendPanel;
+    private javax.swing.JTextField inputChatField;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
@@ -470,10 +469,9 @@ public class mainJFrame extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu4;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JTextArea mainChatArea;
     private javax.swing.JButton serverButton1;
     private javax.swing.JButton serverButton2;
     private javax.swing.JButton serverButton3;

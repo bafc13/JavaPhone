@@ -25,7 +25,9 @@ import javax.swing.Timer;
  */
 public final class CallFrame extends javax.swing.JFrame {
 
-//    private SpeechRecognizer speechRec;
+    private String ipToConnect;
+    private String nickName;
+
     private ApplicationController controller;
     private SubtitleDisplay subtitleDisplay;
     private VoskSpeechRecognizer recognizer;
@@ -51,10 +53,9 @@ public final class CallFrame extends javax.swing.JFrame {
      */
     public CallFrame() throws IOException {
         cameras = new Vector<>();
-//        cameras = new ArrayList<JLabel>();
 
         this.setTitle("Call");
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setUndecorated(true);
         this.setResizable(true);
 
@@ -93,14 +94,16 @@ public final class CallFrame extends javax.swing.JFrame {
         initComponents();
     }
 
+    public CallFrame(String ip, String nick) throws IOException {
+        this();
+        ipToConnect = ip;
+        nickName = nick;
+        System.out.println("IP AND NICK INITIALIZED");
+    }
+
     public void setController(ApplicationController controller) {
         this.controller = controller;
-        this.addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-                controller.stop();
-            }
-        });
+
     }
 
     private void addChatUserPanel() {
@@ -272,10 +275,12 @@ public final class CallFrame extends javax.swing.JFrame {
 
             for(JLabel camera : cameras){
                 int width = 1920 / cameras.size() - 100;
-                int height = width - 150;
+                int height = width - 125;
                 camera.setMinimumSize(new Dimension(width, height));
                 camera.setPreferredSize(new Dimension(width, height));
                 camera.setMaximumSize(new Dimension(width, height));
+                horizontalPanel.repaint();
+                horizontalPanel.revalidate();
             }
         }
 
@@ -297,10 +302,15 @@ public final class CallFrame extends javax.swing.JFrame {
         JButton addBtn = new JButton("Добавить");
 
         startBtn.addActionListener(e -> startCamera());
+        startBtn.setBorder(new RoundedBorder(2));
         stopBtn.addActionListener(e -> stopCamera());
+        stopBtn.setBorder(new RoundedBorder(2));
         maskBtn.addActionListener(e -> nextStyle());
+        maskBtn.setBorder(new RoundedBorder(2));
         exitBtn.addActionListener(e -> exitFromCall());
+        exitBtn.setBorder(new RoundedBorder(2));
         addBtn.addActionListener(e -> addCamera());
+        addBtn.setBorder(new RoundedBorder(2));
 
         panel.add(startBtn);
         panel.add(stopBtn);
@@ -316,9 +326,14 @@ public final class CallFrame extends javax.swing.JFrame {
 
     private void exitFromCall() {
         stopCamera();
-        this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+        this.dispose();
      }
 
+    @Override
+    public void dispose() {
+        controller.stop();
+        super.dispose();
+    }
 
     private void startCamera() {
         cameraManager.startCamera();
@@ -330,6 +345,7 @@ public final class CallFrame extends javax.swing.JFrame {
     private void nextStyle(){
         CameraManager.StyleCount = (CameraManager.StyleCount+1)%6 ;
     }
+
     private void stopCamera() {
         cameraManager.stopCamera();
         stopVideoStream();
