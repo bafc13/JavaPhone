@@ -64,11 +64,18 @@ public class VideoSender implements VideoHandler {
     @Override
     public void HandleCameraFrameRecorded(BufferedImage frame) {
         try {
-            byte[] chunk = convertToSend(frame);
-            sentSize = chunk.length;
-            out.writeInt(sentSize);
-            out.write(chunk);
-            out.flush();
+            if (frame != null) {
+                byte[] chunk = convertToSend(frame);
+                sentSize = chunk.length;
+                out.writeInt(sentSize);
+                out.write(chunk);
+                out.flush();
+            }
+            else
+            {
+                out.writeInt(0);
+                out.flush();
+            }
         } catch (Exception ex) {
             Logger.getLogger(VoiceReciever.class.getName()).log(Level.SEVERE, null, ex);
         }

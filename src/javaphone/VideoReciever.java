@@ -46,12 +46,18 @@ public class VideoReciever extends Thread {
         while (true) {
             try {
                 recievedSize = in.readInt();
-                chunk = new byte[recievedSize];
-                bytesRead = in.read(chunk);
-                frame = convertRecieved(chunk);
+                if (recievedSize != 0) {
+                    chunk = new byte[recievedSize];
+                    bytesRead = in.read(chunk);
+                    frame = convertRecieved(chunk);
 
-                for (VideoHandler l : listeners) {
-                    l.HandleCameraFrameRecieved(source.getInetAddress().toString(), source.getInetAddress().toString(), frame);
+                    for (VideoHandler l : listeners) {
+                        l.HandleCameraFrameRecieved(source.getInetAddress().toString(), source.getInetAddress().toString(), frame);
+                    }
+                } else {
+                    for (VideoHandler l : listeners) {
+                        l.HandleCameraFrameRecieved(source.getInetAddress().toString(), source.getInetAddress().toString(), null);
+                    }
                 }
             } catch (IOException ex) {
                 Logger.getLogger(VoiceReciever.class.getName()).log(Level.SEVERE, null, ex);

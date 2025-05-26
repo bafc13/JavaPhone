@@ -18,12 +18,10 @@ import javaphone.EventInterfaces.CallResultHandler;
  * @author Andrey
  */
 public class BasicCallHandler implements CallHandler {
-    private DBManager dbm;
     private List<CallResultHandler> listeners;
     
-    public BasicCallHandler(DBManager dbm)
+    public BasicCallHandler()
     {
-        this.dbm = dbm;
     }
     
     public void addListener(CallResultHandler to_add)
@@ -33,7 +31,7 @@ public class BasicCallHandler implements CallHandler {
     
     @Override
     public void callRecieved(Handshake hs) {
-        int id = dbm.get_dm_id(hs.sock.getInetAddress().toString());
+        int id = mainJFrame.db.getDmId(hs.sock.getInetAddress().toString());
         
         if (hs.message.equals(CallCodes.dm))
         {
@@ -66,7 +64,7 @@ public class BasicCallHandler implements CallHandler {
 
     @Override
     public void callSent(Handshake hs) {
-        int id = dbm.get_dm_id(hs.sock.getInetAddress().toString());
+        int id = mainJFrame.db.getDmId(hs.sock.getInetAddress().toString());
         
         if (hs.message.equals(CallCodes.dm))
         {

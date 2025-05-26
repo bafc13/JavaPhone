@@ -6,6 +6,7 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javaphone.EventInterfaces.CallResultHandler;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -20,11 +21,12 @@ import javax.swing.SwingConstants;
  *
  * @author bafc13
  */
-public class mainJFrame extends javax.swing.JFrame {
+public class mainJFrame extends javax.swing.JFrame implements CallResultHandler {
 
-     DBManager db;
-     MainSocket mainSock;
-
+     public static DBManager db;
+     public static MainSocket mainSock;
+     
+     private BasicCallHandler basicCallHandler;
      private String ip;
      private String nick;
      private JLabel resultLabel;
@@ -42,8 +44,8 @@ public class mainJFrame extends javax.swing.JFrame {
 
         db = new DBManager();
         mainSock = new MainSocket();
+        basicCallHandler = new BasicCallHandler();
         mainSock.start();
-
 
         inputChatField.setFont(new Font("Arial Unicode MS", Font.PLAIN, 18));
         inputChatField.addActionListener(e -> messageWritten());
@@ -342,31 +344,31 @@ public class mainJFrame extends javax.swing.JFrame {
 
 
 
-        if (ip.equals("CLOSE") && nick.equals("OPER"))
-        {
-            System.out.println("HUY BLYAT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        } else if(!ip.equals("") && !nick.equals("")){
-            System.out.println("\nhuy " + ip + " chlen " + nick + "\n");
-            try {
-                CallFrame cf = new CallFrame(ip, nick);
-            } catch (IOException ex) {
-                Logger.getLogger(mainJFrame.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            //
-            //      NETCODE
-            //
-            //        mainSock.call(ip, nick, CallCodes.dm);
-            //
-            //      NETCODE
-            //
-        } else {
-            try {
-                System.out.println("pizdec");
-                CallFrame cf = new CallFrame();
-            } catch (IOException ex) {
-                Logger.getLogger(mainJFrame.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
+//        if (ip.equals("CLOSE") && nick.equals("OPER"))
+//        {
+//            System.out.println("HUY BLYAT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+//        } else if(!ip.equals("") && !nick.equals("")){
+//            System.out.println("\nhuy " + ip + " chlen " + nick + "\n");
+//            try {
+//                CallFrame cf = new CallFrame(ip, nick);
+//            } catch (IOException ex) {
+//                Logger.getLogger(mainJFrame.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//            //
+//            //      NETCODE
+//            //
+//            //        mainSock.call(ip, nick, CallCodes.dm);
+//            //
+//            //      NETCODE
+//            //
+//        } else {
+//            try {
+//                System.out.println("pizdec");
+//                CallFrame cf = new CallFrame();
+//            } catch (IOException ex) {
+//                Logger.getLogger(mainJFrame.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//        }
     }//GEN-LAST:event_connectButtonActionPerformed
 
     private void serverButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverButton1ActionPerformed
@@ -479,6 +481,20 @@ public class mainJFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane serverScrollPanel;
     private javax.swing.JButton settingsButton;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void DMCreated(DirectMessenger dm) {
+         try {
+             CallFrame cf = new CallFrame(dm);
+         } catch (IOException ex) {
+             Logger.getLogger(mainJFrame.class.getName()).log(Level.SEVERE, null, ex);
+         }
+    }
+
+    @Override
+    public void VoiceCreated(VoiceSender vs, VoiceReciever vr) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }
 
 
