@@ -8,6 +8,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -31,12 +32,13 @@ public class ChatArea extends javax.swing.JPanel {
         super();
 
         if(isCall == false) {
-            this.setSize(900,300);
+            this.setSize(screenSize.width / 2, screenSize.height / 2);
+
             chatPanel = new JPanel();
             chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
-            chatPanel.setMinimumSize(new Dimension(500, 300));
-            chatPanel.setPreferredSize(new Dimension(500,300));
-            chatPanel.setMaximumSize(new Dimension(500,300));
+            chatPanel.setMinimumSize(new Dimension(screenSize.width / 4 + 100, screenSize.height / 3 + 100));
+            chatPanel.setPreferredSize(new Dimension(screenSize.width / 4 + 100, screenSize.height / 3 + 100));
+            chatPanel.setMaximumSize(new Dimension(screenSize.width / 4 + 100, screenSize.height / 3 + 100));
             chatPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 
@@ -48,9 +50,9 @@ public class ChatArea extends javax.swing.JPanel {
 
             chatPane = new JScrollPane(chatArea);
             chatPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-            chatPane.setMinimumSize(new Dimension(500, 270));
-            chatPane.setPreferredSize(new Dimension(500,270));
-            chatPane.setMaximumSize(new Dimension(500,270));
+            chatPane.setMinimumSize(new Dimension(screenSize.width / 4 + 100, screenSize.height / 3 + 70));
+            chatPane.setPreferredSize(new Dimension(screenSize.width / 4 + 100, screenSize.height / 3 + 70));
+            chatPane.setMaximumSize(new Dimension(screenSize.width / 4 + 100, screenSize.height / 3 + 70));
             chatPane.setBorder(new RoundedBorder(5));
 
             inputField = new JTextField();
@@ -73,24 +75,25 @@ public class ChatArea extends javax.swing.JPanel {
 
             userPane = new JScrollPane(userArea);
             userPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-            userPane.setMinimumSize(new Dimension(360, 300));
-            userPane.setPreferredSize(new Dimension(360, 300));
-            userPane.setMaximumSize(new Dimension(360, 300));
+            userPane.setMinimumSize(new Dimension(screenSize.width / 4 - 100, screenSize.height / 3 + 100));
+            userPane.setPreferredSize(new Dimension(screenSize.width / 4 - 100, screenSize.height / 3 + 100));
+            userPane.setMaximumSize(new Dimension(screenSize.width / 4 - 100, screenSize.height / 3 + 100));
             userArea.append("bafc13\n");
             userArea.setAlignmentX(Component.CENTER_ALIGNMENT);
             userPane.setBorder(new RoundedBorder(5));
+
         } else {
             if(chatPanel != null) {
                 this.remove(chatPanel);
                 this.remove(userPane);
             }
 
-            this.setSize(900,300);
+            this.setSize(screenSize.width / 2, screenSize.height / 3 - 100);
             chatPanel = new JPanel();
             chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
-            chatPanel.setMinimumSize(new Dimension(500, 300));
-            chatPanel.setPreferredSize(new Dimension(500,300));
-            chatPanel.setMaximumSize(new Dimension(500,300));
+            chatPanel.setMinimumSize(new Dimension(screenSize.width / 4 + 100, screenSize.height / 3 - 100));
+            chatPanel.setPreferredSize(new Dimension(screenSize.width / 4 + 100, screenSize.height / 3 - 100));
+            chatPanel.setMaximumSize(new Dimension(screenSize.width / 4 + 100, screenSize.height / 3 - 100));
             chatPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 
@@ -102,9 +105,9 @@ public class ChatArea extends javax.swing.JPanel {
             chatArea.setWrapStyleWord(true);
             chatPane = new JScrollPane(chatArea);
             chatPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-            chatPane.setMinimumSize(new Dimension(500, 270));
-            chatPane.setPreferredSize(new Dimension(500,270));
-            chatPane.setMaximumSize(new Dimension(500,270));
+            chatPane.setMinimumSize(new Dimension(screenSize.width / 4 + 100, screenSize.height / 3 - 130));
+            chatPane.setPreferredSize(new Dimension(screenSize.width / 4 + 100, screenSize.height / 3 - 130));
+            chatPane.setMaximumSize(new Dimension(screenSize.width / 4 + 100, screenSize.height / 3 - 130));
             chatPane.setBorder(new RoundedBorder(5));
 
             inputField = new JTextField();
@@ -124,9 +127,9 @@ public class ChatArea extends javax.swing.JPanel {
             userArea.setWrapStyleWord(true);
             userPane = new JScrollPane(userArea);
             userPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-            userPane.setMinimumSize(new Dimension(360, 300));
-            userPane.setPreferredSize(new Dimension(360, 300));
-            userPane.setMaximumSize(new Dimension(360, 300));
+            userPane.setMinimumSize(new Dimension(screenSize.width / 4 - 100, screenSize.height / 3 - 100));
+            userPane.setPreferredSize(new Dimension(screenSize.width / 4 - 100, screenSize.height / 3 - 100));
+            userPane.setMaximumSize(new Dimension(screenSize.width / 4 - 100, screenSize.height / 3 - 100));
             userArea.append("bafc13\n");
             userArea.setAlignmentX(Component.CENTER_ALIGNMENT);
             userPane.setBorder(new RoundedBorder(5));

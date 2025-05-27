@@ -42,6 +42,7 @@ public final class CallFrame extends javax.swing.JFrame {
     private Timer timer;
     private CameraManager cameraManager;
     private JPanel horizontalPanel;
+    private JPanel secondHorizontalPanel;
     private JPanel chatUserPanel;
     ChatArea chatArea;
 
@@ -71,7 +72,7 @@ public final class CallFrame extends javax.swing.JFrame {
         this.setLayout(new BorderLayout());
 
         horizontalPanelSize = (screenSize.height / 2) + 100;
-        chatPanelSize = screenSize.height - horizontalPanelSize;
+        chatPanelSize = screenSize.height / 3 - 50;
 
         if(isCall == false){
             initChat();
@@ -101,13 +102,9 @@ public final class CallFrame extends javax.swing.JFrame {
         addCameraPanel();
         addChatUserPanel();
 
-
         OpenCVInitializer.init();
         subtitleDisplay = new SubtitleDisplay();
         addMyCamera();
-
-
-
 
         this.recognizer = new VoskSpeechRecognizer();
         controller = new ApplicationController(recognizer, subtitleDisplay);
@@ -146,35 +143,50 @@ public final class CallFrame extends javax.swing.JFrame {
         horizontalPanel.setLayout(new BoxLayout(horizontalPanel, BoxLayout.X_AXIS));
         horizontalPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         horizontalPanel.setSize(screenSize.width, horizontalPanelSize);
-        horizontalPanel.setMinimumSize(new Dimension(screenSize.width, horizontalPanelSize));
-        horizontalPanel.setPreferredSize(new Dimension(screenSize.width, horizontalPanelSize));
-        horizontalPanel.setMaximumSize(new Dimension(screenSize.width, horizontalPanelSize));
         this.add(horizontalPanel, BorderLayout.NORTH);
     }
 
+    private void addSecondCameraPanel(){
+        horizontalPanel.setSize(screenSize.width, screenSize.height / 3);
+
+        horizontalPanel.repaint();
+        horizontalPanel.revalidate();
+
+        chatUserPanel.setSize(screenSize.width, screenSize.height / 3 - 50);
+        chatUserPanel.repaint();
+        chatUserPanel.revalidate();
+
+        secondHorizontalPanel = new JPanel();
+        secondHorizontalPanel.setLayout(new BoxLayout(secondHorizontalPanel, BoxLayout.X_AXIS));
+        secondHorizontalPanel.setBorder(BorderFactory.createEmptyBorder(3, 0, 3, 0));
+        secondHorizontalPanel.repaint();
+        secondHorizontalPanel.revalidate();
+        this.add(secondHorizontalPanel, BorderLayout.CENTER);
+
+        this.repaint();
+        this.revalidate();
+    }
+
     private void addChatUserPanel() {
-        //
-        ///
-        ///
-        ///
-        //
-        //тут надо размеры порасставлять
-        ///
-        ///
-        ///
-        ///
-        //
 
         chatUserPanel = new JPanel();
         chatUserPanel.setLayout(new BoxLayout(chatUserPanel, BoxLayout.X_AXIS));
-        chatUserPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
-        chatUserPanel.setMinimumSize(new Dimension(1920,312));
-        chatUserPanel.setPreferredSize(new Dimension(1920,312));
-        chatUserPanel.setMaximumSize(new Dimension(1920,312));
-        chatUserPanel.setSize(screenSize.width, chatPanelSize);
+        chatUserPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 5));
+        if(isCall == false) {
+            chatUserPanel.setMinimumSize(new Dimension(screenSize.width,chatPanelSize + 500));
+            chatUserPanel.setPreferredSize(new Dimension(screenSize.width,chatPanelSize + 500));
+            chatUserPanel.setMaximumSize(new Dimension(screenSize.width,chatPanelSize + 500));
+            chatUserPanel.setSize(screenSize.width, chatPanelSize + 500);
+        } else {
+            chatUserPanel.setMinimumSize(new Dimension(screenSize.width,chatPanelSize ));
+            chatUserPanel.setPreferredSize(new Dimension(screenSize.width,chatPanelSize ));
+            chatUserPanel.setMaximumSize(new Dimension(screenSize.width,chatPanelSize ));
+            chatUserPanel.setSize(screenSize.width, chatPanelSize );
+        }
+
 
         chatArea = new ChatArea(screenSize, isCall);
-        chatUserPanel.add(chatArea, BorderLayout.SOUTH);
+        chatUserPanel.add(chatArea, BorderLayout.CENTER);
 
         this.add(chatUserPanel, BorderLayout.SOUTH);
         chatUserPanel.repaint();
@@ -189,7 +201,7 @@ public final class CallFrame extends javax.swing.JFrame {
     private void addMyCamera() {
         //панель для своей камеры
         JPanel myCameraPanel = new JPanel();
-        myCameraPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+        myCameraPanel.setBorder(BorderFactory.createEmptyBorder(3, 0, 3, 0));
         myCameraPanel.setLayout(new BoxLayout(myCameraPanel, BoxLayout.Y_AXIS));
         myCameraPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -228,7 +240,7 @@ public final class CallFrame extends javax.swing.JFrame {
         JLabel CameraScreen;
         if(cameras.size() < 2) {
 
-            CameraPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+            CameraPanel.setBorder(BorderFactory.createEmptyBorder(3, 0, 3, 0));
             CameraPanel.setLayout(new BoxLayout(CameraPanel, BoxLayout.Y_AXIS));
 
             JPanel southPanel = new JPanel();
@@ -253,8 +265,13 @@ public final class CallFrame extends javax.swing.JFrame {
             CameraPanel.add(southPanel, BorderLayout.SOUTH);
             camerasCount++;
             cameras.add(CameraScreen);
-        } else {
-            CameraPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+
+            horizontalPanel.add(CameraPanel);
+
+            horizontalPanel.repaint();
+            horizontalPanel.revalidate();
+        } else if (cameras.size() < 4){
+            CameraPanel.setBorder(BorderFactory.createEmptyBorder(3, 0, 3, 0));
             CameraPanel.setLayout(new BoxLayout(CameraPanel, BoxLayout.Y_AXIS));
 
             JPanel southPanel = new JPanel();
@@ -279,22 +296,60 @@ public final class CallFrame extends javax.swing.JFrame {
             cameras.add(CameraScreen);
 
             for(JLabel camera : cameras){
-                int width = 1920 / cameras.size() - 100;
-                int height = width - 125;
+                int width = screenSize.width / cameras.size() - 100;
+                int height = (int) (width * 0.66);
                 camera.setMinimumSize(new Dimension(width, height));
                 camera.setPreferredSize(new Dimension(width, height));
                 camera.setMaximumSize(new Dimension(width, height));
                 horizontalPanel.repaint();
                 horizontalPanel.revalidate();
             }
+            horizontalPanel.add(CameraPanel);
+
+            horizontalPanel.repaint();
+            horizontalPanel.revalidate();
+        } else {
+            if(cameras.size() == 4){
+                addSecondCameraPanel();
+            }
+
+            CameraPanel.setBorder(BorderFactory.createEmptyBorder(3, 0, 3, 0));
+            CameraPanel.setLayout(new BoxLayout(CameraPanel, BoxLayout.Y_AXIS));
+
+            JPanel southPanel = new JPanel();
+            southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.Y_AXIS));
+
+
+            CameraScreen = new JLabel("Zzzzz...");
+            CameraScreen.setAlignmentX(Component.CENTER_ALIGNMENT);
+            CameraScreen.setBorder(new RoundedBorder(3));
+
+            CameraPanel.add(CameraScreen);
+
+
+            subtitleDisplay = new SubtitleDisplay();
+            subtitleDisplay.getView().setMaximumSize(new Dimension(400,50));
+
+            southPanel.add(subtitleDisplay.getView());
+            addControlPanel(southPanel);
+
+            CameraPanel.add(southPanel, BorderLayout.SOUTH);
+            camerasCount++;
+            cameras.add(CameraScreen);
+
+            int width = screenSize.width / 4 - 100;
+            int height = (int) (width * 0.66);
+
+            CameraScreen.setSize(width, height);
+            CameraScreen.setPreferredSize(new Dimension(width, height));
+            CameraScreen.setMaximumSize(new Dimension(width, height));
+            CameraScreen.setMinimumSize(new Dimension(width, height));
+
+            secondHorizontalPanel.add(CameraPanel);
+
+            secondHorizontalPanel.repaint();
+            secondHorizontalPanel.revalidate();
         }
-
-        horizontalPanel.add(CameraPanel);
-
-        horizontalPanel.repaint();
-        horizontalPanel.revalidate();
-
-
     }
 
     private void addControlPanel(JPanel panelToAdd) {
