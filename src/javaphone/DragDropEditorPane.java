@@ -41,7 +41,7 @@ public class DragDropEditorPane extends JEditorPane {
                             .append("</a>")
                             .append("<br>");
                     }
-
+                    
                     doc.insertAfterEnd(
                         doc.getCharacterElement(doc.getLength()),
                         html.toString()

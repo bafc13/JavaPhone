@@ -20,10 +20,8 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javaphone.EventInterfaces.*;
-
-
-
-
+import static javaphone.VideoSender.h;
+import static javaphone.VideoSender.w;
 import javax.swing.Timer;
 
 /**
@@ -31,17 +29,18 @@ import javax.swing.Timer;
  * @author bafc13
  */
 public final class CallFrame extends javax.swing.JFrame implements VideoHandler, VoiceHandler {
+
     private Dimension screenSize;
-    
+
     private DirectMessenger dm;
     private VoiceSender voiceSender;
     private VoiceReciever voiceReciever;
     private VideoSender videoSender;
     private VideoReciever videoReciever;
-    
+
     private Boolean voiceEnabled;
     private Boolean videoEnabled;
-    
+
     private String ipToConnect;
     private String nickName;
 
@@ -64,8 +63,10 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     private int chatPanelSize;
 
     private int camerasCount = 0;
+
     /**
      * Creates new form CallFrame
+     *
      * @throws java.io.IOException
      */
     public CallFrame() throws IOException {
@@ -86,7 +87,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         horizontalPanelSize = (screenSize.height / 2) + 100;
         chatPanelSize = screenSize.height / 3 - 50;
 
-        if(isCall == false){
+        if (isCall == false) {
             initChat();
         } else {
             initCall();
@@ -94,16 +95,9 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         this.setVisible(true);
         this.setSize(screenSize.width, screenSize.height);
         initComponents();
-      
+
         voiceEnabled = false;
         videoEnabled = false;
-    }
-
-    public CallFrame(String ip, String nick) throws IOException {
-        this();
-        ipToConnect = ip;
-        nickName = nick;
-        System.out.println("IP AND NICK INITIALIZED");
     }
 
     public void setController(ApplicationController controller) {
@@ -126,29 +120,26 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         controller.start();
     }
 
-
-       
-
     public CallFrame(DirectMessenger dm) throws IOException {
         this();
         this.dm = dm;
-        
+
         System.out.println("INITIALIZED WITH DM");
     }
-    
+
     public CallFrame(DirectMessenger dm, VoiceSender voiceSender, VoiceReciever voiceReciever) throws IOException {
         this();
         this.dm = dm;
         this.voiceSender = voiceSender;
         this.voiceReciever = voiceReciever;
-        
+
         this.voiceReciever.addListener(this);
-        
+
         voiceEnabled = true;
-        
+
         System.out.println("INITIALIZED WITH DM AND VOICE");
     }
-    
+
     public CallFrame(DirectMessenger dm, VoiceSender voiceSender, VoiceReciever voiceReciever, VideoSender videoSender, VideoReciever videoReciever) throws IOException {
         this();
         this.dm = dm;
@@ -156,25 +147,24 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         this.voiceReciever = voiceReciever;
         this.videoSender = videoSender;
         this.videoReciever = videoReciever;
-        
+
         this.voiceReciever.addListener(this);
         this.videoReciever.addListener(this);
-        
+
         voiceEnabled = true;
         videoEnabled = true;
-        
+
         System.out.println("INITIALIZED WITH DM, VOICE AND VIDEO");
     }
-      
 
     private void initChat() {
         addChatUserPanel();
 
         JButton callButton = new JButton();
         callButton.setText("Начать звонок");
-        callButton.setSize(200,75);
-        callButton.setMaximumSize(new Dimension(200,75));
-        callButton.setPreferredSize(new Dimension(200,75));
+        callButton.setSize(200, 75);
+        callButton.setMaximumSize(new Dimension(200, 75));
+        callButton.setPreferredSize(new Dimension(200, 75));
         callButton.setAlignmentY(Component.CENTER_ALIGNMENT);
         callButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         callButton.addActionListener((ActionEvent e) -> {
@@ -192,7 +182,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         this.add(callButton, BorderLayout.NORTH);
     }
 
-    private void addCameraPanel(){
+    private void addCameraPanel() {
         //добавление панели для всех камер
         horizontalPanel = new JPanel();
         horizontalPanel.setLayout(new BoxLayout(horizontalPanel, BoxLayout.X_AXIS));
@@ -201,7 +191,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         this.add(horizontalPanel, BorderLayout.NORTH);
     }
 
-    private void addSecondCameraPanel(){
+    private void addSecondCameraPanel() {
         horizontalPanel.setSize(screenSize.width, screenSize.height / 3);
 
         horizontalPanel.repaint();
@@ -227,16 +217,16 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         chatUserPanel = new JPanel();
         chatUserPanel.setLayout(new BoxLayout(chatUserPanel, BoxLayout.X_AXIS));
         chatUserPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 5));
-        if(isCall == false) {
-            chatUserPanel.setMinimumSize(new Dimension(screenSize.width,chatPanelSize + 500));
-            chatUserPanel.setPreferredSize(new Dimension(screenSize.width,chatPanelSize + 500));
-            chatUserPanel.setMaximumSize(new Dimension(screenSize.width,chatPanelSize + 500));
+        if (isCall == false) {
+            chatUserPanel.setMinimumSize(new Dimension(screenSize.width, chatPanelSize + 500));
+            chatUserPanel.setPreferredSize(new Dimension(screenSize.width, chatPanelSize + 500));
+            chatUserPanel.setMaximumSize(new Dimension(screenSize.width, chatPanelSize + 500));
             chatUserPanel.setSize(screenSize.width, chatPanelSize + 500);
         } else {
-            chatUserPanel.setMinimumSize(new Dimension(screenSize.width,chatPanelSize ));
-            chatUserPanel.setPreferredSize(new Dimension(screenSize.width,chatPanelSize ));
-            chatUserPanel.setMaximumSize(new Dimension(screenSize.width,chatPanelSize ));
-            chatUserPanel.setSize(screenSize.width, chatPanelSize );
+            chatUserPanel.setMinimumSize(new Dimension(screenSize.width, chatPanelSize));
+            chatUserPanel.setPreferredSize(new Dimension(screenSize.width, chatPanelSize));
+            chatUserPanel.setMaximumSize(new Dimension(screenSize.width, chatPanelSize));
+            chatUserPanel.setSize(screenSize.width, chatPanelSize);
         }
 
         chatArea = new ChatArea(screenSize, isCall, dm);
@@ -248,11 +238,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         this.repaint();
         this.revalidate();
     }
-      
 
-    
-
-  
     private void addMyCamera() {
         //панель для своей камеры
         JPanel myCameraPanel = new JPanel();
@@ -266,6 +252,8 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
 
         cameraManager = new CameraManager();
 
+        cameraManager.addListener(this);
+
         cameraScreen = new JLabel("Zzzzz...");
         cameraScreen.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -275,8 +263,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         cameraScreen.setMaximumSize(new Dimension(600, 400));
         myCameraPanel.add(cameraScreen);
 
-
-        subtitleDisplay.getView().setMaximumSize(new Dimension(400,50));
+        subtitleDisplay.getView().setMaximumSize(new Dimension(400, 50));
 
         southPanel.add(subtitleDisplay.getView());
         addControlPanel(southPanel);
@@ -290,17 +277,16 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         cameras.add(cameraScreen);
     }
 
-    private void addCamera(){
+    private void addCamera() {
         JPanel CameraPanel = new JPanel();
         JLabel CameraScreen;
-        if(cameras.size() < 2) {
+        if (cameras.size() < 2) {
 
             CameraPanel.setBorder(BorderFactory.createEmptyBorder(3, 0, 3, 0));
             CameraPanel.setLayout(new BoxLayout(CameraPanel, BoxLayout.Y_AXIS));
 
             JPanel southPanel = new JPanel();
             southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.Y_AXIS));
-
 
             CameraScreen = new JLabel("Zzzzz...");
             CameraScreen.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -310,9 +296,8 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
             CameraScreen.setMaximumSize(new Dimension(600, 400));
             CameraPanel.add(CameraScreen);
 
-
             subtitleDisplay = new SubtitleDisplay();
-            subtitleDisplay.getView().setMaximumSize(new Dimension(400,50));
+            subtitleDisplay.getView().setMaximumSize(new Dimension(400, 50));
 
             southPanel.add(subtitleDisplay.getView());
             addControlPanel(southPanel);
@@ -325,13 +310,12 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
 
             horizontalPanel.repaint();
             horizontalPanel.revalidate();
-        } else if (cameras.size() < 4){
+        } else if (cameras.size() < 4) {
             CameraPanel.setBorder(BorderFactory.createEmptyBorder(3, 0, 3, 0));
             CameraPanel.setLayout(new BoxLayout(CameraPanel, BoxLayout.Y_AXIS));
 
             JPanel southPanel = new JPanel();
             southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.Y_AXIS));
-
 
             CameraScreen = new JLabel("Zzzzz...");
             CameraScreen.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -339,9 +323,8 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
 
             CameraPanel.add(CameraScreen);
 
-
             subtitleDisplay = new SubtitleDisplay();
-            subtitleDisplay.getView().setMaximumSize(new Dimension(400,50));
+            subtitleDisplay.getView().setMaximumSize(new Dimension(400, 50));
 
             southPanel.add(subtitleDisplay.getView());
             addControlPanel(southPanel);
@@ -350,7 +333,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
             camerasCount++;
             cameras.add(CameraScreen);
 
-            for(JLabel camera : cameras){
+            for (JLabel camera : cameras) {
                 int width = screenSize.width / cameras.size() - 100;
                 int height = (int) (width * 0.66);
                 camera.setMinimumSize(new Dimension(width, height));
@@ -364,7 +347,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
             horizontalPanel.repaint();
             horizontalPanel.revalidate();
         } else {
-            if(cameras.size() == 4){
+            if (cameras.size() == 4) {
                 addSecondCameraPanel();
             }
 
@@ -374,16 +357,14 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
             JPanel southPanel = new JPanel();
             southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.Y_AXIS));
 
-
             CameraScreen = new JLabel("Zzzzz...");
             CameraScreen.setAlignmentX(Component.CENTER_ALIGNMENT);
             CameraScreen.setBorder(new RoundedBorder(3));
 
             CameraPanel.add(CameraScreen);
 
-
             subtitleDisplay = new SubtitleDisplay();
-            subtitleDisplay.getView().setMaximumSize(new Dimension(400,50));
+            subtitleDisplay.getView().setMaximumSize(new Dimension(400, 50));
 
             southPanel.add(subtitleDisplay.getView());
             addControlPanel(southPanel);
@@ -442,7 +423,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     private void exitFromCall() {
         stopCamera();
         this.dispose();
-     }
+    }
 
     @Override
     public void dispose() {
@@ -453,8 +434,9 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     private void startCamera() {
         cameraManager.startCamera();
     }
-    private void nextStyle(){
-        CameraManager.StyleCount = (CameraManager.StyleCount+1)%6 ;
+
+    private void nextStyle() {
+        CameraManager.StyleCount = (CameraManager.StyleCount + 1) % 6;
     }
 
     private void stopCamera() {
@@ -479,6 +461,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
             videoSender.HandleCameraFrameRecorded(null);
         }
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -526,7 +509,6 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
      * @param args the command line arguments
      */
 
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JFrame jFrame1;
     // End of variables declaration//GEN-END:variables
@@ -544,7 +526,24 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
 
     @Override
     public void HandleCameraFrameRecorded(BufferedImage frame) {
-        updateFrame(frame);
+        int w = cameras.get(0).getWidth();
+        int h = cameras.get(0).getHeight();
+        BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        int x, y;
+        int ww = frame.getWidth();
+        int hh = frame.getHeight();
+        int[] ys = new int[h];
+        for (y = 0; y < h; y++) {
+            ys[y] = y * hh / h;
+        }
+        for (x = 0; x < w; x++) {
+            int newX = x * ww / w;
+            for (y = 0; y < h; y++) {
+                int col = frame.getRGB(newX, ys[y]);
+                img.setRGB(x, y, col);
+            }
+        }
+        updateFrame(img);
     }
 
     @Override
@@ -557,4 +556,3 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }
-

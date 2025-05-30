@@ -35,6 +35,7 @@ import javax.swing.text.html.StyleSheet;
  * @author bafc13
  */
 public class ChatArea extends javax.swing.JPanel implements DMHandler {
+
     private JPanel chatPanel;
     private JTextArea chatArea;
     private JScrollPane chatPane;
@@ -43,11 +44,11 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
     private JScrollPane userPane;
     private DragDropEditorPane editorPane;
     private DirectMessenger dm;
-    
-    public ChatArea (Dimension screenSize, boolean isCall, DirectMessenger dm) {
+
+    public ChatArea(Dimension screenSize, boolean isCall, DirectMessenger dm) {
         super();
         this.dm = dm;
-        if(isCall == false) {
+        if (isCall == false) {
             this.setSize(screenSize.width / 2, screenSize.height / 2);
 
             chatPanel = new JPanel();
@@ -56,7 +57,6 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
             chatPanel.setPreferredSize(new Dimension(screenSize.width / 4 + 100, screenSize.height / 3 + 100));
             chatPanel.setMaximumSize(new Dimension(screenSize.width / 4 + 100, screenSize.height / 3 + 100));
             chatPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
 
             chatArea = new JTextArea("");
             chatArea.setEditable(false);
@@ -78,7 +78,6 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
 //            HTMLDocument doc = (HTMLDocument) editorPane.getDocument();
 //            StyleSheet styles = doc.getStyleSheet();
 //            styles.addRule("p { word-wrap: wrap }");
-
             chatPane = new JScrollPane(editorPane);
             chatPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
             chatPane.setMinimumSize(new Dimension(screenSize.width / 4 + 100, screenSize.height / 3 + 70));
@@ -100,11 +99,8 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
 
             chatPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-
-            chatPanel.add(chatPane,BorderLayout.CENTER);
+            chatPanel.add(chatPane, BorderLayout.CENTER);
             chatPanel.add(inputField);
-
-
 
             userArea = new JTextArea("");
             userArea.setEditable(false);
@@ -122,7 +118,7 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
             userPane.setBorder(new RoundedBorder(5));
 
         } else {
-            if(chatPanel != null) {
+            if (chatPanel != null) {
                 this.remove(chatPanel);
                 this.remove(userPane);
             }
@@ -134,8 +130,6 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
             chatPanel.setPreferredSize(new Dimension(screenSize.width / 4 + 100, screenSize.height / 3 - 100));
             chatPanel.setMaximumSize(new Dimension(screenSize.width / 4 + 100, screenSize.height / 3 - 100));
             chatPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-
 
             chatArea = new JTextArea("");
             chatArea.setEditable(false);
@@ -163,9 +157,8 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
 
             chatPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-            chatPanel.add(chatPane,BorderLayout.CENTER);
+            chatPanel.add(chatPane, BorderLayout.CENTER);
             chatPanel.add(inputField);
-
 
             userArea = new JTextArea("");
             userArea.setEditable(false);
@@ -186,7 +179,7 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
         this.add(userPane);
     }
 
-    private void addHyperlinkListener(){
+    private void addHyperlinkListener() {
         editorPane.addHyperlinkListener(e -> {
             if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
                 try {
@@ -205,8 +198,8 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
                             }
                         } else {
                             JOptionPane.showMessageDialog(this,
-                                "Файл не найден: " + file.getPath(),
-                                "Ошибка", JOptionPane.ERROR_MESSAGE);
+                                    "Файл не найден: " + file.getPath(),
+                                    "Ошибка", JOptionPane.ERROR_MESSAGE);
                         }
                     }
                 } catch (Exception ex) {
@@ -216,37 +209,45 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
         });
     }
 
-    private void messageWritten() throws BadLocationException, IOException{
-        if(!"".equals(inputField.getText())) {
+    private void messageWritten() throws BadLocationException, IOException {
 
-            HTMLDocument doc = (HTMLDocument) editorPane.getDocument();
-            doc.insertAfterEnd(
-                doc.getCharacterElement(doc.getLength()),
-                inputField.getText() + "<br>"
-            );
-            inputField.setText("");
-
-        }
     }
 
     @Override
     public void HandleDMText(String dm_address, String address, String text) {
         String username = mainJFrame.db.getUsername(address);
+
+        HTMLDocument doc = (HTMLDocument) editorPane.getDocument();
+        try {
+            doc.insertAfterEnd(
+                    doc.getCharacterElement(doc.getLength()),
+                    inputField.getText() + "<br>"
+            );
+        } catch (BadLocationException ex) {
+            Logger.getLogger(ChatArea.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(ChatArea.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        inputField.setText("");
+
         chatArea.append(username + ": " + text + "\n");
+        inputField.setText("");
     }
 
     @Override
     public void HandleDMFile(String dm_address, String address, String fname) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
-    
-    private void sendMessageText()
-    {
-        try {
-            dm.sendText(inputField.getText());
-            inputField.setText("");
-        } catch (IOException ex) {
-            Logger.getLogger(CallFrame.class.getName()).log(Level.SEVERE, null, ex);
+
+    private void sendMessageText() throws BadLocationException, IOException {
+        if (!"".equals(inputField.getText())) {
+            try {
+                dm.sendText(inputField.getText());
+            } catch (IOException ex) {
+                Logger.getLogger(CallFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
+
     }
 }

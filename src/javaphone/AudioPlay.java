@@ -1,4 +1,4 @@
-package audioplayer;
+package javaphone;
 
 import javax.sound.sampled.*;
 import java.io.File;
@@ -15,19 +15,19 @@ import java.util.concurrent.Executors;
 public class AudioPlay {
     // Формат аудио для воспроизведения
     private final AudioFormat playbackFormat;
-    
+
     // Карта активных участников звонка (ID -> аудиолиния)
     private final Map<String, SourceDataLine> activeSpeakers;
-    
+
     // Пул потоков для асинхронного воспроизведения
     private final ExecutorService audioExecutor;
-    
+
     // Флаг работы аудиосистемы
     private volatile boolean isRunning;
-    
+
     // Флаг воспроизведения WAV-файла
     private volatile boolean isPlaying;
-    
+
     // Аудиолиния для системных звуков (звонков, уведомлений)
     private SourceDataLine speakers;
 
@@ -78,12 +78,11 @@ public class AudioPlay {
      * Воспроизвести WAV-файл (для звонков, уведомлений)
      * @param filename путь к WAV-файлу
      */
-    public void playWav(String filename) throws UnsupportedAudioFileException, 
-            IOException, LineUnavailableException {
+    public void playWav(String filename) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         isPlaying = true;
         AudioInputStream in = AudioSystem.getAudioInputStream(new File(filename));
         AudioFormat baseFormat = in.getFormat();
-        
+
         // Конвертируем в нужный формат
         AudioFormat decodedFormat = new AudioFormat(
             AudioFormat.Encoding.PCM_SIGNED,
@@ -94,25 +93,25 @@ public class AudioPlay {
             baseFormat.getSampleRate(),
             false
         );
-        
+
         AudioInputStream din = AudioSystem.getAudioInputStream(decodedFormat, in);
         speakers = AudioSystem.getSourceDataLine(decodedFormat);
         speakers.open(decodedFormat);
         speakers.start();
-        
+
         byte[] buffer = new byte[4096];
         int bytesRead;
         while (isPlaying && (bytesRead = din.read(buffer)) != -1) {
             speakers.write(buffer, 0, bytesRead);
         }
-        
+
         speakers.drain();
         speakers.stop();
         speakers.close();
         din.close();
         in.close();
     }
-     
+
     /**
      * Остановить воспроизведение WAV-файла
      */

@@ -1,5 +1,6 @@
 package com.example.camera;
 
+import java.awt.event.ActionListener;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -11,31 +12,39 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import javaphone.EventInterfaces.VideoHandler;
+import javax.swing.Timer;
 
 public class CameraManager {
 
     private VideoCapture camera;
     private boolean isCameraActive = false;
     public static int StyleCount = 0;
-    
+    private Timer timer;
+
     private List<VideoHandler> listeners = new ArrayList<>();
+
 
     public void addListener(VideoHandler to_add)
     {
         listeners.add(to_add);
     }
-    
+
     public void startCamera() {
         if (!isCameraActive) {
             camera = new VideoCapture(0); // 0 - индекс камеры по умолчанию
             isCameraActive = camera.isOpened();
         }
+        timer = new Timer(30, e -> {
+            getCurrentFrame();
+        });
+        timer.start();
     }
 
     public void stopCamera() {
         if (isCameraActive) {
             camera.release();
             isCameraActive = false;
+            timer.stop();
         }
     }
 
@@ -83,12 +92,12 @@ public class CameraManager {
             Imgproc.resize(temp, frame, frame.size(), 0, 0, Imgproc.INTER_NEAREST);
         }
         BufferedImage result = matToBufferedImage(frame);
-        
+
         for (VideoHandler vh : listeners)
         {
             vh.HandleCameraFrameRecorded(result);
         }
-        
+
         return result;
     }
 
