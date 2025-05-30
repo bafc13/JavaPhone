@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javaphone.EventInterfaces.DMHandler;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JEditorPane;
@@ -33,7 +34,7 @@ import javax.swing.text.html.StyleSheet;
  *
  * @author bafc13
  */
-public class ChatArea extends javax.swing.JPanel {
+public class ChatArea extends javax.swing.JPanel implements DMHandler {
     private JPanel chatPanel;
     private JTextArea chatArea;
     private JScrollPane chatPane;
@@ -41,11 +42,11 @@ public class ChatArea extends javax.swing.JPanel {
     private JTextArea userArea;
     private JScrollPane userPane;
     private DragDropEditorPane editorPane;
-
-
-    public ChatArea (Dimension screenSize, boolean isCall) {
+    private DirectMessenger dm;
+    
+    public ChatArea (Dimension screenSize, boolean isCall, DirectMessenger dm) {
         super();
-
+        this.dm = dm;
         if(isCall == false) {
             this.setSize(screenSize.width / 2, screenSize.height / 2);
 
@@ -228,4 +229,24 @@ public class ChatArea extends javax.swing.JPanel {
         }
     }
 
+    @Override
+    public void HandleDMText(String dm_address, String address, String text) {
+        String username = mainJFrame.db.getUsername(address);
+        chatArea.append(username + ": " + text + "\n");
+    }
+
+    @Override
+    public void HandleDMFile(String dm_address, String address, String fname) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+    
+    private void sendMessageText()
+    {
+        try {
+            dm.sendText(inputField.getText());
+            inputField.setText("");
+        } catch (IOException ex) {
+            Logger.getLogger(CallFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }
