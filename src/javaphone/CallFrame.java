@@ -379,10 +379,6 @@ public final class CallFrame extends javax.swing.JFrame implements DMHandler, Vi
 
     private void startCamera() {
         cameraManager.startCamera();
-        if (cameraManager.isCameraActive()) {
-            startVideoStream();
-        }
-
     }
     private void nextStyle(){
         CameraManager.StyleCount = (CameraManager.StyleCount+1)%6 ;
@@ -398,20 +394,10 @@ public final class CallFrame extends javax.swing.JFrame implements DMHandler, Vi
         if (image != null) {
             ImageIcon icon = new ImageIcon(image);
             cameraScreen.setIcon(icon);
-            
-            videoSender.HandleCameraFrameRecorded(image);
         } else {
             cameraScreen.setIcon(null);
             cameraScreen.setText("Zzzzz...");
         }
-    }
-
-    private void startVideoStream() {
-        timer = new Timer(30, e -> {
-            BufferedImage image = cameraManager.getCurrentFrame();
-            updateFrame(image);
-        });
-        timer.start();
     }
 
     private void stopVideoStream() {
@@ -496,7 +482,7 @@ public final class CallFrame extends javax.swing.JFrame implements DMHandler, Vi
 
     @Override
     public void HandleCameraFrameRecorded(BufferedImage frame) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        updateFrame(frame);
     }
 
     @Override
