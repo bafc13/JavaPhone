@@ -49,6 +49,8 @@ class CustomDialog extends JDialog {
             this.dispose();
         } else if (field1.getText().equals("") || field2.getText().equals("")){
             JOptionPane.showMessageDialog(this, "Введите второе поле!");
+        } else {
+            super.dispose();
         }
     }
 

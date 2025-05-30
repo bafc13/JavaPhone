@@ -6,14 +6,28 @@ package javaphone;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JEditorPane;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.StyleSheet;
 
 /**
  *
@@ -26,6 +40,7 @@ public class ChatArea extends javax.swing.JPanel {
     private JTextField inputField;
     private JTextArea userArea;
     private JScrollPane userPane;
+    private DragDropEditorPane editorPane;
 
 
     public ChatArea (Dimension screenSize, boolean isCall) {
@@ -48,7 +63,22 @@ public class ChatArea extends javax.swing.JPanel {
             chatArea.setLineWrap(true);
             chatArea.setWrapStyleWord(true);
 
-            chatPane = new JScrollPane(chatArea);
+            editorPane = new DragDropEditorPane();
+            addHyperlinkListener();
+            editorPane.setContentType("text/html");
+            editorPane.setEditable(false);
+            editorPane.setFont(new Font("Arial Unicode MS", Font.BOLD, 16));
+
+            HTMLEditorKit kit = new HTMLEditorKit();
+            StyleSheet styleSheet = kit.getStyleSheet();
+            styleSheet.addRule("body { word-wrap: wrap }");
+            editorPane.setEditorKit(kit);
+
+//            HTMLDocument doc = (HTMLDocument) editorPane.getDocument();
+//            StyleSheet styles = doc.getStyleSheet();
+//            styles.addRule("p { word-wrap: wrap }");
+
+            chatPane = new JScrollPane(editorPane);
             chatPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
             chatPane.setMinimumSize(new Dimension(screenSize.width / 4 + 100, screenSize.height / 3 + 70));
             chatPane.setPreferredSize(new Dimension(screenSize.width / 4 + 100, screenSize.height / 3 + 70));
@@ -57,7 +87,15 @@ public class ChatArea extends javax.swing.JPanel {
 
             inputField = new JTextField();
             inputField.setFont(new Font("Arial Unicode MS", Font.PLAIN, 18));
-            inputField.addActionListener(e -> messageWritten());
+            inputField.addActionListener(e -> {
+                try {
+                    messageWritten();
+                } catch (BadLocationException ex) {
+                    Logger.getLogger(ChatArea.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException ex) {
+                    Logger.getLogger(ChatArea.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
 
             chatPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -112,7 +150,15 @@ public class ChatArea extends javax.swing.JPanel {
 
             inputField = new JTextField();
             inputField.setFont(new Font("Arial Unicode MS", Font.PLAIN, 18));
-            inputField.addActionListener(e -> messageWritten());
+            inputField.addActionListener(e -> {
+                try {
+                    messageWritten();
+                } catch (BadLocationException ex) {
+                    Logger.getLogger(ChatArea.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException ex) {
+                    Logger.getLogger(ChatArea.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
 
             chatPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -135,15 +181,50 @@ public class ChatArea extends javax.swing.JPanel {
             userPane.setBorder(new RoundedBorder(5));
         }
 
-
         this.add(chatPanel);
         this.add(userPane);
     }
 
-    private void messageWritten(){
-        if(inputField.getText() != "") {
-            chatArea.append(inputField.getText() + "\n");
+    private void addHyperlinkListener(){
+        editorPane.addHyperlinkListener(e -> {
+            if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                try {
+                    URI uri = e.getURL().toURI();
+
+                    if ("file".equals(uri.getScheme())) {
+                        File file = new File(uri);
+
+                        if (file.exists()) {
+                            if (file.isDirectory()) {
+                                // Открыть папку в проводнике
+                                Desktop.getDesktop().open(file);
+                            } else {
+                                // Открыть файл в ассоциированной программе
+                                Desktop.getDesktop().open(file);
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(this,
+                                "Файл не найден: " + file.getPath(),
+                                "Ошибка", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void messageWritten() throws BadLocationException, IOException{
+        if(!"".equals(inputField.getText())) {
+
+            HTMLDocument doc = (HTMLDocument) editorPane.getDocument();
+            doc.insertAfterEnd(
+                doc.getCharacterElement(doc.getLength()),
+                inputField.getText() + "<br>"
+            );
             inputField.setText("");
+
         }
     }
 

@@ -19,7 +19,6 @@ public class SubtitleDisplay {
         subtitleArea.setEditable(false);
         subtitleArea.setLineWrap(true);
 
-
         panel.add(subtitleArea, BorderLayout.CENTER);
     }
 
