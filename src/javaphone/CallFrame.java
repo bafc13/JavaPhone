@@ -30,7 +30,7 @@ import javax.swing.Timer;
  *
  * @author bafc13
  */
-public final class CallFrame extends javax.swing.JFrame implements DMHandler, VideoHandler, VoiceHandler {
+public final class CallFrame extends javax.swing.JFrame implements VideoHandler, VoiceHandler {
     private Dimension screenSize;
     
     private DirectMessenger dm;
@@ -62,7 +62,6 @@ public final class CallFrame extends javax.swing.JFrame implements DMHandler, Vi
     private boolean isCall = false;
     private int horizontalPanelSize;
     private int chatPanelSize;
-    private Dimension screenSize;
 
     private int camerasCount = 0;
     /**
@@ -240,7 +239,7 @@ public final class CallFrame extends javax.swing.JFrame implements DMHandler, Vi
             chatUserPanel.setSize(screenSize.width, chatPanelSize );
         }
 
-        chatArea = new ChatArea(screenSize, isCall);
+        chatArea = new ChatArea(screenSize, isCall, dm);
         chatUserPanel.add(chatArea, BorderLayout.CENTER);
 
         this.add(chatUserPanel, BorderLayout.SOUTH);
@@ -251,15 +250,7 @@ public final class CallFrame extends javax.swing.JFrame implements DMHandler, Vi
     }
       
 
-    private void sendMessageText()
-    {
-        try {
-            dm.sendText(inputField.getText());
-            inputField.setText("");
-        } catch (IOException ex) {
-            Logger.getLogger(CallFrame.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+    
 
   
     private void addMyCamera() {
@@ -539,17 +530,6 @@ public final class CallFrame extends javax.swing.JFrame implements DMHandler, Vi
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JFrame jFrame1;
     // End of variables declaration//GEN-END:variables
-
-    @Override
-    public void HandleDMText(String dm_address, String address, String text) {
-        String username = mainJFrame.db.getUsername(address);
-        chatArea.append(username + ": " + text + "\n");
-    }
-
-    @Override
-    public void HandleDMFile(String dm_address, String address, String fname) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
 
     @Override
     public void HandleCameraFrameRecieved(String dm_address, String address, BufferedImage frame) {
