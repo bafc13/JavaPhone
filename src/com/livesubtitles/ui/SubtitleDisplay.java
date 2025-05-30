@@ -15,10 +15,9 @@ public class SubtitleDisplay {
         panel.setBackground(inactiveColor);
 
         subtitleArea = new JTextArea();
-        subtitleArea.setFont(new Font("Arial Unicode MS", Font.BOLD, 28));
+        subtitleArea.setFont(new Font("Arial Unicode MS", Font.BOLD, 22));
         subtitleArea.setEditable(false);
         subtitleArea.setLineWrap(true);
-
 
         panel.add(subtitleArea, BorderLayout.CENTER);
     }
