@@ -19,6 +19,9 @@ import java.io.IOException;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javaphone.EventInterfaces.*;
+
+
 
 
 import javax.swing.Timer;
@@ -27,8 +30,18 @@ import javax.swing.Timer;
  *
  * @author bafc13
  */
-public final class CallFrame extends javax.swing.JFrame {
-
+public final class CallFrame extends javax.swing.JFrame implements DMHandler, VideoHandler, VoiceHandler {
+    private Dimension screenSize;
+    
+    private DirectMessenger dm;
+    private VoiceSender voiceSender;
+    private VoiceReciever voiceReciever;
+    private VideoSender videoSender;
+    private VideoReciever videoReciever;
+    
+    private Boolean voiceEnabled;
+    private Boolean videoEnabled;
+    
     private String ipToConnect;
     private String nickName;
 
@@ -82,7 +95,9 @@ public final class CallFrame extends javax.swing.JFrame {
         this.setVisible(true);
         this.setSize(screenSize.width, screenSize.height);
         initComponents();
-
+      
+        voiceEnabled = false;
+        videoEnabled = false;
     }
 
     public CallFrame(String ip, String nick) throws IOException {
@@ -111,6 +126,47 @@ public final class CallFrame extends javax.swing.JFrame {
         this.setController(controller);
         controller.start();
     }
+
+
+       
+
+    public CallFrame(DirectMessenger dm) throws IOException {
+        this();
+        this.dm = dm;
+        
+        System.out.println("INITIALIZED WITH DM");
+    }
+    
+    public CallFrame(DirectMessenger dm, VoiceSender voiceSender, VoiceReciever voiceReciever) throws IOException {
+        this();
+        this.dm = dm;
+        this.voiceSender = voiceSender;
+        this.voiceReciever = voiceReciever;
+        
+        this.voiceReciever.addListener(this);
+        
+        voiceEnabled = true;
+        
+        System.out.println("INITIALIZED WITH DM AND VOICE");
+    }
+    
+    public CallFrame(DirectMessenger dm, VoiceSender voiceSender, VoiceReciever voiceReciever, VideoSender videoSender, VideoReciever videoReciever) throws IOException {
+        this();
+        this.dm = dm;
+        this.voiceSender = voiceSender;
+        this.voiceReciever = voiceReciever;
+        this.videoSender = videoSender;
+        this.videoReciever = videoReciever;
+        
+        this.voiceReciever.addListener(this);
+        this.videoReciever.addListener(this);
+        
+        voiceEnabled = true;
+        videoEnabled = true;
+        
+        System.out.println("INITIALIZED WITH DM, VOICE AND VIDEO");
+    }
+      
 
     private void initChat() {
         addChatUserPanel();
@@ -184,20 +240,28 @@ public final class CallFrame extends javax.swing.JFrame {
             chatUserPanel.setSize(screenSize.width, chatPanelSize );
         }
 
-
         chatArea = new ChatArea(screenSize, isCall);
         chatUserPanel.add(chatArea, BorderLayout.CENTER);
 
         this.add(chatUserPanel, BorderLayout.SOUTH);
         chatUserPanel.repaint();
         chatUserPanel.revalidate();
-
         this.repaint();
         this.revalidate();
     }
+      
 
+    private void sendMessageText()
+    {
+        try {
+            dm.sendText(inputField.getText());
+            inputField.setText("");
+        } catch (IOException ex) {
+            Logger.getLogger(CallFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
-
+  
     private void addMyCamera() {
         //панель для своей камеры
         JPanel myCameraPanel = new JPanel();
@@ -397,10 +461,6 @@ public final class CallFrame extends javax.swing.JFrame {
 
     private void startCamera() {
         cameraManager.startCamera();
-        if (cameraManager.isCameraActive()) {
-            startVideoStream();
-        }
-
     }
     private void nextStyle(){
         CameraManager.StyleCount = (CameraManager.StyleCount+1)%6 ;
@@ -422,17 +482,10 @@ public final class CallFrame extends javax.swing.JFrame {
         }
     }
 
-    private void startVideoStream() {
-        timer = new Timer(30, e -> {
-            BufferedImage image = cameraManager.getCurrentFrame();
-            updateFrame(image);
-        });
-        timer.start();
-    }
-
     private void stopVideoStream() {
         if (timer != null && timer.isRunning()) {
             timer.stop();
+            videoSender.HandleCameraFrameRecorded(null);
         }
     }
     /**
@@ -459,20 +512,20 @@ public final class CallFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        setMaximumSize(new java.awt.Dimension(1920, 1080));
+        setMaximumSize(new java.awt.Dimension(5200, 5200));
         setMinimumSize(new java.awt.Dimension(1024, 768));
-        setPreferredSize(new java.awt.Dimension(1920, 1080));
+        setPreferredSize(new java.awt.Dimension(5200, 5200));
         setSize(new java.awt.Dimension(1920, 1080));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1140, Short.MAX_VALUE)
+            .addGap(0, 1920, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 573, Short.MAX_VALUE)
+            .addGap(0, 1080, Short.MAX_VALUE)
         );
 
         pack();
@@ -486,5 +539,42 @@ public final class CallFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JFrame jFrame1;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void HandleDMText(String dm_address, String address, String text) {
+        String username = mainJFrame.db.getUsername(address);
+        chatArea.append(username + ": " + text + "\n");
+    }
+
+    @Override
+    public void HandleDMFile(String dm_address, String address, String fname) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void HandleCameraFrameRecieved(String dm_address, String address, BufferedImage frame) {
+        if (frame != null) {
+            ImageIcon icon = new ImageIcon(frame);
+            cameras.get(1).setIcon(icon);
+        } else {
+            cameras.get(1).setIcon(null);
+            cameras.get(1).setText("Zzzzz...");
+        }
+    }
+
+    @Override
+    public void HandleCameraFrameRecorded(BufferedImage frame) {
+        updateFrame(frame);
+    }
+
+    @Override
+    public void HandleVoiceRecieved(String dm_address, String address, byte[] audioChunk) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void HandleVoiceRecorded(byte[] audioChunk) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }
 

@@ -17,13 +17,14 @@ import javaphone.EventInterfaces.CallHandler;
  */
 public class MainSocket extends Thread {
     public static final int PORT = 666;
+    
     private final ServerSocket main_sock;
     private List<CallHandler> listeners;
 
 
     public MainSocket() throws IOException
     {
-        listeners = new ArrayList<CallHandler>();
+        listeners = new ArrayList<>();
         main_sock = new ServerSocket(PORT);
     }
 
@@ -35,32 +36,39 @@ public class MainSocket extends Thread {
     @Override
     public void run()
     {
+        BufferedReader in = null;
+        BufferedWriter out = null;
         try
         {
             while(true)
             {
                 Socket sock = main_sock.accept();
-                BufferedReader in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-                BufferedWriter out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
+                in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+                out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
 
                 Handshake hs = new Handshake(in.readLine(), in.readLine(), sock);
-                System.out.println("Zvonit huesos");
-                System.out.println("ALLO NHAUYAFDAJHGBFJAHGFJHAGFJKHSG");
-                System.out.println(hs.message);
-                System.out.println(hs.name);
-                out.write("OK");
+
+                out.write(CallCodes.responseOK + "\n");
                 out.flush();
 
                 for (CallHandler l : listeners)
                 {
                     l.callRecieved(hs);
                 }
+                
+                in = null;
+                out = null;
             }
         }
         catch (IOException e)
         {
 
             try {
+                if (out != null)
+                {
+                    out.write(CallCodes.responseErr + "\n");
+                    out.flush();
+                }
                 main_sock.close();
             } catch (IOException ex) {
                 Logger.getLogger(MainSocket.class.getName()).log(Level.SEVERE, null, ex);
@@ -73,7 +81,6 @@ public class MainSocket extends Thread {
         Socket sock;
         try {
             sock = new Socket(addr, PORT);
-            System.out.println("HUYAKA BLYAT");
         } catch (IOException ex) {
             Logger.getLogger(MainSocket.class.getName()).log(Level.SEVERE, null, ex);
 
@@ -85,13 +92,13 @@ public class MainSocket extends Thread {
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
 
             out.write(name + "\n");
-            out.write(purpose);
+            out.write(purpose + "\n");
             out.flush();
 
-            if (in.readLine().equals("OK"))
+            if (in.readLine().equals(CallCodes.responseOK))
             {
-                System.out.println("Otvetili");
-                Handshake hs = new Handshake(name, purpose, sock);
+                String responseName = in.readLine();
+                Handshake hs = new Handshake(responseName, purpose, sock);
 
                 for (CallHandler l : listeners)
                 {
