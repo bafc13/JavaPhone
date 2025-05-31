@@ -69,8 +69,45 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
      *
      * @throws java.io.IOException
      */
-    public CallFrame() throws IOException {
 
+    public CallFrame(DirectMessenger dm) throws IOException {
+        this.dm = dm;
+        initCallFrame();
+
+        System.out.println("INITIALIZED WITH DM");
+    }
+
+    public CallFrame(DirectMessenger dm, VoiceSender voiceSender, VoiceReciever voiceReciever) throws IOException {
+        this.dm = dm;
+        initCallFrame();
+        this.voiceSender = voiceSender;
+        this.voiceReciever = voiceReciever;
+
+        this.voiceReciever.addListener(this);
+
+        voiceEnabled = true;
+
+        System.out.println("INITIALIZED WITH DM AND VOICE");
+    }
+
+    public CallFrame(DirectMessenger dm, VoiceSender voiceSender, VoiceReciever voiceReciever, VideoSender videoSender, VideoReciever videoReciever) throws IOException {
+        this.dm = dm;
+        initCallFrame();
+        this.voiceSender = voiceSender;
+        this.voiceReciever = voiceReciever;
+        this.videoSender = videoSender;
+        this.videoReciever = videoReciever;
+
+        this.voiceReciever.addListener(this);
+        this.videoReciever.addListener(this);
+
+        voiceEnabled = true;
+        videoEnabled = true;
+
+        System.out.println("INITIALIZED WITH DM, VOICE AND VIDEO");
+    }
+
+    private void initCallFrame() throws IOException {
         cameras = new Vector<>();
 
         this.setTitle("Call");
@@ -98,43 +135,6 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
 
         voiceEnabled = false;
         videoEnabled = false;
-    }
-
-    public CallFrame(DirectMessenger dm) throws IOException {
-        this();
-        this.dm = dm;
-
-        System.out.println("INITIALIZED WITH DM");
-    }
-
-    public CallFrame(DirectMessenger dm, VoiceSender voiceSender, VoiceReciever voiceReciever) throws IOException {
-        this();
-        this.dm = dm;
-        this.voiceSender = voiceSender;
-        this.voiceReciever = voiceReciever;
-
-        this.voiceReciever.addListener(this);
-
-        voiceEnabled = true;
-
-        System.out.println("INITIALIZED WITH DM AND VOICE");
-    }
-
-    public CallFrame(DirectMessenger dm, VoiceSender voiceSender, VoiceReciever voiceReciever, VideoSender videoSender, VideoReciever videoReciever) throws IOException {
-        this();
-        this.dm = dm;
-        this.voiceSender = voiceSender;
-        this.voiceReciever = voiceReciever;
-        this.videoSender = videoSender;
-        this.videoReciever = videoReciever;
-
-        this.voiceReciever.addListener(this);
-        this.videoReciever.addListener(this);
-
-        voiceEnabled = true;
-        videoEnabled = true;
-
-        System.out.println("INITIALIZED WITH DM, VOICE AND VIDEO");
     }
 
     public void setController(ApplicationController controller) {
