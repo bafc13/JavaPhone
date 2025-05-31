@@ -37,7 +37,6 @@ import javax.swing.text.html.StyleSheet;
 public class ChatArea extends javax.swing.JPanel implements DMHandler {
 
     private JPanel chatPanel;
-    private JTextArea chatArea;
     private JScrollPane chatPane;
     private JTextField inputField;
     private JTextArea userArea;
@@ -58,12 +57,6 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
             chatPanel.setMaximumSize(new Dimension(screenSize.width / 4 + 100, screenSize.height / 3 + 100));
             chatPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-            chatArea = new JTextArea("");
-            chatArea.setEditable(false);
-            chatArea.setFont(new Font("Arial Unicode MS", Font.BOLD, 16));
-            chatArea.setLineWrap(true);
-            chatArea.setWrapStyleWord(true);
-
             editorPane = new DragDropEditorPane();
             addHyperlinkListener();
             editorPane.setContentType("text/html");
@@ -75,9 +68,6 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
             styleSheet.addRule("body { word-wrap: wrap }");
             editorPane.setEditorKit(kit);
 
-//            HTMLDocument doc = (HTMLDocument) editorPane.getDocument();
-//            StyleSheet styles = doc.getStyleSheet();
-//            styles.addRule("p { word-wrap: wrap }");
             chatPane = new JScrollPane(editorPane);
             chatPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
             chatPane.setMinimumSize(new Dimension(screenSize.width / 4 + 100, screenSize.height / 3 + 70));
@@ -89,7 +79,7 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
             inputField.setFont(new Font("Arial Unicode MS", Font.PLAIN, 18));
             inputField.addActionListener(e -> {
                 try {
-                    messageWritten();
+                    sendMessageText();
                 } catch (BadLocationException ex) {
                     Logger.getLogger(ChatArea.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (IOException ex) {
@@ -131,12 +121,19 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
             chatPanel.setMaximumSize(new Dimension(screenSize.width / 4 + 100, screenSize.height / 3 - 100));
             chatPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-            chatArea = new JTextArea("");
-            chatArea.setEditable(false);
-            chatArea.setFont(new Font("Arial Unicode MS", Font.BOLD, 16));
-            chatArea.setLineWrap(true);
-            chatArea.setWrapStyleWord(true);
-            chatPane = new JScrollPane(chatArea);
+
+            editorPane = new DragDropEditorPane();
+            addHyperlinkListener();
+            editorPane.setContentType("text/html");
+            editorPane.setEditable(false);
+            editorPane.setFont(new Font("Arial Unicode MS", Font.BOLD, 16));
+
+            HTMLEditorKit kit = new HTMLEditorKit();
+            StyleSheet styleSheet = kit.getStyleSheet();
+            styleSheet.addRule("body { word-wrap: wrap }");
+            editorPane.setEditorKit(kit);
+
+            chatPane = new JScrollPane(editorPane);
             chatPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
             chatPane.setMinimumSize(new Dimension(screenSize.width / 4 + 100, screenSize.height / 3 - 130));
             chatPane.setPreferredSize(new Dimension(screenSize.width / 4 + 100, screenSize.height / 3 - 130));
@@ -147,7 +144,7 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
             inputField.setFont(new Font("Arial Unicode MS", Font.PLAIN, 18));
             inputField.addActionListener(e -> {
                 try {
-                    messageWritten();
+                    sendMessageText();
                 } catch (BadLocationException ex) {
                     Logger.getLogger(ChatArea.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (IOException ex) {
@@ -209,10 +206,6 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
         });
     }
 
-    private void messageWritten() throws BadLocationException, IOException {
-
-    }
-
     @Override
     public void HandleDMText(String dm_address, String address, String text) {
         String username = mainJFrame.db.getUsername(address);
@@ -221,17 +214,14 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
         try {
             doc.insertAfterEnd(
                     doc.getCharacterElement(doc.getLength()),
-                    inputField.getText() + "<br>"
+                    username + ": " + inputField.getText() + "<br>"
             );
         } catch (BadLocationException ex) {
             Logger.getLogger(ChatArea.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(ChatArea.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        inputField.setText("");
 
-        chatArea.append(username + ": " + text + "\n");
         inputField.setText("");
     }
 
