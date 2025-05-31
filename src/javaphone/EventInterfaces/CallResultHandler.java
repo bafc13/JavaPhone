@@ -5,6 +5,8 @@
 package javaphone.EventInterfaces;
 
 import javaphone.DirectMessenger;
+import javaphone.VideoReciever;
+import javaphone.VideoSender;
 import javaphone.VoiceReciever;
 import javaphone.VoiceSender;
 
@@ -15,4 +17,5 @@ import javaphone.VoiceSender;
 public interface CallResultHandler {
     void DMCreated(DirectMessenger dm);
     void VoiceCreated(VoiceSender vs, VoiceReciever vr);
+    void VideoCreated(VideoSender vs, VideoReciever vr);
 }

@@ -49,12 +49,26 @@ public class BasicCallHandler implements CallHandler {
         else if (hs.message.equals(CallCodes.voiceCall))
         {
             try {
-                VoiceSender vs = new VoiceSender(hs.sock, AudioConfig.CHUNK_SIZE);
-                VoiceReciever vr = new VoiceReciever(hs.sock, AudioConfig.CHUNK_SIZE);
+                VoiceSender vs = new VoiceSender(hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockSend, hs.port);
+                VoiceReciever vr = new VoiceReciever(hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockRecieve);
                 
                 for (CallResultHandler cr : listeners)
                 {
                     cr.VoiceCreated(vs, vr);
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        else if (hs.message.equals(CallCodes.videoCall))
+        {
+            try {
+                VideoSender vs = new VideoSender(hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockSend, hs.port);
+                VideoReciever vr = new VideoReciever(hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockRecieve);
+                
+                for (CallResultHandler cr : listeners)
+                {
+                    cr.VideoCreated(vs, vr);
                 }
             } catch (IOException ex) {
                 Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -82,8 +96,8 @@ public class BasicCallHandler implements CallHandler {
         else if (hs.message.equals(CallCodes.voiceCall))
         {
             try {
-                VoiceSender vs = new VoiceSender(hs.sock, AudioConfig.CHUNK_SIZE);
-                VoiceReciever vr = new VoiceReciever(hs.sock, AudioConfig.CHUNK_SIZE);
+                VoiceSender vs = new VoiceSender(hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockSend, hs.port);
+                VoiceReciever vr = new VoiceReciever(hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockRecieve);
                 
                 for (CallResultHandler cr : listeners)
                 {
