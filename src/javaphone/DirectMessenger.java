@@ -128,6 +128,11 @@ public class DirectMessenger extends Thread {
         return chatID;
     }
     
+    public String getIP()
+    {
+        return source.getInetAddress().toString();
+    }
+    
     public void sendText(String msg) throws IOException
     {
         out.writeInt(type_text);

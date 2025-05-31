@@ -24,7 +24,7 @@ import javax.swing.SwingConstants;
 public class mainJFrame extends javax.swing.JFrame implements CallResultHandler {
      public static DBManager db;
      public static MainSocket mainSock;
-     private BasicCallHandler basicCallHandler;
+     public static BasicCallHandler basicCallHandler;
      
      private String ip;
      private String nick;

@@ -115,6 +115,8 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     }
 
     private void initCallFrame() throws IOException {
+        mainJFrame.basicCallHandler.addListener(this);
+        
         cameras = new Vector<>();
         
         this.setTitle("Call");
@@ -149,7 +151,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     }
 
     private void initCall() throws IOException {
-        this.setLayout(new BorderLayout());
+        this.setLayout(new BorderLayout()); 
 
         addCameraPanel();
         addChatUserPanel();
@@ -162,6 +164,9 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         controller = new ApplicationController(recognizer, subtitleDisplay);
         this.setController(controller);
         controller.start();
+        
+        mainJFrame.mainSock.call(dm.getIP(), mainJFrame.username, CallCodes.voiceCall);
+        mainJFrame.mainSock.call(dm.getIP(), mainJFrame.username, CallCodes.videoCall);
     }
 
     private void initChat() {
@@ -449,10 +454,10 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     private void stopCamera() {
         cameraManager.stopCamera();
         stopVideoStream();
-        updateFrame(null); // Очистка экрана
+        updateFrame(null, 0); // Очистка экрана
     }
 
-    private void updateFrame(BufferedImage image) {
+    private void updateFrame(BufferedImage image, int cameraID) {
         if (image != null) {
             ImageIcon icon = new ImageIcon(image);
             cameraScreen.setIcon(icon);
@@ -519,25 +524,11 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JFrame jFrame1;
     // End of variables declaration//GEN-END:variables
-
-    @Override
-    public void HandleCameraFrameRecieved(int chatID, String address, BufferedImage frame) {
-        if (this.chatID != chatID)
-            return;
-        
-        if (frame != null) {
-            ImageIcon icon = new ImageIcon(frame);
-            cameras.get(1).setIcon(icon);
-        } else {
-            cameras.get(1).setIcon(null);
-            cameras.get(1).setText("Zzzzz...");
-        }
-    }
-
-    @Override
-    public void HandleCameraFrameRecorded(BufferedImage frame) {
-        int w = cameras.get(0).getWidth();
-        int h = cameras.get(0).getHeight();
+    
+    private BufferedImage resizeToCameraFrame(BufferedImage frame, int cameraID)
+    {
+        int w = cameras.get(cameraID).getWidth();
+        int h = cameras.get(cameraID).getHeight();
         BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
         int x, y;
         int ww = frame.getWidth();
@@ -553,7 +544,24 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
                 img.setRGB(x, y, col);
             }
         }
-        updateFrame(img);
+        
+        return img;
+    }
+    
+    @Override
+    public void HandleCameraFrameRecieved(int chatID, String address, BufferedImage frame) {
+        if (this.chatID != chatID)
+            return;
+        
+        int cameraID = -1; // TODO: find camera that handles sander
+        BufferedImage img = resizeToCameraFrame(frame, cameraID);
+        updateFrame(img, cameraID);
+    }
+
+    @Override
+    public void HandleCameraFrameRecorded(BufferedImage frame) {
+        BufferedImage img = resizeToCameraFrame(frame, 0);
+        updateFrame(img, 0);
     }
 
     @Override
