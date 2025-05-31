@@ -14,6 +14,11 @@ public class Handshake {
     public String name;
     public String message;
     public Socket sock;
+    public DatagramSocket dSockRecieve;
+    public DatagramSocket dSockSend;
+    public int port;
+    public int packetSize;
+    
     
     public Handshake(String n, String m, Socket s)
     {

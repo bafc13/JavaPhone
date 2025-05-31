@@ -8,6 +8,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.Socket;
 import java.util.List;
 import java.util.logging.Level;
@@ -27,11 +29,16 @@ public class VideoReciever extends Thread {
     private final DataInputStream in;
     private List<VideoHandler> listeners;
     private final int chunk_size;
+    private final DatagramSocket dSock;
+    private DatagramPacket dPack;
 
-    public VideoReciever(Socket s, int cs) throws IOException {
+    public VideoReciever(Socket s, int cs, DatagramSocket ds) throws IOException {
+        dSock = ds;
         chunk_size = cs;
         source = s;
         in = new DataInputStream(s.getInputStream());
+        
+        dPack = new DatagramPacket(new byte[cs], cs);
     }
 
     public void addListener(VideoHandler to_add) {
@@ -45,10 +52,9 @@ public class VideoReciever extends Thread {
         BufferedImage frame;
         while (true) {
             try {
-                recievedSize = in.readInt();
-                if (recievedSize != 0) {
-                    chunk = new byte[recievedSize];
-                    bytesRead = in.read(chunk);
+                dSock.receive(dPack);
+                if (dPack.getData().length != 0) {
+                    chunk = dPack.getData();
                     frame = convertRecieved(chunk);
 
                     for (VideoHandler l : listeners) {

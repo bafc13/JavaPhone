@@ -5,6 +5,8 @@
 package javaphone;
 
 
+import com.example.camera.CameraManager;
+import com.livesubtitles.audio.AudioConfig;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -50,7 +52,30 @@ public class MainSocket extends Thread {
 
                 out.write(CallCodes.responseOK + "\n");
                 out.flush();
-
+                
+                if (hs.message.equals(CallCodes.videoCall) || hs.message.equals(CallCodes.voiceCall))
+                {
+                    int chunkSize = Integer.parseInt(in.readLine());
+                    int port = Integer.parseInt(in.readLine());
+                    
+                    if (hs.message.equals(CallCodes.videoCall))
+                    {
+                        out.write(String.valueOf(CameraManager.chunkSize) + "\n");
+                    }
+                    if (hs.message.equals(CallCodes.voiceCall))
+                    {
+                        out.write(String.valueOf(AudioConfig.CHUNK_SIZE) + "\n");
+                    }
+                    DatagramSocket dSock = new DatagramSocket();
+                    out.write(String.valueOf(dSock.getPort()) + "\n");
+                    out.flush();
+                    
+                    hs.dSockRecieve = dSock;
+                    hs.dSockSend = new DatagramSocket();
+                    hs.packetSize = chunkSize;
+                    hs.port = port;
+                }
+                
                 for (CallHandler l : listeners)
                 {
                     l.callRecieved(hs);
@@ -99,7 +124,30 @@ public class MainSocket extends Thread {
             {
                 String responseName = in.readLine();
                 Handshake hs = new Handshake(responseName, purpose, sock);
-
+                
+                if (purpose.equals(CallCodes.videoCall) || purpose.equals(CallCodes.voiceCall))
+                {
+                    if (purpose.equals(CallCodes.videoCall))
+                    {
+                        out.write(String.valueOf(CameraManager.chunkSize) + "\n");
+                    }
+                    if (purpose.equals(CallCodes.voiceCall))
+                    {
+                        out.write(String.valueOf(AudioConfig.CHUNK_SIZE) + "\n");
+                    }
+                    DatagramSocket dSock = new DatagramSocket();
+                    out.write(String.valueOf(dSock.getPort()) + "\n");
+                    out.flush();
+                    
+                    int chunkSize = Integer.parseInt(in.readLine());
+                    int port = Integer.parseInt(in.readLine());
+                    
+                    hs.dSockRecieve = dSock;
+                    hs.dSockSend = new DatagramSocket();
+                    hs.packetSize = chunkSize;
+                    hs.port = port;
+                }
+                
                 for (CallHandler l : listeners)
                 {
                     l.callSent(hs);

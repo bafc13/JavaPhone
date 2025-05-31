@@ -7,6 +7,8 @@ package javaphone;
 import com.livesubtitles.audio.AudioCapture;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.Socket;
 import java.util.List;
 import java.util.logging.Level;
@@ -22,11 +24,16 @@ public class VoiceSender implements VoiceHandler {
     private final Socket source;
     private final DataOutputStream out;
     private final int chunk_size;
-
-    public VoiceSender(Socket s, int cs) throws IOException {
+    private final DatagramSocket dSock;
+    private DatagramPacket dPack;
+    private final int port;
+    
+    public VoiceSender(Socket s, int cs, DatagramSocket ds, int port) throws IOException {
+        this.port = port;
+        dSock = ds;
         chunk_size = cs;
         source = s;
-        out = new DataOutputStream(s.getOutputStream());
+        out = new DataOutputStream(s.getOutputStream());       
     }
 
     @Override
@@ -36,9 +43,9 @@ public class VoiceSender implements VoiceHandler {
 
     @Override
     public void HandleVoiceRecorded(byte[] audioChunk) {
+        dPack =  new DatagramPacket(audioChunk, chunk_size, source.getInetAddress(), port);
         try {
-            out.write(audioChunk);
-            out.flush();
+            dSock.send(dPack);
 
         } catch (Exception ex) {
             Logger.getLogger(VoiceReciever.class.getName()).log(Level.SEVERE, null, ex);

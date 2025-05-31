@@ -9,6 +9,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.Socket;
 import java.util.List;
 import java.util.logging.Level;
@@ -24,11 +26,17 @@ public class VideoSender implements VideoHandler {
 
     public static final int w = 1280;
     public static final int h = 720;
-    private int sentSize;
+    private int chunk_size;
     private final Socket source;
     private final DataOutputStream out;
+    private final DatagramSocket dSock;
+    private DatagramPacket dPack;
+    private final int port;
 
-    public VideoSender(Socket s, int cs) throws IOException {
+    public VideoSender(Socket s, int cs, DatagramSocket ds, int port) throws IOException {
+        chunk_size = cs;
+        dSock = ds;
+        this.port = port;
         source = s;
         out = new DataOutputStream(s.getOutputStream());
     }
@@ -65,16 +73,13 @@ public class VideoSender implements VideoHandler {
     public void HandleCameraFrameRecorded(BufferedImage frame) {
         try {
             if (frame != null) {
-                byte[] chunk = convertToSend(frame);
-                sentSize = chunk.length;
-                out.writeInt(sentSize);
-                out.write(chunk);
-                out.flush();
+                dPack = new DatagramPacket(convertToSend(frame), chunk_size, source.getInetAddress(), port);
+                dSock.send(dPack);
             }
             else
             {
-                out.writeInt(0);
-                out.flush();
+                dPack = new DatagramPacket(new byte[0], 0, source.getInetAddress(), port);
+                dSock.send(dPack);
             }
         } catch (Exception ex) {
             Logger.getLogger(VoiceReciever.class.getName()).log(Level.SEVERE, null, ex);

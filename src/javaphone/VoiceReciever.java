@@ -6,6 +6,8 @@ package javaphone;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.Socket;
 import java.util.List;
 import java.util.logging.Level;
@@ -21,12 +23,17 @@ public class VoiceReciever extends Thread {
     private final DataInputStream in;
     private List<VoiceHandler> listeners;
     private final int chunk_size;
+    private final DatagramSocket dSock;
+    private DatagramPacket dPack;
     
-    public VoiceReciever(Socket s, int cs) throws IOException
+    public VoiceReciever(Socket s, int cs, DatagramSocket ds) throws IOException
     {
+        dSock = ds;
         chunk_size = cs;
         source = s;
         in = new DataInputStream(s.getInputStream());
+        
+        dPack = new DatagramPacket(new byte[cs], cs);
     }
     
     public void addListener(VoiceHandler to_add)
@@ -37,16 +44,14 @@ public class VoiceReciever extends Thread {
     @Override
     public void run()
     {
-        int bytes_read;
-        byte[] chunk = new byte[chunk_size];
         while (true)
         {
             try {
-                bytes_read = in.read(chunk);
+                dSock.receive(dPack);
                 
                 for (VoiceHandler l : listeners)                  
                 {
-                    l.HandleVoiceRecieved(source.getInetAddress().toString(), source.getInetAddress().toString(), chunk);
+                    l.HandleVoiceRecieved(source.getInetAddress().toString(), source.getInetAddress().toString(), dPack.getData());
                 }
             } catch (IOException ex) {
                 Logger.getLogger(VoiceReciever.class.getName()).log(Level.SEVERE, null, ex);
