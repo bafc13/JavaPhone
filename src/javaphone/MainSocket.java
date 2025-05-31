@@ -19,7 +19,7 @@ import javaphone.EventInterfaces.CallHandler;
  */
 public class MainSocket extends Thread {
     public static final int PORT = 666;
-    
+
     private final ServerSocket main_sock;
     private List<CallHandler> listeners;
 
@@ -52,12 +52,14 @@ public class MainSocket extends Thread {
 
                 out.write(CallCodes.responseOK + "\n");
                 out.flush();
-                
+                out.write(mainJFrame.username + "\n");
+                out.flush();
+
                 if (hs.message.equals(CallCodes.videoCall) || hs.message.equals(CallCodes.voiceCall))
                 {
                     int chunkSize = Integer.parseInt(in.readLine());
                     int port = Integer.parseInt(in.readLine());
-                    
+
                     if (hs.message.equals(CallCodes.videoCall))
                     {
                         out.write(String.valueOf(CameraManager.chunkSize) + "\n");
@@ -69,18 +71,18 @@ public class MainSocket extends Thread {
                     DatagramSocket dSock = new DatagramSocket();
                     out.write(String.valueOf(dSock.getPort()) + "\n");
                     out.flush();
-                    
+
                     hs.dSockRecieve = dSock;
                     hs.dSockSend = new DatagramSocket();
                     hs.packetSize = chunkSize;
                     hs.port = port;
                 }
-                
+
                 for (CallHandler l : listeners)
                 {
                     l.callRecieved(hs);
                 }
-                
+
                 in = null;
                 out = null;
             }
@@ -124,7 +126,7 @@ public class MainSocket extends Thread {
             {
                 String responseName = in.readLine();
                 Handshake hs = new Handshake(responseName, purpose, sock);
-                
+
                 if (purpose.equals(CallCodes.videoCall) || purpose.equals(CallCodes.voiceCall))
                 {
                     if (purpose.equals(CallCodes.videoCall))
@@ -138,16 +140,16 @@ public class MainSocket extends Thread {
                     DatagramSocket dSock = new DatagramSocket();
                     out.write(String.valueOf(dSock.getPort()) + "\n");
                     out.flush();
-                    
+
                     int chunkSize = Integer.parseInt(in.readLine());
                     int port = Integer.parseInt(in.readLine());
-                    
+
                     hs.dSockRecieve = dSock;
                     hs.dSockSend = new DatagramSocket();
                     hs.packetSize = chunkSize;
                     hs.port = port;
                 }
-                
+
                 for (CallHandler l : listeners)
                 {
                     l.callSent(hs);

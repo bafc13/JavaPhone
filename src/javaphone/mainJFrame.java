@@ -25,11 +25,12 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
 
      public static DBManager db;
      public static MainSocket mainSock;
-     
+
      private BasicCallHandler basicCallHandler;
      private String ip;
      private String nick;
      private JLabel resultLabel;
+     public static String username = "bafc13";
 
     /**
      * Creates new form mainJFrame
@@ -46,6 +47,9 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
         mainSock = new MainSocket();
         basicCallHandler = new BasicCallHandler();
         mainSock.start();
+        mainSock.addListener(basicCallHandler);
+
+        basicCallHandler.addListener(this);
 
         inputChatField.setFont(new Font("Arial Unicode MS", Font.PLAIN, 18));
         inputChatField.addActionListener(e -> messageWritten());
@@ -342,33 +346,20 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
         ip = dialog.getField1Value();
         nick = dialog.getField2Value();
 
-
-
-//        if (ip.equals("CLOSE") && nick.equals("OPER"))
-//        {
-//            System.out.println("HUY BLYAT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-//        } else if(!ip.equals("") && !nick.equals("")){
-//            System.out.println("\nhuy " + ip + " chlen " + nick + "\n");
-//            try {
-//                CallFrame cf = new CallFrame(ip, nick);
-//            } catch (IOException ex) {
-//                Logger.getLogger(mainJFrame.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//            //
-//            //      NETCODE
-//            //
-//            //        mainSock.call(ip, nick, CallCodes.dm);
-//            //
-//            //      NETCODE
-//            //
-//        } else {
-//            try {
-//                System.out.println("pizdec");
-//                CallFrame cf = new CallFrame();
-//            } catch (IOException ex) {
-//                Logger.getLogger(mainJFrame.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
+        if (ip.equals("CLOSE") && nick.equals("OPER"))
+        {
+            System.out.println("HUY BLYAT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        } else if(!ip.equals("") && !nick.equals("")){
+            System.out.println("\nhuy " + ip + " chlen " + nick + "\n");
+            mainSock.call(ip, nick, CallCodes.dm);
+        } else {
+            try {
+                System.out.println("pizdec");
+                CallFrame cf = new CallFrame();
+            } catch (IOException ex) {
+                Logger.getLogger(mainJFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }//GEN-LAST:event_connectButtonActionPerformed
 
     private void serverButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverButton1ActionPerformed

@@ -100,26 +100,6 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         videoEnabled = false;
     }
 
-    public void setController(ApplicationController controller) {
-        this.controller = controller;
-    }
-
-    private void initCall() throws IOException {
-        this.setLayout(new BorderLayout());
-
-        addCameraPanel();
-        addChatUserPanel();
-
-        OpenCVInitializer.init();
-        subtitleDisplay = new SubtitleDisplay();
-        addMyCamera();
-
-        this.recognizer = new VoskSpeechRecognizer();
-        controller = new ApplicationController(recognizer, subtitleDisplay);
-        this.setController(controller);
-        controller.start();
-    }
-
     public CallFrame(DirectMessenger dm) throws IOException {
         this();
         this.dm = dm;
@@ -155,6 +135,26 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         videoEnabled = true;
 
         System.out.println("INITIALIZED WITH DM, VOICE AND VIDEO");
+    }
+
+    public void setController(ApplicationController controller) {
+        this.controller = controller;
+    }
+
+    private void initCall() throws IOException {
+        this.setLayout(new BorderLayout());
+
+        addCameraPanel();
+        addChatUserPanel();
+
+        OpenCVInitializer.init();
+        subtitleDisplay = new SubtitleDisplay();
+        addMyCamera();
+
+        this.recognizer = new VoskSpeechRecognizer();
+        controller = new ApplicationController(recognizer, subtitleDisplay);
+        this.setController(controller);
+        controller.start();
     }
 
     private void initChat() {
