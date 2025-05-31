@@ -7,6 +7,7 @@ package javaphone;
 import com.livesubtitles.audio.AudioConfig;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,6 +23,7 @@ public class BasicCallHandler implements CallHandler {
     
     public BasicCallHandler()
     {
+        listeners = new ArrayList<>();
     }
     
     public void addListener(CallResultHandler to_add)
@@ -78,12 +80,12 @@ public class BasicCallHandler implements CallHandler {
 
     @Override
     public void callSent(Handshake hs) {
-        int id = mainJFrame.db.getDmId(hs.sock.getInetAddress().toString());
+        //int id = mainJFrame.db.getDmId(hs.sock.getInetAddress().toString());
         
         if (hs.message.equals(CallCodes.dm))
         {
             try {
-                DirectMessenger dm = new DirectMessenger(id, false, hs.sock);
+                DirectMessenger dm = new DirectMessenger(0, false, hs.sock);
                 
                 for (CallResultHandler cr : listeners)
                 {

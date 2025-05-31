@@ -37,6 +37,8 @@ public class DirectMessenger extends Thread {
         source = s;
         in = new DataInputStream(s.getInputStream());
         out = new DataOutputStream(s.getOutputStream());
+        
+        listeners = new ArrayList<>();
     }
 
     public void addListener(DMHandler to_add)

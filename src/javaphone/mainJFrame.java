@@ -30,7 +30,7 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
      private String ip;
      private String nick;
      private JLabel resultLabel;
-     public static String username = "bafc13";
+     public static String username = "avKuzma";
 
     /**
      * Creates new form mainJFrame
