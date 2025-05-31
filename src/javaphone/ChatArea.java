@@ -50,8 +50,7 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
 
         dm.addListener(this);
         dm.addListener(mainJFrame.db);
-        dm.start();
-
+        
         if (isCall == false) {
             this.setSize(screenSize.width / 2, screenSize.height / 2);
 

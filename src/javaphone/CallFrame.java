@@ -79,6 +79,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         chatID = dm.getID();
         this.dm = dm;
         
+        dm.start();
         initCallFrame();
 
         System.out.println("INITIALIZED WITH DM");
@@ -170,8 +171,11 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         controller.start();
         
         // Is it supposed to be here?? (must happen when call button is pressed)
-        mainJFrame.mainSock.call(dm.getIP(), mainJFrame.username, CallCodes.voiceCall);
-        mainJFrame.mainSock.call(dm.getIP(), mainJFrame.username, CallCodes.videoCall);
+        String ip = dm.getIP().substring(1);
+        mainJFrame.mainSock.call(ip, mainJFrame.username, CallCodes.voiceCall);
+        System.out.println("call 1 done");
+        mainJFrame.mainSock.call(ip, mainJFrame.username, CallCodes.videoCall);
+        System.out.println("call 2 done");
     }
 
     private void initChat() {

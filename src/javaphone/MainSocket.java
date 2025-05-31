@@ -49,11 +49,13 @@ public class MainSocket extends Thread {
                 out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
 
                 Handshake hs = new Handshake(in.readLine(), in.readLine(), sock);
-
+                System.out.println("Handshake created");
                 out.write(CallCodes.responseOK + "\n");
                 out.flush();
                 out.write(mainJFrame.username + "\n");
                 out.flush();
+                
+                System.out.println("Wrote ok and username");
 
                 if (hs.message.equals(CallCodes.videoCall) || hs.message.equals(CallCodes.voiceCall))
                 {
@@ -122,9 +124,10 @@ public class MainSocket extends Thread {
             out.write(name + "\n");
             out.write(purpose + "\n");
             out.flush();
-
+            System.out.println("Base call done");
             if (in.readLine().equals(CallCodes.responseOK))
             {
+                System.out.println("Response ok");
                 String responseName = in.readLine();
                 Handshake hs = new Handshake(responseName, purpose, sock);
 
@@ -139,12 +142,13 @@ public class MainSocket extends Thread {
                         out.write(String.valueOf(AudioConfig.CHUNK_SIZE) + "\n");
                     }
                     DatagramSocket dSock = new DatagramSocket();
+                    System.out.println("Dsock created");
                     out.write(String.valueOf(dSock.getPort()) + "\n");
                     out.flush();
-
+                    System.out.println("wrote shit");
                     int chunkSize = Integer.parseInt(in.readLine());
                     int port = Integer.parseInt(in.readLine());
-
+                    System.out.println("read shit");
                     hs.dSockRecieve = dSock;
                     hs.dSockSend = new DatagramSocket();
                     hs.packetSize = chunkSize;
