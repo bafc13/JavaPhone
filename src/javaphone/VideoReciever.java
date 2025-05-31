@@ -29,7 +29,7 @@ public class VideoReciever extends Thread {
     private final Socket source;
     private final DataInputStream in;
     private List<VideoHandler> listeners;
-    private List<SubtitleHandler> subListeners;
+    
     private final int chunk_size;
     private final DatagramSocket dSock;
     private DatagramPacket dPack;
@@ -49,33 +49,11 @@ public class VideoReciever extends Thread {
     public void addListener(VideoHandler to_add) {
         listeners.add(to_add);
     }
-    public void addSubListener(SubtitleHandler to_add) {
-        subListeners.add(to_add);
-    }
     
-    public void receiveSubtitles()
-    {
-        String line;
-        while (true) {
-            try {
-                line = in.readUTF();
-                for (SubtitleHandler sh : subListeners)
-                {
-                    sh.SubtitleLineReceived(chatID, source.getInetAddress().toString(), line);
-                }
-            } catch (IOException ex) {
-                Logger.getLogger(VoiceReciever.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
     
     @Override
     public void run() {
-        Runnable task = () -> {
-		receiveSubtitles();
-	};
-	Thread subtitleThread = new Thread(task);
-        subtitleThread.run();
+        
         int bytesRead;
         byte[] chunk;
         BufferedImage frame;

@@ -28,7 +28,6 @@ public class DirectMessenger extends Thread {
     public static int type_file = 200;
     public int chatID;
     
-
     private List<DMHandler> listeners;
 
     public DirectMessenger(int id, Boolean is_host, Socket s) throws IOException

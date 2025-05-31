@@ -15,6 +15,7 @@ import java.net.Socket;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javaphone.EventInterfaces.SubtitleHandler;
 import javaphone.EventInterfaces.VideoHandler;
 import javax.imageio.ImageIO;
 
@@ -22,7 +23,7 @@ import javax.imageio.ImageIO;
  *
  * @author Andrey
  */
-public class VideoSender implements VideoHandler {
+public class VideoSender implements VideoHandler, SubtitleHandler {
 
     public static final int w = 1280;
     public static final int h = 720;
@@ -84,5 +85,15 @@ public class VideoSender implements VideoHandler {
         } catch (Exception ex) {
             Logger.getLogger(VoiceReciever.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    @Override
+    public void SubtitleLineRecorded(String line) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void SubtitleLineReceived(int chatID, String address, String line) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

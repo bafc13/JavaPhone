@@ -67,6 +67,11 @@ public class ApplicationController implements SpeechRecognitionListener {
             }
         }
     }
+    
+    public AudioCapture getMic()
+    {
+        return audioCapture;
+    }
 
     public void stop() {
         

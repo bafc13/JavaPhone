@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import com.example.OpenCVInitializer;
 import com.example.camera.CameraManager;
+import com.livesubtitles.audio.AudioConfig;
 import com.livesubtitles.core.ApplicationController;
 import com.livesubtitles.speech.VoskSpeechRecognizer;
 import com.livesubtitles.ui.SubtitleDisplay;
@@ -22,22 +23,25 @@ import java.util.logging.Logger;
 import javaphone.EventInterfaces.*;
 import static javaphone.VideoSender.h;
 import static javaphone.VideoSender.w;
+import javax.sound.sampled.LineUnavailableException;
 import javax.swing.Timer;
 
 /**
  *
  * @author bafc13
  */
-public final class CallFrame extends javax.swing.JFrame implements VideoHandler, VoiceHandler, CallResultHandler {
+public final class CallFrame extends javax.swing.JFrame implements VideoHandler, VoiceHandler, CallResultHandler, SubtitleHandler {
 
     private Dimension screenSize;
     private final int chatID;
     
+    private AudioPlay audioPlay;
+    
     private DirectMessenger dm;
     private VoiceSender voiceSender;
-    private VoiceReciever voiceReciever;
+    private VoiceReciever voiceReceiver;
     private VideoSender videoSender;
-    private VideoReciever videoReciever;
+    private VideoReciever videoReceiver;
 
     private Boolean voiceEnabled;
     private Boolean videoEnabled;
@@ -87,9 +91,9 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         initCallFrame();
         
         this.voiceSender = voiceSender;
-        this.voiceReciever = voiceReciever;
+        this.voiceReceiver = voiceReciever;
 
-        this.voiceReciever.addListener(this);
+        this.voiceReceiver.addListener(this);
 
         voiceEnabled = true;
 
@@ -101,12 +105,12 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         this.dm = dm;
         initCallFrame();
         this.voiceSender = voiceSender;
-        this.voiceReciever = voiceReciever;
+        this.voiceReceiver = voiceReciever;
         this.videoSender = videoSender;
-        this.videoReciever = videoReciever;
+        this.videoReceiver = videoReciever;
 
-        this.voiceReciever.addListener(this);
-        this.videoReciever.addListener(this);
+        this.voiceReceiver.addListener(this);
+        this.videoReceiver.addListener(this);
 
         voiceEnabled = true;
         videoEnabled = true;
@@ -165,6 +169,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         this.setController(controller);
         controller.start();
         
+        // Is it supposed to be here?? (must happen when call button is pressed)
         mainJFrame.mainSock.call(dm.getIP(), mainJFrame.username, CallCodes.voiceCall);
         mainJFrame.mainSock.call(dm.getIP(), mainJFrame.username, CallCodes.videoCall);
     }
@@ -569,7 +574,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         if (this.chatID != chatID)
             return;
         
-        // Do stuff
+        audioPlay.playAudioForParticipant(dm.getIP(), audioChunk);
     }
 
     @Override
@@ -587,7 +592,20 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         if (chatID != this.chatID)
             return;
         
-        // Do stuff
+        audioPlay = new AudioPlay(AudioConfig.getAudioFormat());
+        voiceSender = vs;
+        voiceReceiver = vr;
+        
+        voiceReceiver.addListener(this);
+        controller.getMic().addListener(voiceSender);
+        
+        try {
+            audioPlay.addParticipant("localhost");
+            audioPlay.addParticipant(dm.getIP());
+        } catch (LineUnavailableException ex) {
+            Logger.getLogger(CallFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }
 
     @Override
@@ -596,5 +614,15 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
             return;
         
         // Do stuff
+    }
+
+    @Override
+    public void SubtitleLineReceived(int chatID, String address, String line) {
+        System.out.println("Recieved: " + line);
+    }
+
+    @Override
+    public void SubtitleLineRecorded(String line) {
+        System.out.println("Recorded: " + line);
     }
 }

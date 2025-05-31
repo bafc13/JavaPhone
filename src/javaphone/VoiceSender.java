@@ -28,13 +28,13 @@ public class VoiceSender implements VoiceHandler, SubtitleHandler {
     private final DatagramSocket dSock;
     private DatagramPacket dPack;
     private final int port;
-    
+
     public VoiceSender(Socket s, int cs, DatagramSocket ds, int port) throws IOException {
         this.port = port;
         dSock = ds;
         chunk_size = cs;
         source = s;
-        out = new DataOutputStream(s.getOutputStream());       
+        out = new DataOutputStream(s.getOutputStream());
     }
 
     @Override
@@ -44,7 +44,7 @@ public class VoiceSender implements VoiceHandler, SubtitleHandler {
 
     @Override
     public void HandleVoiceRecorded(byte[] audioChunk) {
-        dPack =  new DatagramPacket(audioChunk, chunk_size, source.getInetAddress(), port);
+        dPack = new DatagramPacket(audioChunk, chunk_size, source.getInetAddress(), port);
         try {
             dSock.send(dPack);
         } catch (Exception ex) {
