@@ -40,7 +40,7 @@ public class BasicCallHandler implements CallHandler {
             try {
                 DirectMessenger dm = new DirectMessenger(id, true, hs.sock);
                 
-                for (CallResultHandler cr : listeners)
+                for (CallResultHandler cr : new ArrayList<>(listeners))
                 {
                     cr.DMCreated(id, dm);
                 }
@@ -54,7 +54,7 @@ public class BasicCallHandler implements CallHandler {
                 VoiceSender vs = new VoiceSender(hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockSend, hs.port);
                 VoiceReciever vr = new VoiceReciever(id, hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockRecieve);
                 
-                for (CallResultHandler cr : listeners)
+                for (CallResultHandler cr : new ArrayList<>(listeners))
                 {
                     cr.VoiceCreated(id, vs, vr);
                 }
@@ -68,7 +68,7 @@ public class BasicCallHandler implements CallHandler {
                 VideoSender vs = new VideoSender(hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockSend, hs.port);
                 VideoReciever vr = new VideoReciever(id, hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockRecieve);
                 
-                for (CallResultHandler cr : listeners)
+                for (CallResultHandler cr : new ArrayList<>(listeners))
                 {
                     cr.VideoCreated(id, vs, vr);
                 }
@@ -87,7 +87,7 @@ public class BasicCallHandler implements CallHandler {
             try {
                 DirectMessenger dm = new DirectMessenger(id, false, hs.sock);
                 
-                for (CallResultHandler cr : listeners)
+                for (CallResultHandler cr : new ArrayList<>(listeners))
                 {
                     cr.DMCreated(id, dm);
                 }
@@ -101,7 +101,7 @@ public class BasicCallHandler implements CallHandler {
                 VoiceSender vs = new VoiceSender(hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockSend, hs.port);
                 VoiceReciever vr = new VoiceReciever(id, hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockRecieve);
                 
-                for (CallResultHandler cr : listeners)
+                for (CallResultHandler cr : new ArrayList<>(listeners))
                 {
                     cr.VoiceCreated(id, vs, vr);
                 }
@@ -115,7 +115,7 @@ public class BasicCallHandler implements CallHandler {
                 VideoSender vs = new VideoSender(hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockSend, hs.port);
                 VideoReciever vr = new VideoReciever(id, hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockRecieve);
                 
-                for (CallResultHandler cr : listeners)
+                for (CallResultHandler cr : new ArrayList<>(listeners))
                 {
                     cr.VideoCreated(id, vs, vr);
                 }

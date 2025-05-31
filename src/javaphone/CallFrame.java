@@ -120,8 +120,6 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     }
 
     private void initCallFrame() throws IOException {
-        mainJFrame.basicCallHandler.addListener(this);
-        
         cameras = new Vector<>();
         
         this.setTitle("Call");
@@ -149,6 +147,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
 
         voiceEnabled = false;
         videoEnabled = false;
+        mainJFrame.basicCallHandler.addListener(this);
     }
 
     public void setController(ApplicationController controller) {
@@ -156,20 +155,6 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     }
 
     private void initCall() throws IOException {
-        this.setLayout(new BorderLayout()); 
-
-        addCameraPanel();
-        addChatUserPanel();
-
-        OpenCVInitializer.init();
-        subtitleDisplay = new SubtitleDisplay();
-        addMyCamera();
-
-        this.recognizer = new VoskSpeechRecognizer();
-        controller = new ApplicationController(recognizer, subtitleDisplay);
-        this.setController(controller);
-        controller.start();
-        
         // Is it supposed to be here?? (must happen when call button is pressed)
         String ip = dm.getIP().substring(1);
         mainJFrame.mainSock.call(ip, mainJFrame.username, CallCodes.voiceCall);
@@ -596,12 +581,31 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         if (chatID != this.chatID)
             return;
         
+        this.setLayout(new BorderLayout()); 
+
+        addCameraPanel();
+        addChatUserPanel();
+
+        OpenCVInitializer.init();
+        subtitleDisplay = new SubtitleDisplay();
+        addMyCamera();
+
+        try {
+            this.recognizer = new VoskSpeechRecognizer();
+        } catch (IOException ex) {
+            Logger.getLogger(CallFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        controller = new ApplicationController(recognizer, subtitleDisplay);
+        this.setController(controller);
+        controller.start();
+        
         audioPlay = new AudioPlay(AudioConfig.getAudioFormat());
         voiceSender = vs;
         voiceReceiver = vr;
         
         voiceReceiver.addListener(this);
         controller.getMic().addListener(voiceSender);
+        voiceReceiver.addSubListener(this);
         
         try {
             audioPlay.addParticipant("localhost");

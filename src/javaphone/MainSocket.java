@@ -71,7 +71,8 @@ public class MainSocket extends Thread {
                         out.write(String.valueOf(AudioConfig.CHUNK_SIZE) + "\n");
                     }
                     DatagramSocket dSock = new DatagramSocket();
-                    out.write(String.valueOf(dSock.getPort()) + "\n");
+                    System.out.println(String.valueOf(dSock.getLocalPort()));
+                    out.write(String.valueOf(dSock.getLocalPort()) + "\n");
                     out.flush();
 
                     hs.dSockRecieve = dSock;
@@ -142,13 +143,14 @@ public class MainSocket extends Thread {
                         out.write(String.valueOf(AudioConfig.CHUNK_SIZE) + "\n");
                     }
                     DatagramSocket dSock = new DatagramSocket();
-                    System.out.println("Dsock created");
-                    out.write(String.valueOf(dSock.getPort()) + "\n");
+                    System.out.println("Dsock created " + String.valueOf(dSock.getLocalPort()));
+                    out.write(String.valueOf(dSock.getLocalPort()) + "\n");
                     out.flush();
                     System.out.println("wrote shit");
                     int chunkSize = Integer.parseInt(in.readLine());
                     int port = Integer.parseInt(in.readLine());
-                    System.out.println("read shit");
+                    System.out.println("read shit ");
+                    System.out.println(port);
                     hs.dSockRecieve = dSock;
                     hs.dSockSend = new DatagramSocket();
                     hs.packetSize = chunkSize;

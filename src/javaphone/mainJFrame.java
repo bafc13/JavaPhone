@@ -477,12 +477,10 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
 
     @Override
     public void VoiceCreated(int chatID, VoiceSender vs, VoiceReciever vr) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
     public void VideoCreated(int chatID, VideoSender vs, VideoReciever vr) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }
 
