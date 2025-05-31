@@ -9,6 +9,6 @@ package javaphone.EventInterfaces;
  * @author Andrey
  */
 public interface SubtitleHandler {
-    public void SubtitleLineRecorded(int chatID, String address, String line);
+    public void SubtitleLineRecorded(String line);
     public void SubtitleLineReceived(int chatID, String address, String line);
 }

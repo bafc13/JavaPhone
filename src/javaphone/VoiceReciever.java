@@ -12,6 +12,7 @@ import java.net.Socket;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javaphone.EventInterfaces.SubtitleHandler;
 import javaphone.EventInterfaces.VoiceHandler;
 
 /**
@@ -21,7 +22,10 @@ import javaphone.EventInterfaces.VoiceHandler;
 public class VoiceReciever extends Thread {
     private final Socket source;
     private final DataInputStream in;
+    
     private List<VoiceHandler> listeners;
+    private List<SubtitleHandler> subListeners;
+    
     private final int chunk_size;
     private final DatagramSocket dSock;
     private DatagramPacket dPack;
@@ -42,6 +46,32 @@ public class VoiceReciever extends Thread {
     public void addListener(VoiceHandler to_add)
     {
         listeners.add(to_add);
+    }
+    
+    public void addSubListener(SubtitleHandler to_add) {
+        subListeners.add(to_add);
+    }
+    
+    public void receiveSubtitles()
+    {
+        Runnable task = () -> {
+		receiveSubtitles();
+	};
+	Thread subtitleThread = new Thread(task);
+        subtitleThread.run();
+        
+        String line;
+        while (true) {
+            try {
+                line = in.readUTF();
+                for (SubtitleHandler sh : subListeners)
+                {
+                    sh.SubtitleLineReceived(chatID, source.getInetAddress().toString(), line);
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(VoiceReciever.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
     
     @Override
