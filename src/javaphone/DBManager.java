@@ -36,7 +36,7 @@ public class DBManager implements CallHandler, DMHandler {
 
     String sql_find_last_message = "SELECT id FROM messages ORDER BY id DESC LIMIT 1";
     String sql_find_last_file = "SELECT id FROM media ORDER BY id DESC LIMIT 1";
-    String sql_get_user = "SELECT name FROM users WHER ip = ?";
+    String sql_get_user = "SELECT name FROM users WHERE ip = ?";
 
     public DBManager() {
         try {
@@ -170,6 +170,6 @@ public class DBManager implements CallHandler, DMHandler {
 
     @Override
     public void callSent(Handshake hs) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        callRecieved(hs);
     }
 }
