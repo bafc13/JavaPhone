@@ -218,7 +218,7 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
         try {
             doc.insertAfterEnd(
                     doc.getCharacterElement(doc.getLength()),
-                    username + ": " + inputField.getText() + "<br>"
+                    username + ": " + text + "<br>"
             );
         } catch (BadLocationException ex) {
             Logger.getLogger(ChatArea.class.getName()).log(Level.SEVERE, null, ex);

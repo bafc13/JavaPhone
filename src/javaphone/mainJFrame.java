@@ -48,6 +48,7 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
         basicCallHandler = new BasicCallHandler();
         mainSock.start();
         mainSock.addListener(basicCallHandler);
+        mainSock.addListener(db);
 
         basicCallHandler.addListener(this);
 

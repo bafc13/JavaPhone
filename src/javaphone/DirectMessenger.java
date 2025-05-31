@@ -50,6 +50,7 @@ public class DirectMessenger extends Thread {
     {
         try {
             String msg = in.readUTF();
+            System.out.println(msg.length());
             return msg;
         } catch (IOException ex) {
             Logger.getLogger(DirectMessenger.class.getName()).log(Level.SEVERE, null, ex);
