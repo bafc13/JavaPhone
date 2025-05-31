@@ -22,11 +22,10 @@ import javax.swing.SwingConstants;
  * @author bafc13
  */
 public class mainJFrame extends javax.swing.JFrame implements CallResultHandler {
-
      public static DBManager db;
      public static MainSocket mainSock;
-
      private BasicCallHandler basicCallHandler;
+     
      private String ip;
      private String nick;
      private JLabel resultLabel;
@@ -49,7 +48,9 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
         mainSock.start();
         mainSock.addListener(basicCallHandler);
         mainSock.addListener(db);
-
+        
+        db.setUsername("localhost", username);
+        
         basicCallHandler.addListener(this);
 
         inputChatField.setFont(new Font("Arial Unicode MS", Font.PLAIN, 18));
@@ -466,7 +467,7 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
     // End of variables declaration//GEN-END:variables
 
     @Override
-    public void DMCreated(DirectMessenger dm) {
+    public void DMCreated(int chatID, DirectMessenger dm) {
          try {
              CallFrame cf = new CallFrame(dm);
          } catch (IOException ex) {
@@ -475,12 +476,12 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
     }
 
     @Override
-    public void VoiceCreated(VoiceSender vs, VoiceReciever vr) {
+    public void VoiceCreated(int chatID, VoiceSender vs, VoiceReciever vr) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public void VideoCreated(VideoSender vs, VideoReciever vr) {
+    public void VideoCreated(int chatID, VideoSender vs, VideoReciever vr) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

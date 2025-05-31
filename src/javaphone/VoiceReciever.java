@@ -26,8 +26,11 @@ public class VoiceReciever extends Thread {
     private final DatagramSocket dSock;
     private DatagramPacket dPack;
     
-    public VoiceReciever(Socket s, int cs, DatagramSocket ds) throws IOException
+    private final int chatID;
+    
+    public VoiceReciever(int id, Socket s, int cs, DatagramSocket ds) throws IOException
     {
+        chatID = id;
         dSock = ds;
         chunk_size = cs;
         source = s;
@@ -51,7 +54,7 @@ public class VoiceReciever extends Thread {
                 
                 for (VoiceHandler l : listeners)                  
                 {
-                    l.HandleVoiceRecieved(source.getInetAddress().toString(), source.getInetAddress().toString(), dPack.getData());
+                    l.HandleVoiceRecieved(chatID, source.getInetAddress().toString(), dPack.getData());
                 }
             } catch (IOException ex) {
                 Logger.getLogger(VoiceReciever.class.getName()).log(Level.SEVERE, null, ex);

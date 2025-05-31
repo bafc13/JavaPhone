@@ -9,6 +9,6 @@ package javaphone.EventInterfaces;
  * @author Andrey
  */
 public interface VoiceHandler {
-    void HandleVoiceRecieved(String dm_address, String address, byte[] audioChunk);
+    void HandleVoiceRecieved(int chatID, String address, byte[] audioChunk);
     void HandleVoiceRecorded(byte[] audioChunk);
 }

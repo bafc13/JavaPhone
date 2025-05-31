@@ -28,10 +28,11 @@ import javax.swing.Timer;
  *
  * @author bafc13
  */
-public final class CallFrame extends javax.swing.JFrame implements VideoHandler, VoiceHandler {
+public final class CallFrame extends javax.swing.JFrame implements VideoHandler, VoiceHandler, CallResultHandler {
 
     private Dimension screenSize;
-
+    private final int chatID;
+    
     private DirectMessenger dm;
     private VoiceSender voiceSender;
     private VoiceReciever voiceReciever;
@@ -71,15 +72,20 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
      */
 
     public CallFrame(DirectMessenger dm) throws IOException {
+        chatID = dm.getID();
         this.dm = dm;
+        
         initCallFrame();
 
         System.out.println("INITIALIZED WITH DM");
     }
 
     public CallFrame(DirectMessenger dm, VoiceSender voiceSender, VoiceReciever voiceReciever) throws IOException {
+        chatID = dm.getID();
         this.dm = dm;
+        
         initCallFrame();
+        
         this.voiceSender = voiceSender;
         this.voiceReciever = voiceReciever;
 
@@ -91,6 +97,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     }
 
     public CallFrame(DirectMessenger dm, VoiceSender voiceSender, VoiceReciever voiceReciever, VideoSender videoSender, VideoReciever videoReciever) throws IOException {
+        chatID = dm.getID();
         this.dm = dm;
         initCallFrame();
         this.voiceSender = voiceSender;
@@ -109,7 +116,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
 
     private void initCallFrame() throws IOException {
         cameras = new Vector<>();
-
+        
         this.setTitle("Call");
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setResizable(true);
@@ -514,7 +521,10 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     // End of variables declaration//GEN-END:variables
 
     @Override
-    public void HandleCameraFrameRecieved(String dm_address, String address, BufferedImage frame) {
+    public void HandleCameraFrameRecieved(int chatID, String address, BufferedImage frame) {
+        if (this.chatID != chatID)
+            return;
+        
         if (frame != null) {
             ImageIcon icon = new ImageIcon(frame);
             cameras.get(1).setIcon(icon);
@@ -547,12 +557,36 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     }
 
     @Override
-    public void HandleVoiceRecieved(String dm_address, String address, byte[] audioChunk) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public void HandleVoiceRecieved(int chatID, String address, byte[] audioChunk) {
+        if (this.chatID != chatID)
+            return;
+        
+        // Do stuff
     }
 
     @Override
     public void HandleVoiceRecorded(byte[] audioChunk) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void DMCreated(int chatID, DirectMessenger dm) {
+        
+    }
+
+    @Override
+    public void VoiceCreated(int chatID, VoiceSender vs, VoiceReciever vr) {
+        if (chatID != this.chatID)
+            return;
+        
+        // Do stuff
+    }
+
+    @Override
+    public void VideoCreated(int chatID, VideoSender vs, VideoReciever vr) {
+        if (chatID != this.chatID)
+            return;
+        
+        // Do stuff
     }
 }

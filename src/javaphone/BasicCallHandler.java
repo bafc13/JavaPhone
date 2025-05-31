@@ -42,7 +42,7 @@ public class BasicCallHandler implements CallHandler {
                 
                 for (CallResultHandler cr : listeners)
                 {
-                    cr.DMCreated(dm);
+                    cr.DMCreated(id, dm);
                 }
             } catch (IOException ex) {
                 Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -52,11 +52,11 @@ public class BasicCallHandler implements CallHandler {
         {
             try {
                 VoiceSender vs = new VoiceSender(hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockSend, hs.port);
-                VoiceReciever vr = new VoiceReciever(hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockRecieve);
+                VoiceReciever vr = new VoiceReciever(id, hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockRecieve);
                 
                 for (CallResultHandler cr : listeners)
                 {
-                    cr.VoiceCreated(vs, vr);
+                    cr.VoiceCreated(id, vs, vr);
                 }
             } catch (IOException ex) {
                 Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -66,11 +66,11 @@ public class BasicCallHandler implements CallHandler {
         {
             try {
                 VideoSender vs = new VideoSender(hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockSend, hs.port);
-                VideoReciever vr = new VideoReciever(hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockRecieve);
+                VideoReciever vr = new VideoReciever(id, hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockRecieve);
                 
                 for (CallResultHandler cr : listeners)
                 {
-                    cr.VideoCreated(vs, vr);
+                    cr.VideoCreated(id, vs, vr);
                 }
             } catch (IOException ex) {
                 Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -80,16 +80,16 @@ public class BasicCallHandler implements CallHandler {
 
     @Override
     public void callSent(Handshake hs) {
-        //int id = mainJFrame.db.getDmId(hs.sock.getInetAddress().toString());
+        int id = mainJFrame.db.getDmId(hs.sock.getInetAddress().toString());
         
         if (hs.message.equals(CallCodes.dm))
         {
             try {
-                DirectMessenger dm = new DirectMessenger(0, false, hs.sock);
+                DirectMessenger dm = new DirectMessenger(id, false, hs.sock);
                 
                 for (CallResultHandler cr : listeners)
                 {
-                    cr.DMCreated(dm);
+                    cr.DMCreated(id, dm);
                 }
             } catch (IOException ex) {
                 Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -99,11 +99,25 @@ public class BasicCallHandler implements CallHandler {
         {
             try {
                 VoiceSender vs = new VoiceSender(hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockSend, hs.port);
-                VoiceReciever vr = new VoiceReciever(hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockRecieve);
+                VoiceReciever vr = new VoiceReciever(id, hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockRecieve);
                 
                 for (CallResultHandler cr : listeners)
                 {
-                    cr.VoiceCreated(vs, vr);
+                    cr.VoiceCreated(id, vs, vr);
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        else if (hs.message.equals(CallCodes.videoCall))
+        {
+            try {
+                VideoSender vs = new VideoSender(hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockSend, hs.port);
+                VideoReciever vr = new VideoReciever(id, hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockRecieve);
+                
+                for (CallResultHandler cr : listeners)
+                {
+                    cr.VideoCreated(id, vs, vr);
                 }
             } catch (IOException ex) {
                 Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);

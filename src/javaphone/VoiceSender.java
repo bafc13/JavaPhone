@@ -37,7 +37,7 @@ public class VoiceSender implements VoiceHandler {
     }
 
     @Override
-    public void HandleVoiceRecieved(String dm_address, String address, byte[] audioChunk) {
+    public void HandleVoiceRecieved(int chatID, String address, byte[] audioChunk) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 

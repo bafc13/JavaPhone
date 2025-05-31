@@ -58,12 +58,7 @@ public class DBManager implements CallHandler, DMHandler {
             stmt_cue.setString(1, ip);
             ResultSet rs_cue = stmt_cue.executeQuery();
 
-            if (!rs_cue.isBeforeFirst()) {
-                PreparedStatement stmt_au = c.prepareStatement(sql_add_user);
-                stmt_au.setString(1, ip);
-                stmt_au.setString(2, hs.name);
-                stmt_au.executeUpdate();
-
+            if (setUsername(ip, hs.name)) {
                 PreparedStatement stmt_ad = c.prepareStatement(sql_add_dm);
                 stmt_ad.executeUpdate();
 
@@ -80,25 +75,18 @@ public class DBManager implements CallHandler, DMHandler {
                 PreparedStatement stmt_ayd = c.prepareStatement(sql_add_yourself_to_dm);
                 stmt_ayd.setInt(1, chat_id);
                 stmt_ayd.executeUpdate();
-            } else {
-                PreparedStatement stmt_uun = c.prepareStatement(sql_update_username);
-                stmt_uun.setString(1, ip);
-                stmt_uun.executeUpdate();
-            }
-
+            } 
         } catch (SQLException ex) {
             Logger.getLogger(DBManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     @Override
-    public void HandleDMText(String dm_address, String address, String text) {
+    public void HandleDMText(int chatID, String address, String text) {
         try {
-            int dm_id = getDmId(dm_address);
-
             PreparedStatement stmt_adm = c.prepareStatement(sql_add_dm_message);
 
-            stmt_adm.setInt(1, dm_id);
+            stmt_adm.setInt(1, chatID);
             stmt_adm.setString(2, address);
             stmt_adm.setString(3, text);
             stmt_adm.setLong(4, System.currentTimeMillis() / 1000L);
@@ -110,13 +98,11 @@ public class DBManager implements CallHandler, DMHandler {
     }
 
     @Override
-    public void HandleDMFile(String dm_address, String address, String fname) {
+    public void HandleDMFile(int chatID, String address, String fname) {
         try {
-            int dm_id = getDmId(dm_address);
-
             PreparedStatement stmt_adm = c.prepareStatement(sql_add_dm_message);
 
-            stmt_adm.setInt(1, dm_id);
+            stmt_adm.setInt(1, chatID);
             stmt_adm.setString(2, address);
             stmt_adm.setString(3, fname);
             stmt_adm.setLong(4, System.currentTimeMillis() / 1000L);
@@ -152,6 +138,32 @@ public class DBManager implements CallHandler, DMHandler {
 
             return -1;
         }
+    }
+    
+    public Boolean setUsername(String ip, String newUsername)
+    {
+        try {
+            PreparedStatement stmt_cue = c.prepareStatement(sql_check_user_exists);
+            stmt_cue.setString(1, ip);
+            ResultSet rs_cue = stmt_cue.executeQuery();
+
+            if (!rs_cue.isBeforeFirst()) {
+                PreparedStatement stmt_au = c.prepareStatement(sql_add_user);
+                stmt_au.setString(1, ip);
+                stmt_au.setString(2, newUsername);
+                stmt_au.executeUpdate();
+                return true;
+            } else {
+                PreparedStatement stmt_uun = c.prepareStatement(sql_update_username);
+                stmt_uun.setString(1, ip);
+                stmt_uun.executeUpdate();
+                return false;
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(DBManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
     }
     
     public String getUsername(String ip) {

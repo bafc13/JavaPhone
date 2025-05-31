@@ -31,8 +31,11 @@ public class VideoReciever extends Thread {
     private final int chunk_size;
     private final DatagramSocket dSock;
     private DatagramPacket dPack;
+    
+    private final int chatID;
 
-    public VideoReciever(Socket s, int cs, DatagramSocket ds) throws IOException {
+    public VideoReciever(int id, Socket s, int cs, DatagramSocket ds) throws IOException {
+        chatID = id;
         dSock = ds;
         chunk_size = cs;
         source = s;
@@ -58,11 +61,11 @@ public class VideoReciever extends Thread {
                     frame = convertRecieved(chunk);
 
                     for (VideoHandler l : listeners) {
-                        l.HandleCameraFrameRecieved(source.getInetAddress().toString(), source.getInetAddress().toString(), frame);
+                        l.HandleCameraFrameRecieved(chatID, source.getInetAddress().toString(), frame);
                     }
                 } else {
                     for (VideoHandler l : listeners) {
-                        l.HandleCameraFrameRecieved(source.getInetAddress().toString(), source.getInetAddress().toString(), null);
+                        l.HandleCameraFrameRecieved(chatID, source.getInetAddress().toString(), null);
                     }
                 }
             } catch (IOException ex) {

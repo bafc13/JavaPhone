@@ -15,7 +15,7 @@ import javaphone.VoiceSender;
  * @author Andrey
  */
 public interface CallResultHandler {
-    void DMCreated(DirectMessenger dm);
-    void VoiceCreated(VoiceSender vs, VoiceReciever vr);
-    void VideoCreated(VideoSender vs, VideoReciever vr);
+    void DMCreated(int chatID, DirectMessenger dm);
+    void VoiceCreated(int chatID, VoiceSender vs, VoiceReciever vr);
+    void VideoCreated(int chatID, VideoSender vs, VideoReciever vr);
 }

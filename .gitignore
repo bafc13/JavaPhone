@@ -1,3 +1,6 @@
 dist/
 lib/
 build/
+JP.sqlite
+recognized_text.txt
+account.txt

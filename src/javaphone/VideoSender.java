@@ -65,7 +65,7 @@ public class VideoSender implements VideoHandler {
     }
 
     @Override
-    public void HandleCameraFrameRecieved(String dm_address, String address, BufferedImage frame) {
+    public void HandleCameraFrameRecieved(int chatID, String address, BufferedImage frame) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 

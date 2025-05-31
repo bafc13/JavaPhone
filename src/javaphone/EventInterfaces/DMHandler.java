@@ -9,6 +9,6 @@ package javaphone.EventInterfaces;
  * @author Andrey
  */
 public interface DMHandler {
-    void HandleDMText(String dm_address, String address, String text);
-    void HandleDMFile(String dm_address, String address, String fname);
+    void HandleDMText(int chatID, String senderIP, String text);
+    void HandleDMFile(int chatID, String senderIP, String fname);
 }

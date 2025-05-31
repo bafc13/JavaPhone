@@ -26,13 +26,14 @@ public class DirectMessenger extends Thread {
     private final DataOutputStream out;
     public static int type_text = 100;
     public static int type_file = 200;
-    public int dm_id;
+    public int chatID;
+    
 
     private List<DMHandler> listeners;
 
     public DirectMessenger(int id, Boolean is_host, Socket s) throws IOException
     {
-        dm_id = id; // TODO: recieve id from database
+        chatID = id; // TODO: recieve id from database
         this.is_host = is_host;
         source = s;
         in = new DataInputStream(s.getInputStream());
@@ -103,7 +104,7 @@ public class DirectMessenger extends Thread {
                     msg = readTextMessage();
                     for (DMHandler l : listeners)
                     {
-                        l.HandleDMText(source.getInetAddress().toString(), source.getInetAddress().toString(), msg);
+                        l.HandleDMText(chatID, source.getInetAddress().toString(), msg);
                     }
                 }
                 else if (msg_type == type_file)
@@ -111,7 +112,7 @@ public class DirectMessenger extends Thread {
                     msg = readFile();
                     for (DMHandler l : listeners)
                     {
-                        l.HandleDMFile(source.getInetAddress().toString(), source.getInetAddress().toString(), msg);
+                        l.HandleDMFile(chatID, source.getInetAddress().toString(), msg);
                     }
                 }
             }
@@ -121,7 +122,12 @@ public class DirectMessenger extends Thread {
                 Logger.getLogger(DirectMessenger.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    
+    public int getID()
+    {
+        return chatID;
+    }
+    
     public void sendText(String msg) throws IOException
     {
         out.writeInt(type_text);
@@ -131,7 +137,7 @@ public class DirectMessenger extends Thread {
 
         for (DMHandler l : listeners)
         {
-            l.HandleDMText(source.getInetAddress().toString(), "localhost", msg);
+            l.HandleDMText(chatID, "localhost", msg);
         }
     }
 

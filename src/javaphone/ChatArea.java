@@ -49,6 +49,7 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
         this.dm = dm;
 
         dm.addListener(this);
+        dm.addListener(mainJFrame.db);
         dm.start();
 
         if (isCall == false) {
@@ -211,7 +212,10 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
     }
 
     @Override
-    public void HandleDMText(String dm_address, String address, String text) {
+    public void HandleDMText(int chatID, String address, String text) {
+        if (dm.chatID != chatID)
+            return;
+        
         String username = mainJFrame.db.getUsername(address);
 
         HTMLDocument doc = (HTMLDocument) editorPane.getDocument();
@@ -230,8 +234,11 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
     }
 
     @Override
-    public void HandleDMFile(String dm_address, String address, String fname) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public void HandleDMFile(int chatID, String address, String fname) {
+        if (dm.chatID != chatID)
+            return;
+        
+        // Do stuff
     }
 
     private void sendMessageText() throws BadLocationException, IOException {

@@ -11,6 +11,6 @@ import java.awt.image.BufferedImage;
  * @author Andrey
  */
 public interface VideoHandler {
-    void HandleCameraFrameRecieved(String dm_address, String address, BufferedImage frame);
+    void HandleCameraFrameRecieved(int chatID, String address, BufferedImage frame);
     void HandleCameraFrameRecorded(BufferedImage frame);
 }
