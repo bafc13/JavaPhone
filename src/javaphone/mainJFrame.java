@@ -1,6 +1,5 @@
 package javaphone;
 
-//import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -25,7 +24,7 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
      public static DBManager db;
      public static MainSocket mainSock;
      public static BasicCallHandler basicCallHandler;
-     
+
      private String ip;
      private String nick;
      private JLabel resultLabel;
@@ -48,9 +47,9 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
         mainSock.start();
         mainSock.addListener(basicCallHandler);
         mainSock.addListener(db);
-        
+
         db.setUsername("localhost", username);
-        
+
         basicCallHandler.addListener(this);
 
         inputChatField.setFont(new Font("Arial Unicode MS", Font.PLAIN, 18));
@@ -285,6 +284,11 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
         settingsButton.setFocusable(false);
         settingsButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         settingsButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        settingsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                settingsButtonActionPerformed(evt);
+            }
+        });
         jToolBar1.add(settingsButton);
 
         exitButton.setText("exit");
@@ -396,6 +400,14 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
 
 
     }//GEN-LAST:event_serverButton1MouseReleased
+
+    private void settingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_settingsButtonActionPerformed
+         try {
+             SettingsFrame sf = new SettingsFrame();
+         } catch (IOException ex) {
+             Logger.getLogger(mainJFrame.class.getName()).log(Level.SEVERE, null, ex);
+         }
+    }//GEN-LAST:event_settingsButtonActionPerformed
     /**
      * @param args the command line arguments
      */
@@ -485,35 +497,3 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }
-
-
-//JButton button = new JButton("Нажми меня");
-
-        // Добавляем обработчик нажатия
-//        button.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                // Устанавливаем фокус на кнопку после нажатия
-//                button.requestFocusInWindow();
-//            }
-//        });
-
-//сервера можно реализовать так:
-//первый кто сервера типо есть в закрепе, то есть можно по нажатии открыть сервак и порт на этом конкретно адресе,
-//но они не захосчены
-//
-//первый кто тыкает зайти - является хостом сервака и к нему уже все подключаются
-//
-//остальным при наведении на сервак - показывается что сервак активен, на нем кто то уже сидит, показывается всё на уровне просто адрессов
-//и они уже могут подключаться напрямую туда, на сервак, на раздачу аудио, епта
-//
-//это звучит как ауе, так у нас и получится реализовать серваки, как в дискорде, с названиями и прочей шелухой
-//
-//они просто изначально будут забиты с названиями и всё
-//
-//справа в панели будут показаны участники
-//
-//
-//также надо будет создавать в mainJFrame объектъ сервера, ибо надо иметь информацию о пользователях подключенных к серверу
-//
-//наведение на друга, кнопка невероятная подключения к чату, отдельное окошко уже в звонке с интерфейсами, с чатиком...

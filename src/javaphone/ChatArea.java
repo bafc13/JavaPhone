@@ -46,11 +46,6 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
 
     public ChatArea(Dimension screenSize, boolean isCall, DirectMessenger dm) {
         super();
-        this.dm = dm;
-
-        dm.addListener(this);
-        dm.addListener(mainJFrame.db);
-        dm.start();
 
         if (isCall == false) {
             this.setSize(screenSize.width / 2, screenSize.height / 2);
@@ -177,6 +172,11 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
             userPane.setBorder(new RoundedBorder(5));
         }
 
+        this.dm = dm;
+
+        dm.addListener(this);
+        dm.addListener(mainJFrame.db);
+        dm.start();
         this.add(chatPanel);
         this.add(userPane);
     }
@@ -215,7 +215,7 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
     public void HandleDMText(int chatID, String address, String text) {
         if (dm.chatID != chatID)
             return;
-        
+
         String username = mainJFrame.db.getUsername(address);
 
         HTMLDocument doc = (HTMLDocument) editorPane.getDocument();
@@ -237,7 +237,7 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
     public void HandleDMFile(int chatID, String address, String fname) {
         if (dm.chatID != chatID)
             return;
-        
+
         // Do stuff
     }
 

@@ -16,6 +16,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,7 +33,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
 
     private Dimension screenSize;
     private final int chatID;
-    
+
     private DirectMessenger dm;
     private VoiceSender voiceSender;
     private VoiceReciever voiceReciever;
@@ -49,21 +50,24 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     private SubtitleDisplay subtitleDisplay;
     private VoskSpeechRecognizer recognizer;
 
-    private Vector<JLabel> cameras;
-
     private JLabel cameraScreen;
     private Timer timer;
     private CameraManager cameraManager;
     private JPanel horizontalPanel;
     private JPanel secondHorizontalPanel;
     private JPanel chatUserPanel;
-    ChatArea chatArea;
+    private ChatArea chatArea;
 
     private boolean isCall = false;
     private int horizontalPanelSize;
     private int chatPanelSize;
 
     private int camerasCount = 0;
+    private int subtitleCount = 0;
+
+    private LinkedHashMap <Integer, JLabel> cameraMap = new LinkedHashMap<>();
+    private LinkedHashMap <Integer, SubtitleDisplay> subtitleMap = new LinkedHashMap<>();
+
 
     /**
      * Creates new form CallFrame
@@ -74,7 +78,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     public CallFrame(DirectMessenger dm) throws IOException {
         chatID = dm.getID();
         this.dm = dm;
-        
+
         initCallFrame();
 
         System.out.println("INITIALIZED WITH DM");
@@ -83,9 +87,9 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     public CallFrame(DirectMessenger dm, VoiceSender voiceSender, VoiceReciever voiceReciever) throws IOException {
         chatID = dm.getID();
         this.dm = dm;
-        
+
         initCallFrame();
-        
+
         this.voiceSender = voiceSender;
         this.voiceReciever = voiceReciever;
 
@@ -116,9 +120,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
 
     private void initCallFrame() throws IOException {
         mainJFrame.basicCallHandler.addListener(this);
-        
-        cameras = new Vector<>();
-        
+
         this.setTitle("Call");
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setResizable(true);
@@ -151,20 +153,22 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     }
 
     private void initCall() throws IOException {
-        this.setLayout(new BorderLayout()); 
+        this.setLayout(new BorderLayout());
 
         addCameraPanel();
         addChatUserPanel();
 
         OpenCVInitializer.init();
         subtitleDisplay = new SubtitleDisplay();
+        subtitleMap.put(subtitleCount, subtitleDisplay);
+        subtitleCount++;
         addMyCamera();
 
         this.recognizer = new VoskSpeechRecognizer();
         controller = new ApplicationController(recognizer, subtitleDisplay);
         this.setController(controller);
         controller.start();
-        
+
         mainJFrame.mainSock.call(dm.getIP(), mainJFrame.username, CallCodes.voiceCall);
         mainJFrame.mainSock.call(dm.getIP(), mainJFrame.username, CallCodes.videoCall);
     }
@@ -276,23 +280,28 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         myCameraPanel.add(cameraScreen);
 
         subtitleDisplay.getView().setMaximumSize(new Dimension(400, 50));
-
         southPanel.add(subtitleDisplay.getView());
+
+        subtitleMap.put(subtitleCount, subtitleDisplay);
+        subtitleCount++;
+
+
         addControlPanel(southPanel);
 
         myCameraPanel.add(southPanel, BorderLayout.SOUTH);
         horizontalPanel.add(myCameraPanel);
 
+        cameraMap.put(camerasCount, cameraScreen);
+        camerasCount++;
+
         horizontalPanel.repaint();
         horizontalPanel.revalidate();
-        camerasCount++;
-        cameras.add(cameraScreen);
     }
 
     private void addCamera() {
         JPanel CameraPanel = new JPanel();
         JLabel CameraScreen;
-        if (cameras.size() < 2) {
+        if (cameraMap.size() < 2) {
 
             CameraPanel.setBorder(BorderFactory.createEmptyBorder(3, 0, 3, 0));
             CameraPanel.setLayout(new BoxLayout(CameraPanel, BoxLayout.Y_AXIS));
@@ -310,19 +319,24 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
 
             subtitleDisplay = new SubtitleDisplay();
             subtitleDisplay.getView().setMaximumSize(new Dimension(400, 50));
-
             southPanel.add(subtitleDisplay.getView());
+
+            subtitleMap.put(subtitleCount, subtitleDisplay);
+            subtitleCount++;
+
+
             addControlPanel(southPanel);
 
             CameraPanel.add(southPanel, BorderLayout.SOUTH);
-            camerasCount++;
-            cameras.add(CameraScreen);
-
             horizontalPanel.add(CameraPanel);
+
+            cameraMap.put(camerasCount, CameraScreen);
+            camerasCount++;
+
 
             horizontalPanel.repaint();
             horizontalPanel.revalidate();
-        } else if (cameras.size() < 4) {
+        } else if (cameraMap.size() < 4) {
             CameraPanel.setBorder(BorderFactory.createEmptyBorder(3, 0, 3, 0));
             CameraPanel.setLayout(new BoxLayout(CameraPanel, BoxLayout.Y_AXIS));
 
@@ -337,29 +351,44 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
 
             subtitleDisplay = new SubtitleDisplay();
             subtitleDisplay.getView().setMaximumSize(new Dimension(400, 50));
+            subtitleMap.put(subtitleCount, subtitleDisplay);
+            subtitleCount++;
+
 
             southPanel.add(subtitleDisplay.getView());
             addControlPanel(southPanel);
 
             CameraPanel.add(southPanel, BorderLayout.SOUTH);
-            camerasCount++;
-            cameras.add(CameraScreen);
 
-            for (JLabel camera : cameras) {
-                int width = screenSize.width / cameras.size() - 100;
+            cameraMap.put(camerasCount, CameraScreen);
+            camerasCount++;
+
+//            for (JLabel camera : cameraMap) {
+//                int width = screenSize.width / cameras.size() - 100;
+//                int height = (int) (width * 0.66);
+//                camera.setMinimumSize(new Dimension(width, height));
+//                camera.setPreferredSize(new Dimension(width, height));
+//                camera.setMaximumSize(new Dimension(width, height));
+//                horizontalPanel.repaint();
+//                horizontalPanel.revalidate();
+//            }
+
+            cameraMap.forEach((Integer key, JLabel camera) -> {
+                int width = screenSize.width / cameraMap.size() - 100;
                 int height = (int) (width * 0.66);
                 camera.setMinimumSize(new Dimension(width, height));
                 camera.setPreferredSize(new Dimension(width, height));
                 camera.setMaximumSize(new Dimension(width, height));
                 horizontalPanel.repaint();
                 horizontalPanel.revalidate();
-            }
+            });
+
             horizontalPanel.add(CameraPanel);
 
             horizontalPanel.repaint();
             horizontalPanel.revalidate();
         } else {
-            if (cameras.size() == 4) {
+            if (cameraMap.size() == 4) {
                 addSecondCameraPanel();
             }
 
@@ -377,13 +406,18 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
 
             subtitleDisplay = new SubtitleDisplay();
             subtitleDisplay.getView().setMaximumSize(new Dimension(400, 50));
-
             southPanel.add(subtitleDisplay.getView());
+
+            subtitleMap.put(subtitleCount, subtitleDisplay);
+            subtitleCount++;
+
+
             addControlPanel(southPanel);
 
             CameraPanel.add(southPanel, BorderLayout.SOUTH);
+
+            cameraMap.put(camerasCount, CameraScreen);
             camerasCount++;
-            cameras.add(CameraScreen);
 
             int width = screenSize.width / 4 - 100;
             int height = (int) (width * 0.66);
@@ -524,11 +558,11 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JFrame jFrame1;
     // End of variables declaration//GEN-END:variables
-    
+
     private BufferedImage resizeToCameraFrame(BufferedImage frame, int cameraID)
     {
-        int w = cameras.get(cameraID).getWidth();
-        int h = cameras.get(cameraID).getHeight();
+        int w = cameraMap.get(cameraID).getWidth();
+        int h = cameraMap.get(cameraID).getHeight();
         BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
         int x, y;
         int ww = frame.getWidth();
@@ -544,16 +578,16 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
                 img.setRGB(x, y, col);
             }
         }
-        
+
         return img;
     }
-    
+
     @Override
     public void HandleCameraFrameRecieved(int chatID, String address, BufferedImage frame) {
         if (this.chatID != chatID)
             return;
-        
-        int cameraID = -1; // TODO: find camera that handles sander
+
+        int cameraID = 0; // TODO: find camera that handles sander
         BufferedImage img = resizeToCameraFrame(frame, cameraID);
         updateFrame(img, cameraID);
     }
@@ -568,7 +602,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     public void HandleVoiceRecieved(int chatID, String address, byte[] audioChunk) {
         if (this.chatID != chatID)
             return;
-        
+
         // Do stuff
     }
 
@@ -579,14 +613,14 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
 
     @Override
     public void DMCreated(int chatID, DirectMessenger dm) {
-        
+
     }
 
     @Override
     public void VoiceCreated(int chatID, VoiceSender vs, VoiceReciever vr) {
         if (chatID != this.chatID)
             return;
-        
+
         // Do stuff
     }
 
@@ -594,7 +628,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     public void VideoCreated(int chatID, VideoSender vs, VideoReciever vr) {
         if (chatID != this.chatID)
             return;
-        
+
         // Do stuff
     }
 }
