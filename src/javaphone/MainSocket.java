@@ -108,6 +108,7 @@ public class MainSocket extends Thread {
         Socket sock;
         try {
             sock = new Socket(addr, PORT);
+            System.out.println(sock.getLocalPort());
         } catch (IOException ex) {
             Logger.getLogger(MainSocket.class.getName()).log(Level.SEVERE, null, ex);
 

@@ -329,11 +329,7 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
     }// </editor-fold>//GEN-END:initComponents
 
     private void createConferenceButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createConferenceButtonActionPerformed
-        try {
-            CallFrame cf = new CallFrame();
-        } catch (IOException ex) {
-             Logger.getLogger(mainJFrame.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        mainSock.call(ip, nick, CallCodes.dm);
     }//GEN-LAST:event_createConferenceButtonActionPerformed
 
     private void connectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectButtonActionPerformed
@@ -353,12 +349,7 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
             System.out.println("\nhuy " + ip + " chlen " + nick + "\n");
             mainSock.call(ip, nick, CallCodes.dm);
         } else {
-            try {
-                System.out.println("pizdec");
-                CallFrame cf = new CallFrame();
-            } catch (IOException ex) {
-                Logger.getLogger(mainJFrame.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            mainSock.call(ip, nick, CallCodes.dm);
         }
     }//GEN-LAST:event_connectButtonActionPerformed
 

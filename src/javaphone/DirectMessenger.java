@@ -49,11 +49,8 @@ public class DirectMessenger extends Thread {
     private String readTextMessage()
     {
         try {
-            int msg_size = in.readInt();
-            byte[] b = new byte[msg_size];
-            int bytes_read = in.read(b, 0, msg_size);
-
-            return new String(b);
+            String msg = in.readUTF();
+            return msg;
         } catch (IOException ex) {
             Logger.getLogger(DirectMessenger.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -127,9 +124,8 @@ public class DirectMessenger extends Thread {
     public void sendText(String msg) throws IOException
     {
         out.writeInt(type_text);
-        out.writeInt(msg.length());
-        out.writeBytes(msg);
-
+        out.writeUTF(msg);
+        System.out.println(msg.length());
         out.flush();
 
         for (DMHandler l : listeners)
