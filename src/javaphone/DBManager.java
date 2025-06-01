@@ -185,4 +185,9 @@ public class DBManager implements CallHandler, DMHandler {
     public void callSent(Handshake hs) {
         callRecieved(hs);
     }
+
+    @Override
+    public void callFailed(String ip) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }
