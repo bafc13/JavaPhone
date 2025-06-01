@@ -29,11 +29,14 @@ public class SettingsFrame extends javax.swing.JFrame {
     private File file;
     private JTextField field1;
     private PrintWriter textFileWriter;
+
     public SettingsFrame() throws IOException {
+        initComponents();
         this.setTitle("Call");
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setResizable(true);
-        setLayout(new GridLayout(2, 2, 5, 5));
+        this.setLocationRelativeTo(null);
+        this.setVisible(true);
 
         JLabel label1 = new JLabel("Your nickname:");
         field1 = new JTextField();
@@ -45,9 +48,9 @@ public class SettingsFrame extends javax.swing.JFrame {
 
         try {
             this.textFileWriter = new PrintWriter(
-                new BufferedWriter(
-                    new FileWriter("account.txt", false) // true для дописывания в файл
-                )
+                    new BufferedWriter(
+                            new FileWriter("account.txt", false) // true для дописывания в файл
+                    )
             );
         } catch (IOException e) {
             System.err.println("Ошибка при создании файла для записи: " + e.getMessage());
@@ -55,18 +58,25 @@ public class SettingsFrame extends javax.swing.JFrame {
         }
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        this.setSize(screenSize.width / 4, screenSize.height / 3);
+        this.setSize(screenSize.width / 7, screenSize.height / 6);
 
-        this.setLocationRelativeTo(null);
-        this.setVisible(true);
-        initComponents();
+
+        setLayout(new GridLayout(2, 2, 5, 5));
+        label1.setSize(100, 30);
+        field1.setSize(100, 30);
+        okButton.setSize(100, 30);
+        this.add(label1);
+        this.add(field1);
+        this.add(okButton);
+
     }
 
     private void writeSettings() {
-        if (textFileWriter != null) {
+        if (textFileWriter != null || !textFileWriter.equals("")) {
             textFileWriter.println(field1.getText());
             textFileWriter.flush();
         }
+        this.dispose();
     }
 
     @SuppressWarnings("unchecked")
@@ -74,6 +84,7 @@ public class SettingsFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(250, 150));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
