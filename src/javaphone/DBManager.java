@@ -155,7 +155,8 @@ public class DBManager implements CallHandler, DMHandler {
                 return true;
             } else {
                 PreparedStatement stmt_uun = c.prepareStatement(sql_update_username);
-                stmt_uun.setString(1, ip);
+                stmt_uun.setString(1, newUsername);
+                stmt_uun.setString(2, ip);
                 stmt_uun.executeUpdate();
                 return false;
             }

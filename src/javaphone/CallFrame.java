@@ -563,7 +563,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
 
     @Override
     public void HandleVoiceRecieved(int chatID, String address, byte[] audioChunk) {
-        System.out.println(String.valueOf(this.chatID) + " " + String.valueOf(chatID));
+        //System.out.println(String.valueOf(this.chatID) + " " + String.valueOf(chatID));
         if (this.chatID != chatID)
             return;
         
@@ -624,6 +624,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         voiceReceiver.addSubListener(log);
         controller.addListener(log);
         
+        voiceReceiver.start();
         try {
             audioPlay.addParticipant("localhost");
             audioPlay.addParticipant(dm.getIP());

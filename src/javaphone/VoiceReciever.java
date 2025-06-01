@@ -57,6 +57,7 @@ public class VoiceReciever extends Thread {
     
     public void receiveSubtitles()
     {   
+        System.out.println("trying to receive");
         String line;
         while (true) {
             try {
@@ -79,7 +80,8 @@ public class VoiceReciever extends Thread {
 		receiveSubtitles();
 	};
 	Thread subtitleThread = new Thread(task);
-        subtitleThread.run();
+        subtitleThread.start();
+
         while (true)
         {
             try {
