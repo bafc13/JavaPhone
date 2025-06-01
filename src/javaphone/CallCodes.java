@@ -9,10 +9,12 @@ package javaphone;
  * @author Andrey
  */
 public class CallCodes {
-    public static final String dm = "dm";
-    public static final String voiceCall = "voice";
-    public static final String videoCall = "video";
+    public static final String callDM = "dm";
+    public static final String callVoice = "voice";
+    public static final String callVideo = "video";
+    public static final String callPing = "ping";
     
-    public static final String responseOK = "OK";
-    public static final String responseErr = "ERROR";
+    public static final String responseAccept = "ACCEPT";
+    public static final String responseError = "ERROR";
+    public static final String responseRefuze = "REFUZE";
 }

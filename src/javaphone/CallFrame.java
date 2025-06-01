@@ -160,9 +160,9 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     private void initCall() throws IOException {
         // Is it supposed to be here?? (must happen when call button is pressed)
         String ip = dm.getIP().substring(1);
-        mainJFrame.mainSock.call(ip, mainJFrame.username, CallCodes.voiceCall);
+        mainJFrame.mainSock.call(ip, mainJFrame.username, CallCodes.callVoice);
         // System.out.println("call 1 done");
-        mainJFrame.mainSock.call(ip, mainJFrame.username, CallCodes.videoCall);
+        mainJFrame.mainSock.call(ip, mainJFrame.username, CallCodes.callVideo);
         // System.out.println("call 2 done");
     }
 

@@ -331,7 +331,7 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
     }// </editor-fold>//GEN-END:initComponents
 
     private void createConferenceButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createConferenceButtonActionPerformed
-        mainSock.call(ip, nick, CallCodes.dm);
+        mainSock.call(ip, nick, CallCodes.callDM);
     }//GEN-LAST:event_createConferenceButtonActionPerformed
 
     private void connectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectButtonActionPerformed
@@ -349,9 +349,9 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
             System.out.println("HUY BLYAT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         } else if(!ip.equals("") && !nick.equals("")){
             System.out.println("\nhuy " + ip + " chlen " + nick + "\n");
-            mainSock.call(ip, nick, CallCodes.dm);
+            mainSock.call(ip, nick, CallCodes.callDM);
         } else {
-            mainSock.call(ip, nick, CallCodes.dm);
+            mainSock.call(ip, nick, CallCodes.callDM);
         }
     }//GEN-LAST:event_connectButtonActionPerformed
 
