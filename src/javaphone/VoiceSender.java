@@ -57,6 +57,7 @@ public class VoiceSender implements VoiceHandler, SubtitleHandler {
         try {
             out.writeUTF(line);
             out.flush();
+            System.out.println("Wrote line: " + line);
         } catch (IOException ex) {
             Logger.getLogger(VoiceSender.class.getName()).log(Level.SEVERE, null, ex);
         }

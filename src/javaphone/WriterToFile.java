@@ -1,10 +1,14 @@
 package javaphone;
 
 import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.time.format.DateTimeFormatter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javaphone.EventInterfaces.SubtitleHandler;
 
 /**
@@ -31,6 +35,15 @@ public class WriterToFile implements SubtitleHandler {
     public WriterToFile(int chatID, String logFilePath) {
         this.chatID = chatID;
         this.logFilePath = logFilePath;
+        
+        try {
+            PrintWriter writer = new PrintWriter(logFilePath, "UTF-8");
+            writer.close();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(WriterToFile.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(WriterToFile.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     @Override
@@ -87,7 +100,7 @@ public class WriterToFile implements SubtitleHandler {
             // 3. Все ресурсы автоматически закроются при выходе из блока try
         } catch (IOException e) {
             // Обработка ошибок ввода-вывода
-            System.err.println("Ошибка записи в лог: " + e.getMessage());
+            Logger.getLogger(WriterToFile.class.getName()).log(Level.SEVERE, null, e);
             
         }
     }

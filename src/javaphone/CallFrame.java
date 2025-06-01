@@ -609,9 +609,9 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         
         
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         String formattedNow = now.format(formatter);
-        log = new WriterToFile(this.chatID, "log/call" + formattedNow);
+        log = new WriterToFile(this.chatID, "./log/call" + formattedNow + ".txt");
         
         controller.getMic().addListener(voiceSender);
         controller.addListener(voiceSender);

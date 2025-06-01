@@ -61,6 +61,7 @@ public class VoiceReciever extends Thread {
         while (true) {
             try {
                 line = in.readUTF();
+                System.out.println("Read line: " + line);
                 for (SubtitleHandler sh : subListeners)
                 {
                     sh.SubtitleLineReceived(chatID, source.getInetAddress().toString(), line);
