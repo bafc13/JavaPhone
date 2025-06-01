@@ -105,6 +105,10 @@ public class MainSocket extends Thread {
             for (CallHandler l : listeners) {
                 l.callSent(task.result);
             }
+        } else {
+            for (CallHandler l : listeners) {
+                l.callFailed(addr);
+            }
         }
 
         return task.status;

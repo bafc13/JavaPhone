@@ -124,4 +124,9 @@ public class BasicCallHandler implements CallHandler {
             }
         }
     }   
+
+    @Override
+    public void callFailed(String ip) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }
