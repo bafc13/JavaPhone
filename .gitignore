@@ -1,6 +1,7 @@
 dist/
 lib/
 build/
+log/
 JP.sqlite
 recognized_text.txt
 account.txt

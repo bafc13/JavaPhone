@@ -17,6 +17,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,6 +44,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     private VoiceReciever voiceReceiver;
     private VideoSender videoSender;
     private VideoReciever videoReceiver;
+    private WriterToFile log;
 
     private Boolean voiceEnabled;
     private Boolean videoEnabled;
@@ -560,6 +563,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
 
     @Override
     public void HandleVoiceRecieved(int chatID, String address, byte[] audioChunk) {
+        System.out.println(String.valueOf(this.chatID) + " " + String.valueOf(chatID));
         if (this.chatID != chatID)
             return;
         
@@ -603,9 +607,22 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         voiceSender = vs;
         voiceReceiver = vr;
         
-        voiceReceiver.addListener(this);
+        
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formattedNow = now.format(formatter);
+        log = new WriterToFile(this.chatID, "log/call" + formattedNow);
+        
         controller.getMic().addListener(voiceSender);
+        controller.addListener(voiceSender);
+        
+        controller.addListener(this);
+        
+        voiceReceiver.addListener(this);
         voiceReceiver.addSubListener(this);
+        
+        voiceReceiver.addSubListener(log);
+        controller.addListener(log);
         
         try {
             audioPlay.addParticipant("localhost");

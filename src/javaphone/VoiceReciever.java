@@ -56,13 +56,7 @@ public class VoiceReciever extends Thread {
     }
     
     public void receiveSubtitles()
-    {
-        Runnable task = () -> {
-		receiveSubtitles();
-	};
-	Thread subtitleThread = new Thread(task);
-        subtitleThread.run();
-        
+    {   
         String line;
         while (true) {
             try {
@@ -80,6 +74,11 @@ public class VoiceReciever extends Thread {
     @Override
     public void run()
     {
+        Runnable task = () -> {
+		receiveSubtitles();
+	};
+	Thread subtitleThread = new Thread(task);
+        subtitleThread.run();
         while (true)
         {
             try {

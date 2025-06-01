@@ -13,12 +13,9 @@ import javaphone.EventInterfaces.SubtitleHandler;
  * Формат записи: "username: message"
  */
 public class WriterToFile implements SubtitleHandler {
-    
-    // Менеджер базы данных для получения информации о пользователях
-    private final DBManager dbManager;
-    
     // Путь к файлу лога
     private final String logFilePath;
+    private final int chatID;
     
     // Форматтер даты и времени (не используется в текущей реализации,
     // но может быть полезен для расширения функциональности)
@@ -31,12 +28,21 @@ public class WriterToFile implements SubtitleHandler {
      * @param dbManager экземпляр DBManager для получения имен пользователей
      * @param logFilePath путь к файлу, в который будет записываться лог
      */
-    public WriterToFile(DBManager dbManager, String logFilePath) {
-        this.dbManager = dbManager;
+    public WriterToFile(int chatID, String logFilePath) {
+        this.chatID = chatID;
         this.logFilePath = logFilePath;
     }
     
-    public void SubtitleLineRecorded(String line){}
+    @Override
+    public void SubtitleLineRecorded(String line){
+        // Получаем имя пользователя по IP-адресу
+        String username = mainJFrame.db.getUsername("localhost");
+        
+        // Форматируем строку для записи в лог
+        String logLine = String.format("%s: %s", username, line);
+        
+        Write(logLine);
+    }
 
 
     /**
@@ -45,17 +51,24 @@ public class WriterToFile implements SubtitleHandler {
      * 
      * @param chatID идентификатор чата (не используется в текущей реализации)
      * @param ipAddress IP-адрес отправителя (для идентификации пользователя)
-     * @param message текст сообщения
+     * @param line текст сообщения
      */
     @Override
-    public void SubtitleLineReceived(int chatID, String ipAddress, String message) {
+    public void SubtitleLineReceived(int chatID, String ipAddress, String line) {
+        if (this.chatID != chatID)
+            return;
+        
         // Получаем имя пользователя по IP-адресу
-        String username = dbManager.getUsername(ipAddress);
+        String username = mainJFrame.db.getUsername(ipAddress);
         
         // Форматируем строку для записи в лог
-        String logLine = String.format("%s: %s", username, message);
+        String logLine = String.format("%s: %s", username, line);
         
-     
+        Write(logLine);
+    }
+    
+    public void Write(String logLine)
+    {
         try (
             // Создаем цепочку писателей:
             // PrintWriter -> BufferedWriter -> FileWriter
