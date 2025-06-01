@@ -135,7 +135,6 @@ public class DirectMessenger extends Thread {
     {
         out.writeInt(type_text);
         out.writeUTF(msg);
-        System.out.println(msg.length());
         out.flush();
 
         for (DMHandler l : listeners)

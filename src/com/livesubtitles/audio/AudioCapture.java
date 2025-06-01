@@ -26,7 +26,7 @@ public class AudioCapture {
     
     public void startCapture() throws LineUnavailableException {
         AudioFormat format = AudioConfig.getAudioFormat();
-        System.out.println("Используемый аудиоформат: " + format);
+        // System.out.println("Используемый аудиоформат: " + format);
         DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
         
         if (!AudioSystem.isLineSupported(info)) {

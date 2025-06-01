@@ -85,7 +85,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         dm.start();
         initCallFrame();
 
-        System.out.println("INITIALIZED WITH DM");
+        // System.out.println("INITIALIZED WITH DM");
     }
 
     public CallFrame(DirectMessenger dm, VoiceSender voiceSender, VoiceReciever voiceReciever) throws IOException {
@@ -101,7 +101,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
 
         voiceEnabled = true;
 
-        System.out.println("INITIALIZED WITH DM AND VOICE");
+        // System.out.println("INITIALIZED WITH DM AND VOICE");
     }
 
     public CallFrame(DirectMessenger dm, VoiceSender voiceSender, VoiceReciever voiceReciever, VideoSender videoSender, VideoReciever videoReciever) throws IOException {
@@ -119,7 +119,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         voiceEnabled = true;
         videoEnabled = true;
 
-        System.out.println("INITIALIZED WITH DM, VOICE AND VIDEO");
+        // System.out.println("INITIALIZED WITH DM, VOICE AND VIDEO");
     }
 
     private void initCallFrame() throws IOException {
@@ -161,9 +161,9 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         // Is it supposed to be here?? (must happen when call button is pressed)
         String ip = dm.getIP().substring(1);
         mainJFrame.mainSock.call(ip, mainJFrame.username, CallCodes.voiceCall);
-        System.out.println("call 1 done");
+        // System.out.println("call 1 done");
         mainJFrame.mainSock.call(ip, mainJFrame.username, CallCodes.videoCall);
-        System.out.println("call 2 done");
+        // System.out.println("call 2 done");
     }
 
     private void initChat() {
@@ -563,7 +563,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
 
     @Override
     public void HandleVoiceRecieved(int chatID, String address, byte[] audioChunk) {
-        //System.out.println(String.valueOf(this.chatID) + " " + String.valueOf(chatID));
+        // System.out.println(String.valueOf(this.chatID) + " " + String.valueOf(chatID));
         if (this.chatID != chatID)
             return;
         
@@ -644,11 +644,11 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
 
     @Override
     public void SubtitleLineReceived(int chatID, String address, String line) {
-        System.out.println("Recieved: " + line);
+        // System.out.println("Recieved: " + line);
     }
 
     @Override
     public void SubtitleLineRecorded(String line) {
-        System.out.println("Recorded: " + line);
+        // System.out.println("Recorded: " + line);
     }
 }

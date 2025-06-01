@@ -111,7 +111,6 @@ public class MainSocket extends Thread {
         Socket sock;
         try {
             sock = new Socket(addr, PORT);
-            System.out.println(sock.getLocalPort());
         } catch (IOException ex) {
             Logger.getLogger(MainSocket.class.getName()).log(Level.SEVERE, null, ex);
 
@@ -125,10 +124,8 @@ public class MainSocket extends Thread {
             out.write(name + "\n");
             out.write(purpose + "\n");
             out.flush();
-            System.out.println("Base call done");
             if (in.readLine().equals(CallCodes.responseOK))
             {
-                System.out.println("Response ok");
                 String responseName = in.readLine();
                 Handshake hs = new Handshake(responseName, purpose, sock);
 
@@ -143,14 +140,12 @@ public class MainSocket extends Thread {
                         out.write(String.valueOf(AudioConfig.CHUNK_SIZE) + "\n");
                     }
                     DatagramSocket dSock = new DatagramSocket();
-                    System.out.println("Dsock created " + String.valueOf(dSock.getLocalPort()));
                     out.write(String.valueOf(dSock.getLocalPort()) + "\n");
                     out.flush();
-                    System.out.println("wrote shit");
+
                     int chunkSize = Integer.parseInt(in.readLine());
                     int port = Integer.parseInt(in.readLine());
-                    System.out.println("read shit ");
-                    System.out.println(port);
+
                     hs.dSockRecieve = dSock;
                     hs.dSockSend = new DatagramSocket();
                     hs.packetSize = chunkSize;
@@ -166,7 +161,7 @@ public class MainSocket extends Thread {
             }
             else
             {
-                System.out.println("Ne otvechaet pidoras");
+
             }
 
         } catch (IOException ex) {
