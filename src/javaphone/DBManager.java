@@ -5,7 +5,19 @@
 package javaphone;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.*;
+import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javaphone.EventInterfaces.*;
@@ -37,6 +49,8 @@ public class DBManager implements CallHandler, DMHandler {
     String sql_find_last_message = "SELECT id FROM messages ORDER BY id DESC LIMIT 1";
     String sql_find_last_file = "SELECT id FROM media ORDER BY id DESC LIMIT 1";
     String sql_get_user = "SELECT name FROM users WHERE ip = ?";
+
+    String sql_find_file_checksum = "SELECT id FROM files WHERE checksum = ?";
 
     public DBManager() {
         try {
@@ -75,7 +89,7 @@ public class DBManager implements CallHandler, DMHandler {
                 PreparedStatement stmt_ayd = c.prepareStatement(sql_add_yourself_to_dm);
                 stmt_ayd.setInt(1, chat_id);
                 stmt_ayd.executeUpdate();
-            } 
+            }
         } catch (SQLException ex) {
             Logger.getLogger(DBManager.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -139,9 +153,8 @@ public class DBManager implements CallHandler, DMHandler {
             return -1;
         }
     }
-    
-    public Boolean setUsername(String ip, String newUsername)
-    {
+
+    public Boolean setUsername(String ip, String newUsername) {
         try {
             PreparedStatement stmt_cue = c.prepareStatement(sql_check_user_exists);
             stmt_cue.setString(1, ip);
@@ -166,7 +179,7 @@ public class DBManager implements CallHandler, DMHandler {
         }
         return false;
     }
-    
+
     public String getUsername(String ip) {
         try {
             PreparedStatement stmt = c.prepareStatement(sql_get_user);
@@ -178,6 +191,65 @@ public class DBManager implements CallHandler, DMHandler {
             Logger.getLogger(DBManager.class.getName()).log(Level.SEVERE, null, ex);
 
             return "Unknown";
+        }
+    }
+
+    public String countChecksum(String path) {
+        byte[] buffer = new byte[8192];
+        int count;
+        MessageDigest digest;
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(DBManager.class.getName()).log(Level.SEVERE, null, ex);
+            return "";
+        }
+        try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(path))) {
+            while ((count = bis.read(buffer)) > 0) {
+                digest.update(buffer, 0, count);
+            }
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(DBManager.class.getName()).log(Level.SEVERE, null, ex);
+            return "";
+        } catch (IOException ex) {
+            Logger.getLogger(DBManager.class.getName()).log(Level.SEVERE, null, ex);
+            return "";
+        }
+
+        byte[] hash = digest.digest();
+        return new String(hash);
+    }
+
+    public void copyFile(String path) {
+        File copied = new File("src/test/resources/copiedWithIo.txt");
+        try (
+                InputStream in = new BufferedInputStream(new FileInputStream(path)); 
+                OutputStream out = new BufferedOutputStream(new FileOutputStream(copied))) {
+
+            byte[] buffer = new byte[1024];
+            int lengthRead;
+            while ((lengthRead = in.read(buffer)) > 0) {
+                out.write(buffer, 0, lengthRead);
+                out.flush();
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(DBManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void addFile(String path) {
+        String hash = countChecksum(path);
+
+        try {
+            PreparedStatement stmt = c.prepareStatement(sql_find_file_checksum);
+            stmt.setString(1, hash);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.isBeforeFirst()) {
+
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(DBManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
