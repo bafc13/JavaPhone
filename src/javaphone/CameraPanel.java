@@ -53,17 +53,23 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
     private VideoReciever videoReciever;
     private Boolean videoEnabled;
 
+    private CallFrame cf;
+
     private Dimension screenSize;
 
 
-    public CameraPanel(JPanel horPanel, JPanel secHorPanel, LinkedHashMap<Integer, JLabel> cameraMap, LinkedHashMap<Integer, SubtitleDisplay> subtitleMap, int chatID) throws IOException {
+    public CameraPanel(JPanel horPanel, JPanel secHorPanel, LinkedHashMap<Integer, JLabel> cameraMap,
+            LinkedHashMap<Integer, SubtitleDisplay> subtitleMap, int chatID,
+            CallFrame cf) throws IOException {
         super();
+        this.cf = cf;
         this.horizontalPanel = horPanel;
         this.secondHorizontalPanel = secHorPanel;
         this.chatID = chatID;
         this.cameraMap = cameraMap;
         this.subtitleMap = subtitleMap;
         screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
         //панель для своей камеры
         JPanel myCameraPanel = new JPanel();
         myCameraPanel.setBorder(BorderFactory.createEmptyBorder(3, 0, 3, 0));
@@ -185,8 +191,7 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
                 camera.setMinimumSize(new Dimension(width, height));
                 camera.setPreferredSize(new Dimension(width, height));
                 camera.setMaximumSize(new Dimension(width, height));
-                horizontalPanel.repaint();
-                horizontalPanel.revalidate();
+                camera.setSize(new Dimension(width, height));
             });
 
             horizontalPanel.add(CameraPanel);
@@ -194,9 +199,9 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
             horizontalPanel.repaint();
             horizontalPanel.revalidate();
         } else {
-//            if (cameraMap.size() == 4) {
-//                addSecondCameraPanel();
-//            }
+            if (cameraMap.size() == 4) {
+                cf.addSecondCameraPanel();
+            }
 
             CameraPanel.setBorder(BorderFactory.createEmptyBorder(3, 0, 3, 0));
             CameraPanel.setLayout(new BoxLayout(CameraPanel, BoxLayout.Y_AXIS));
@@ -245,7 +250,6 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
         JButton startBtn = new JButton("Вкл камеру");
         JButton stopBtn = new JButton("Выкл камеру");
         JButton maskBtn = new JButton("Фильтр");
-//        JButton exitBtn = new JButton("Выход");
         JButton addBtn = new JButton("Добавить");
 
         startBtn.addActionListener(e -> startCamera());
@@ -254,20 +258,14 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
         stopBtn.setBorder(new RoundedBorder(2));
         maskBtn.addActionListener(e -> nextStyle());
         maskBtn.setBorder(new RoundedBorder(2));
-//        exitBtn.addActionListener(e -> exitFromCall());
-//        exitBtn.setBorder(new RoundedBorder(2));
         addBtn.addActionListener(e -> addCamera());
 
         panel.add(startBtn);
         panel.add(stopBtn);
         panel.add(maskBtn);
-//        panel.add(exitBtn);
         panel.add(addBtn);
 
         panelToAdd.add(panel, BorderLayout.SOUTH);
-
-//        horizontalPanel.repaint();
-//        horizontalPanel.revalidate();
     }
 
     public ApplicationController getController() {
@@ -296,19 +294,13 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
 
     public void exitFromCall() {
         stopCamera();
-        controller.stop();
-//        this.dispose();
+        if(controller != null) {
+            controller.stop();
+        }
     }
-
-//    @Override
-//    public void dispose() {
-
-//        super.dispose();
-//    }
 
     private void startCamera() {
         cameraManager.startCamera();
-//        controller.start();
     }
 
     private void nextStyle() {

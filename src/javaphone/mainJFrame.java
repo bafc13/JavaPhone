@@ -360,9 +360,9 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
     }//GEN-LAST:event_connectButtonActionPerformed
 
     private void serverButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverButton1ActionPerformed
+        NotificationDialog nd = new NotificationDialog(this, "dm", "bafc13");
 
-
-
+        boolean response = nd.getResponse();
     }//GEN-LAST:event_serverButton1ActionPerformed
 
     private void serverButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverButton2ActionPerformed

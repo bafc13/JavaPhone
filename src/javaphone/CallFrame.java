@@ -35,7 +35,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     private String nickName;
 
     private JPanel horizontalPanel;
-    private JPanel secondHorizontalPanel;
+    private JPanel secondHorizontalPanel = new JPanel();;
     private JPanel chatUserPanel;
     private ChatArea chatArea;
 
@@ -45,8 +45,6 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
 
     private Boolean videoEnabled;
     private CameraPanel cameraPanel;
-
-    private Timer timer;
 
     private LinkedHashMap<Integer, JLabel> cameraMap = new LinkedHashMap<>();
     private LinkedHashMap<Integer, SubtitleDisplay> subtitleMap = new LinkedHashMap<>();
@@ -140,12 +138,6 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
 
         mainJFrame.mainSock.call(dm.getIP(), mainJFrame.username, CallCodes.voiceCall);
         mainJFrame.mainSock.call(dm.getIP(), mainJFrame.username, CallCodes.videoCall);
-
-        timer = new Timer(30, e -> {
-            checkCamerasCount();
-        });
-
-        timer.start();
     }
 
     private void initChat() {
@@ -183,16 +175,22 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     }
 
     public void addSecondCameraPanel() {
+        System.out.println("\nYA GEI BLYAT\n");
+        int width = screenSize.width / 4 - 100;
+        int height = (int) (width * 0.66);
+        cameraMap.get(0).setSize(width, height);
+
         horizontalPanel.setSize(screenSize.width, screenSize.height / 3);
 
         horizontalPanel.repaint();
         horizontalPanel.revalidate();
+        this.repaint();
+        this.revalidate();
 
         chatUserPanel.setSize(screenSize.width, screenSize.height / 3 - 50);
         chatUserPanel.repaint();
         chatUserPanel.revalidate();
 
-        secondHorizontalPanel = new JPanel();
         secondHorizontalPanel.setLayout(new BoxLayout(secondHorizontalPanel, BoxLayout.X_AXIS));
         secondHorizontalPanel.setBorder(BorderFactory.createEmptyBorder(3, 0, 3, 0));
         secondHorizontalPanel.repaint();
@@ -234,27 +232,17 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     public void dispose() {
         if(cameraPanel != null) {
             cameraPanel.exitFromCall();
-            if(cameraPanel.getController() != null){
-                cameraPanel.getController().stop();
-            }
         }
         super.dispose();
     }
 
     private void addMyCamera() throws IOException {
 
-        cameraPanel = new CameraPanel(horizontalPanel, secondHorizontalPanel, cameraMap, subtitleMap, chatID);
+        cameraPanel = new CameraPanel(horizontalPanel, secondHorizontalPanel, cameraMap, subtitleMap, chatID, this);
         horizontalPanel.add(cameraPanel);
 
         horizontalPanel.repaint();
         horizontalPanel.revalidate();
-    }
-
-    private void checkCamerasCount() {
-        if (cameraMap.size() == 4) {
-            addSecondCameraPanel();
-            timer.stop();
-        }
     }
 
     /**
