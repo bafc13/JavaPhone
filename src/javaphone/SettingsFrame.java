@@ -58,7 +58,7 @@ public class SettingsFrame extends javax.swing.JFrame {
         }
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        this.setSize(screenSize.width / 7, screenSize.height / 6);
+        this.setSize(screenSize.width / 8, screenSize.height / 7);
 
 
         setLayout(new GridLayout(2, 2, 5, 5));

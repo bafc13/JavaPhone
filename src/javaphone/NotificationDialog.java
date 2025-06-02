@@ -31,6 +31,7 @@ public class NotificationDialog extends JDialog {
         setSize(300, 150);
         setLocationRelativeTo(parent);
         this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        this.setResizable(true);
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
