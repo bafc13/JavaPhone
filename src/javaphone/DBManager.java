@@ -221,10 +221,10 @@ public class DBManager implements CallHandler, DMHandler {
     }
 
     public void copyFile(String path) {
-        File copied = new File("src/test/resources/copiedWithIo.txt");
-        try (
-                InputStream in = new BufferedInputStream(new FileInputStream(path)); 
-                OutputStream out = new BufferedOutputStream(new FileOutputStream(copied))) {
+        File source = new File(path);
+        File copy = new File("./files/" + source.getName());
+        try (InputStream in = new BufferedInputStream(new FileInputStream(source)); 
+            OutputStream out = new BufferedOutputStream(new FileOutputStream(copy))) {
 
             byte[] buffer = new byte[1024];
             int lengthRead;
@@ -245,7 +245,8 @@ public class DBManager implements CallHandler, DMHandler {
             stmt.setString(1, hash);
             ResultSet rs = stmt.executeQuery();
             if (rs.isBeforeFirst()) {
-
+                copyFile(path);
+                
             }
 
         } catch (SQLException ex) {
