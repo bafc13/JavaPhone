@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javaphone.EventInterfaces.CallResultHandler;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -25,7 +27,7 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
      public static DBManager db;
      public static MainSocket mainSock;
      public static BasicCallHandler basicCallHandler;
-     
+
      private String ip;
      private String nick;
      private JLabel resultLabel;
@@ -48,9 +50,9 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
         mainSock.start();
         mainSock.addListener(basicCallHandler);
         mainSock.addListener(db);
-        
+
         db.setUsername("localhost", username);
-        
+
         basicCallHandler.addListener(this);
 
         inputChatField.setFont(new Font("Arial Unicode MS", Font.PLAIN, 18));
@@ -66,7 +68,11 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
         mainChatArea.setBorder(new RoundedBorder(3));
         inputChatField.setBorder(new RoundedBorder(3));
         serverPanel.setBorder(new RoundedBorder(3));
+        serverPanel.setLayout(new BoxLayout(serverPanel, BoxLayout.Y_AXIS));
         connectionPanel.setBorder(new RoundedBorder(3));
+
+        addFriend();
+
     }
 
     /**
@@ -91,9 +97,6 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
         createConferenceButton = new javax.swing.JButton();
         serverScrollPanel = new javax.swing.JScrollPane();
         serverPanel = new javax.swing.JPanel();
-        serverButton1 = new javax.swing.JButton();
-        serverButton2 = new javax.swing.JButton();
-        serverButton3 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
@@ -180,66 +183,15 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
 
         serverPanel.setPreferredSize(new java.awt.Dimension(600, 111));
 
-        serverButton1.setText("study server");
-        serverButton1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        serverButton1.setMaximumSize(new java.awt.Dimension(32767, 32767));
-        serverButton1.setMinimumSize(new java.awt.Dimension(0, 0));
-        serverButton1.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/images/image2.png"))); // NOI18N
-        serverButton1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseReleased(java.awt.event.MouseEvent evt) {
-                serverButton1MouseReleased(evt);
-            }
-        });
-        serverButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                serverButton1ActionPerformed(evt);
-            }
-        });
-
-        serverButton2.setText("chill server");
-        serverButton2.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        serverButton2.setMaximumSize(new java.awt.Dimension(32767, 32767));
-        serverButton2.setMinimumSize(new java.awt.Dimension(0, 0));
-        serverButton2.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/images/image1.png"))); // NOI18N
-        serverButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                serverButton2ActionPerformed(evt);
-            }
-        });
-
-        serverButton3.setText("gaming server");
-        serverButton3.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        serverButton3.setMaximumSize(new java.awt.Dimension(32767, 32767));
-        serverButton3.setMinimumSize(new java.awt.Dimension(0, 0));
-        serverButton3.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/images/image0.png"))); // NOI18N
-        serverButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                serverButton3ActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout serverPanelLayout = new javax.swing.GroupLayout(serverPanel);
         serverPanel.setLayout(serverPanelLayout);
         serverPanelLayout.setHorizontalGroup(
             serverPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(serverPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(serverPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(serverButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(serverButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 639, Short.MAX_VALUE)
-                    .addComponent(serverButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+            .addGap(0, 651, Short.MAX_VALUE)
         );
         serverPanelLayout.setVerticalGroup(
             serverPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, serverPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(serverButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(serverButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(serverButton3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(242, 242, 242))
+            .addGap(0, 535, Short.MAX_VALUE)
         );
 
         serverScrollPanel.setViewportView(serverPanel);
@@ -355,24 +307,6 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
         }
     }//GEN-LAST:event_connectButtonActionPerformed
 
-    private void serverButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverButton1ActionPerformed
-
-
-
-    }//GEN-LAST:event_serverButton1ActionPerformed
-
-    private void serverButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverButton2ActionPerformed
-
-
-
-    }//GEN-LAST:event_serverButton2ActionPerformed
-
-    private void serverButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverButton3ActionPerformed
-
-
-
-    }//GEN-LAST:event_serverButton3ActionPerformed
-
     private void exitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitButtonActionPerformed
         this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
     }//GEN-LAST:event_exitButtonActionPerformed
@@ -390,12 +324,6 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
             inputChatField.setText("");
         }
     }
-
-    private void serverButton1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_serverButton1MouseReleased
-
-
-
-    }//GEN-LAST:event_serverButton1MouseReleased
     /**
      * @param args the command line arguments
      */
@@ -436,6 +364,18 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
         });
     }
 
+    private void addFriend() {
+        FriendPanel fpanel = new FriendPanel(mainSock);
+        serverPanel.add(fpanel);
+
+
+        serverPanel.add(Box.createVerticalStrut(13));
+        FriendPanel fpanel1 = new FriendPanel(mainSock);
+        serverPanel.add(fpanel1);
+
+        
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JScrollPane chatPane;
@@ -458,9 +398,6 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JTextArea mainChatArea;
-    private javax.swing.JButton serverButton1;
-    private javax.swing.JButton serverButton2;
-    private javax.swing.JButton serverButton3;
     private javax.swing.JPanel serverPanel;
     private javax.swing.JScrollPane serverScrollPanel;
     private javax.swing.JButton settingsButton;
