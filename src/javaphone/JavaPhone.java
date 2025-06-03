@@ -11,13 +11,13 @@ import java.io.IOException;
  * @author bafc13
  */
 public class JavaPhone {
-
+    public static mainJFrame frame;
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
-        mainJFrame frame = new mainJFrame();
+        frame = new mainJFrame();
 //        frame.setVisible(true);
     }
 

@@ -72,9 +72,11 @@ public class SettingsFrame extends javax.swing.JFrame {
 
     private void writeSettings() {
         if (textFileWriter != null || !textFileWriter.equals("")) {
-            textFileWriter.println(field1.getText());
+            textFileWriter.println(field1.getText() + "\n");
+            mainJFrame.username = field1.getText();
             textFileWriter.flush();
         }
+        
         this.dispose();
     }
 

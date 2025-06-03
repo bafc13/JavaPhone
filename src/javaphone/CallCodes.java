@@ -17,6 +17,7 @@ public class CallCodes {
     public static final String responseAccept = "ACCEPT";
     public static final String responseError = "ERROR";
     public static final String responseRefuze = "REFUZE";
+    public static final String responseWait = "WAIT";
     
     public static final String filePresent = "PRESENT";
     public static final String fileRequired = "REQUIRE";

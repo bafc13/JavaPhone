@@ -50,18 +50,24 @@ public class NotificationDialog extends JDialog {
         buttonPanel.add(acceptButton);
 
         String reasonToNotify = "";
-        if(callCode.equals(CallCodes.callDM)) {
-            reasonToNotify = " пишет вам";
-            acceptButton.setText("пообщаться");
-            rejectButton.setText("отклонить общение");
-        } else if (callCode.equals(CallCodes.callVideo)){
-            reasonToNotify = " звонит вам по видео";
-            acceptButton.setText("ответить");
-            rejectButton.setText("отклонить вызов");
-        } else if (callCode.equals(CallCodes.callVoice)) {
-            reasonToNotify = " звонит вам";
-            acceptButton.setText("ответить");
-            rejectButton.setText("отклонить вызов");
+        switch (callCode) {
+            case CallCodes.callDM:
+                reasonToNotify = " пишет вам";
+                acceptButton.setText("пообщаться");
+                rejectButton.setText("отклонить общение");
+                break;
+            case CallCodes.callVideo:
+                reasonToNotify = " звонит вам по видео";
+                acceptButton.setText("ответить");
+                rejectButton.setText("отклонить вызов");
+                break;
+            case CallCodes.callVoice:
+                reasonToNotify = " звонит вам";
+                acceptButton.setText("ответить");
+                rejectButton.setText("отклонить вызов");
+                break;
+            default:
+                break;
         }
         JLabel notificationText = new JLabel("Пользователь " + nickname + reasonToNotify);
 

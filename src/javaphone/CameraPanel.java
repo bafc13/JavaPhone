@@ -37,6 +37,7 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
     private CameraManager cameraManager;
     private int camerasCount = 0;
     private int subtitleCount = 0;
+    private int participantCount = 1;
     private Timer timer;
 
     private ApplicationController controller;
@@ -48,11 +49,12 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
 
     private LinkedHashMap<Integer, JLabel> cameraMap;
     private LinkedHashMap<Integer, SubtitleDisplay> subtitleMap;
-
+    private LinkedHashMap<String, Integer> participants;
+    
     private VideoSender videoSender;
     private VideoReciever videoReciever;
     private Boolean videoEnabled;
-
+    
     private CallFrame cf;
 
     private Dimension screenSize;
@@ -62,6 +64,10 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
             LinkedHashMap<Integer, SubtitleDisplay> subtitleMap, int chatID,
             CallFrame cf) throws IOException {
         super();
+        
+        participants = new LinkedHashMap<>();
+        participants.put("localhost", 0);
+        
         this.cf = cf;
         this.horizontalPanel = horPanel;
         this.secondHorizontalPanel = secHorPanel;
@@ -122,7 +128,12 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
 //        this.videoReciever.addListener(this);
         videoEnabled = true;
     }
-
+    
+    public void addParticipant(String ip) {
+        participants.put(ip, participantCount);
+        participantCount++;
+    }
+    
     private void addCamera() {
         JPanel CameraPanel = new JPanel();
         JLabel CameraScreen;
@@ -281,7 +292,7 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
         if (this.chatID != chatID)
             return;
 
-        int cameraID = 0; // TODO: find camera that handles sander
+        int cameraID = participants.get(address);
         BufferedImage img = resizeToCameraFrame(frame, cameraID);
         updateFrame(img, cameraID);
     }

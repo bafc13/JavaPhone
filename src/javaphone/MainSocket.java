@@ -45,7 +45,17 @@ public class MainSocket extends Thread {
                 out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
                 String responseName = in.readLine();
                 String purpose = in.readLine();
-
+                
+                out.write(CallCodes.responseWait + "\n");
+                NotificationDialog nd = new NotificationDialog(JavaPhone.frame, purpose, responseName);
+                boolean res = nd.getResponse();
+                if (!res) {
+                    out.write(CallCodes.responseRefuze + "\n");
+                    in.close();
+                    out.close();
+                    continue;
+                }
+                
                 out.write(CallCodes.responseAccept + "\n");
                 out.flush();
                 out.write(mainJFrame.username + "\n");
@@ -123,7 +133,8 @@ public class MainSocket extends Thread {
         public Boolean status;
         public Handshake result;
 
-        private static final long delay = 5000L;
+        public static final long delayOffline = 5000L;
+        public static final long delayResponse = 60000L;
 
         public CallTask(String addr, String name, String purpose) {
             this.addr = addr;
@@ -141,8 +152,10 @@ public class MainSocket extends Thread {
                 }
             ;
             };
-            Timer interruptTimer = new Timer();
-            interruptTimer.schedule(interruptTask, delay);
+            Timer interruptOfflineTimer = new Timer();
+            interruptOfflineTimer.schedule(interruptTask, delayOffline);
+            Timer interruptResponseTimer = new Timer();
+            interruptResponseTimer.schedule(interruptTask, delayResponse);
 
             Socket sock;
             try {
@@ -160,6 +173,10 @@ public class MainSocket extends Thread {
                 out.write(name + "\n");
                 out.write(purpose + "\n");
                 out.flush();
+                
+                if (in.readLine().equals(CallCodes.responseWait))
+                    interruptOfflineTimer.cancel();
+                
                 if (in.readLine().equals(CallCodes.responseAccept)) {
                     String responseName = in.readLine();
 

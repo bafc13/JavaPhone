@@ -2,6 +2,9 @@ package javaphone;
 
 import java.awt.Font;
 import java.awt.event.WindowEvent;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,20 +20,20 @@ import javax.swing.SwingConstants;
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-
 /**
  *
  * @author bafc13
  */
 public class mainJFrame extends javax.swing.JFrame implements CallResultHandler {
-     public static DBManager db;
-     public static MainSocket mainSock;
-     public static BasicCallHandler basicCallHandler;
 
-     private String ip;
-     private String nick;
-     private JLabel resultLabel;
-     public static String username = "avKuzma";
+    public static DBManager db;
+    public static MainSocket mainSock;
+    public static BasicCallHandler basicCallHandler;
+
+    private String ip;
+    private String nick;
+    private JLabel resultLabel;
+    public static String username;
 
     /**
      * Creates new form mainJFrame
@@ -42,6 +45,18 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
         this.setVisible(true);
+
+        try {
+            BufferedReader accr = new BufferedReader(new FileReader("./account.txt"));
+            username = accr.readLine().trim();
+            accr.close();
+        } catch (Exception e) {
+            try {
+                SettingsFrame sf = new SettingsFrame();
+            } catch (IOException ex) {
+                Logger.getLogger(mainJFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
 
         db = new DBManager();
         mainSock = new MainSocket();
@@ -74,6 +89,7 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
 
         NotificationDialog nd = new NotificationDialog(this, CallCodes.callDM, "bafc13");
         boolean response = nd.getResponse();
+        System.out.println(response);
         NotificationDialog nd1 = new NotificationDialog(this, CallCodes.callVideo, "bafc13");
 
     }
@@ -304,10 +320,9 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
         ip = dialog.getField1Value();
         nick = dialog.getField2Value();
 
-        if (ip.equals("CLOSE") && nick.equals("OPER"))
-        {
+        if (ip.equals("CLOSE") && nick.equals("OPER")) {
             System.out.println("HUY BLYAT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        } else if(!ip.equals("") && !nick.equals("")){
+        } else if (!ip.equals("") && !nick.equals("")) {
             System.out.println("\nhuy " + ip + " chlen " + nick + "\n");
             mainSock.call(ip, nick, CallCodes.callDM);
         } else {
@@ -322,11 +337,9 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
     private void serverButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverButton2ActionPerformed
 
 
-
     }//GEN-LAST:event_serverButton2ActionPerformed
 
     private void serverButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverButton3ActionPerformed
-
 
 
     }//GEN-LAST:event_serverButton3ActionPerformed
@@ -339,12 +352,10 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
     private void inputChatFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputChatFieldActionPerformed
 
 
-
-
     }//GEN-LAST:event_inputChatFieldActionPerformed
 
-    private void messageWritten(){
-        if(inputChatField.getText() != "") {
+    private void messageWritten() {
+        if (inputChatField.getText() != "") {
             mainChatArea.append(inputChatField.getText() + "\n");
             inputChatField.setText("");
         }
@@ -354,15 +365,14 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
     private void serverButton1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_serverButton1MouseReleased
 
 
-
     }//GEN-LAST:event_serverButton1MouseReleased
 
     private void settingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_settingsButtonActionPerformed
-         try {
-             SettingsFrame sf = new SettingsFrame();
-         } catch (IOException ex) {
-             Logger.getLogger(mainJFrame.class.getName()).log(Level.SEVERE, null, ex);
-         }
+        try {
+            SettingsFrame sf = new SettingsFrame();
+        } catch (IOException ex) {
+            Logger.getLogger(mainJFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_settingsButtonActionPerformed
 
     /**
@@ -409,11 +419,9 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
         FriendPanel fpanel = new FriendPanel(mainSock);
         serverPanel.add(fpanel);
 
-
         serverPanel.add(Box.createVerticalStrut(13));
         FriendPanel fpanel1 = new FriendPanel(mainSock);
         serverPanel.add(fpanel1);
-
 
     }
 
@@ -446,11 +454,11 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
 
     @Override
     public void DMCreated(int chatID, DirectMessenger dm) {
-         try {
-             CallFrame cf = new CallFrame(dm);
-         } catch (IOException ex) {
-             Logger.getLogger(mainJFrame.class.getName()).log(Level.SEVERE, null, ex);
-         }
+        try {
+            CallFrame cf = new CallFrame(dm);
+        } catch (IOException ex) {
+            Logger.getLogger(mainJFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override
