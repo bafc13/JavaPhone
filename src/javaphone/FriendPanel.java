@@ -16,6 +16,9 @@ import javax.swing.JLabel;
  * @author bafc13
  */
 public class FriendPanel extends javax.swing.JPanel {
+
+    //обводку для FriendPanel и чуть дисты между элементами в панели
+
     private JLabel nickname;
     private JLabel status;
     private JLabel isHost;

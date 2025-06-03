@@ -50,15 +50,15 @@ public class NotificationDialog extends JDialog {
         buttonPanel.add(acceptButton);
 
         String reasonToNotify = "";
-        if(callCode == CallCodes.dm) {
+        if(callCode.equals(CallCodes.callDM)) {
             reasonToNotify = " пишет вам";
             acceptButton.setText("пообщаться");
             rejectButton.setText("отклонить общение");
-        } else if (callCode == CallCodes.videoCall){
+        } else if (callCode.equals(CallCodes.callVideo)){
             reasonToNotify = " звонит вам по видео";
             acceptButton.setText("ответить");
             rejectButton.setText("отклонить вызов");
-        } else if (callCode == CallCodes.voiceCall) {
+        } else if (callCode.equals(CallCodes.callVoice)) {
             reasonToNotify = " звонит вам";
             acceptButton.setText("ответить");
             rejectButton.setText("отклонить вызов");

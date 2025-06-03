@@ -4,7 +4,6 @@
  */
 package javaphone;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
@@ -13,8 +12,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -25,6 +22,8 @@ import javax.swing.JTextField;
  * @author bafc13
  */
 public class SettingsFrame extends javax.swing.JFrame {
+
+    //сделать подтягивание и изначальное задание никнейма (открытие окна с ником)
 
     private File file;
     private JTextField field1;

@@ -4,6 +4,7 @@
  */
 package javaphone;
 
+import com.livesubtitles.audio.AudioConfig;
 import com.livesubtitles.core.ApplicationController;
 import javax.swing.*;
 import java.awt.*;
@@ -13,6 +14,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashMap;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,9 +33,8 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     private Dimension screenSize;
     private final int chatID;
 
-    
     private AudioPlay audioPlay;
-    
+
     private DirectMessenger dm;
     private VoiceSender voiceSender;
     private VoiceReciever voiceReceiver;
@@ -47,7 +48,8 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     private String nickName;
 
     private JPanel horizontalPanel;
-    private JPanel secondHorizontalPanel = new JPanel();;
+    private JPanel secondHorizontalPanel = new JPanel();
+    ;
     private JPanel chatUserPanel;
     private ChatArea chatArea;
 
@@ -57,6 +59,8 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
 
     private Boolean videoEnabled;
     private CameraPanel cameraPanel;
+
+    private ApplicationController controller;
 
     private LinkedHashMap<Integer, JLabel> cameraMap = new LinkedHashMap<>();
     private LinkedHashMap<Integer, SubtitleDisplay> subtitleMap = new LinkedHashMap<>();
@@ -70,7 +74,6 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         chatID = dm.getID();
         this.dm = dm;
 
-        
         dm.start();
         initCallFrame();
 
@@ -152,8 +155,8 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         addMyCamera();
 
         String ip = dm.getIP().substring(1);
-        mainJFrame.mainSock.call(ip, mainJFrame.username, CallCodes.voiceCall);
-        mainJFrame.mainSock.call(ip, mainJFrame.username, CallCodes.videoCall);
+        mainJFrame.mainSock.call(ip, mainJFrame.username, CallCodes.callVoice);
+        mainJFrame.mainSock.call(ip, mainJFrame.username, CallCodes.callVideo);
     }
 
     private void initChat() {
@@ -246,7 +249,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
 
     @Override
     public void dispose() {
-        if(cameraPanel != null) {
+        if (cameraPanel != null) {
             cameraPanel.exitFromCall();
         }
         super.dispose();
@@ -326,9 +329,10 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     public void HandleVoiceRecieved(int chatID, String address, byte[] audioChunk) {
 
         // System.out.println(String.valueOf(this.chatID) + " " + String.valueOf(chatID));
-        if (this.chatID != chatID)
+        if (this.chatID != chatID) {
             return;
-        
+        }
+
         audioPlay.playAudioForParticipant(dm.getIP(), audioChunk);
     }
 
@@ -346,46 +350,41 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     public void VoiceCreated(int chatID, VoiceSender vs, VoiceReciever vr) {
         if (chatID != this.chatID) {
             return;
-        
-        this.setLayout(new BorderLayout()); 
+        }
+        this.setLayout(new BorderLayout());
+
 
         addCameraPanel();
         addChatUserPanel();
 
-        OpenCVInitializer.init();
-        subtitleDisplay = new SubtitleDisplay();
-        addMyCamera();
-
         try {
-            this.recognizer = new VoskSpeechRecognizer();
+            addMyCamera();
         } catch (IOException ex) {
             Logger.getLogger(CallFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
-        controller = new ApplicationController(recognizer, subtitleDisplay);
-        this.setController(controller);
-        controller.start();
-        
+
+        this.controller = cameraPanel.getController();
+
         audioPlay = new AudioPlay(AudioConfig.getAudioFormat());
         voiceSender = vs;
         voiceReceiver = vr;
-        
-        
+
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         String formattedNow = now.format(formatter);
         log = new WriterToFile(this.chatID, "./log/call" + formattedNow + ".txt");
-        
+
         controller.getMic().addListener(voiceSender);
         controller.addListener(voiceSender);
-        
+
         controller.addListener(this);
-        
+
         voiceReceiver.addListener(this);
         voiceReceiver.addSubListener(this);
-        
+
         voiceReceiver.addSubListener(log);
         controller.addListener(log);
-        
+
         voiceReceiver.start();
         try {
             audioPlay.addParticipant("localhost");
@@ -393,7 +392,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         } catch (LineUnavailableException ex) {
             Logger.getLogger(CallFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }
 
     @Override

@@ -72,6 +72,10 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
 
         addFriend();
 
+        NotificationDialog nd = new NotificationDialog(this, CallCodes.callDM, "bafc13");
+        boolean response = nd.getResponse();
+        NotificationDialog nd1 = new NotificationDialog(this, CallCodes.callVideo, "bafc13");
+
     }
 
     /**
@@ -312,9 +316,7 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
     }//GEN-LAST:event_connectButtonActionPerformed
 
     private void serverButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverButton1ActionPerformed
-        NotificationDialog nd = new NotificationDialog(this, "dm", "bafc13");
 
-        boolean response = nd.getResponse();
     }//GEN-LAST:event_serverButton1ActionPerformed
 
     private void serverButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverButton2ActionPerformed
@@ -412,7 +414,7 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
         FriendPanel fpanel1 = new FriendPanel(mainSock);
         serverPanel.add(fpanel1);
 
-        
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
