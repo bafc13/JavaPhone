@@ -50,7 +50,7 @@ public class DBManager implements CallHandler, DMHandler {
     String sql_find_last_file = "SELECT id FROM media ORDER BY id DESC LIMIT 1";
     String sql_get_user = "SELECT name FROM users WHERE ip = ?";
 
-    String sql_find_file_checksum = "SELECT id FROM files WHERE checksum = ?";
+    String sql_find_file_checksum = "SELECT id, path FROM media WHERE checksum = ?";
 
     public DBManager() {
         try {
@@ -236,7 +236,24 @@ public class DBManager implements CallHandler, DMHandler {
             Logger.getLogger(DBManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    
+    public String findFileWithChecksum(String checksum)
+    {
+        try {
+            PreparedStatement stmt = c.prepareStatement(sql_find_file_checksum);
+            stmt.setString(1, checksum);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.isBeforeFirst()) {
+                return rs.getString(2);
+            } else {
+                return "";
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DBManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "";
+    }
+    
     public void addFile(String path) {
         String hash = countChecksum(path);
 
@@ -246,7 +263,6 @@ public class DBManager implements CallHandler, DMHandler {
             ResultSet rs = stmt.executeQuery();
             if (rs.isBeforeFirst()) {
                 copyFile(path);
-                
             }
 
         } catch (SQLException ex) {
