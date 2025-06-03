@@ -9,9 +9,11 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javaphone.EventInterfaces.SubtitleHandler;
 import javaphone.EventInterfaces.VoiceHandler;
 
 /**
@@ -21,7 +23,10 @@ import javaphone.EventInterfaces.VoiceHandler;
 public class VoiceReciever extends Thread {
     private final Socket source;
     private final DataInputStream in;
+    
     private List<VoiceHandler> listeners;
+    private List<SubtitleHandler> subListeners;
+    
     private final int chunk_size;
     private final DatagramSocket dSock;
     private DatagramPacket dPack;
@@ -36,6 +41,8 @@ public class VoiceReciever extends Thread {
         source = s;
         in = new DataInputStream(s.getInputStream());
         
+        listeners = new ArrayList<>();
+        subListeners = new ArrayList<>();
         dPack = new DatagramPacket(new byte[cs], cs);
     }
     
@@ -44,9 +51,35 @@ public class VoiceReciever extends Thread {
         listeners.add(to_add);
     }
     
+    public void addSubListener(SubtitleHandler to_add) {
+        subListeners.add(to_add);
+    }
+    
+    public void receiveSubtitles()
+    {   
+        String line;
+        while (true) {
+            try {
+                line = in.readUTF();
+                for (SubtitleHandler sh : subListeners)
+                {
+                    sh.SubtitleLineReceived(chatID, source.getInetAddress().toString(), line);
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(VoiceReciever.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
     @Override
     public void run()
     {
+        Runnable task = () -> {
+		receiveSubtitles();
+	};
+	Thread subtitleThread = new Thread(task);
+        subtitleThread.start();
+
         while (true)
         {
             try {

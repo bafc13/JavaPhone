@@ -13,4 +13,5 @@ import javaphone.Handshake;
 public interface CallHandler {
     void callRecieved(Handshake hs);
     void callSent(Handshake hs);
+    void callFailed(String ip);
 }

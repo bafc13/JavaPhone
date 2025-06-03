@@ -4,7 +4,6 @@
  */
 package javaphone;
 
-
 import com.example.camera.CameraManager;
 import com.livesubtitles.audio.AudioConfig;
 import java.io.*;
@@ -13,161 +12,188 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javaphone.EventInterfaces.CallHandler;
+
 /**
  *
  * @author Andrey
  */
 public class MainSocket extends Thread {
+
     public static final int PORT = 666;
 
-    private final ServerSocket main_sock;
+    private final ServerSocket mainSock;
     private List<CallHandler> listeners;
 
-
-    public MainSocket() throws IOException
-    {
+    public MainSocket() throws IOException {
         listeners = new ArrayList<>();
-        main_sock = new ServerSocket(PORT);
+        mainSock = new ServerSocket(PORT);
     }
 
-    public void addListener(CallHandler to_add)
-    {
+    public void addListener(CallHandler to_add) {
         listeners.add(to_add);
     }
 
     @Override
-    public void run()
-    {
+    public void run() {
         BufferedReader in = null;
         BufferedWriter out = null;
-        try
-        {
-            while(true)
-            {
-                Socket sock = main_sock.accept();
+        try {
+            while (true) {
+                Handshake hs;
+                Socket sock = mainSock.accept();
                 in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
                 out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
+                String responseName = in.readLine();
+                String purpose = in.readLine();
 
-                Handshake hs = new Handshake(in.readLine(), in.readLine(), sock);
-
-                out.write(CallCodes.responseOK + "\n");
+                out.write(CallCodes.responseAccept + "\n");
                 out.flush();
                 out.write(mainJFrame.username + "\n");
                 out.flush();
 
-                if (hs.message.equals(CallCodes.videoCall) || hs.message.equals(CallCodes.voiceCall))
-                {
+                if (purpose.equals(CallCodes.callVideo) || purpose.equals(CallCodes.callVoice)) {
                     int chunkSize = Integer.parseInt(in.readLine());
                     int port = Integer.parseInt(in.readLine());
 
-                    if (hs.message.equals(CallCodes.videoCall))
-                    {
+                    if (purpose.equals(CallCodes.callVideo)) {
                         out.write(String.valueOf(CameraManager.chunkSize) + "\n");
                     }
-                    if (hs.message.equals(CallCodes.voiceCall))
-                    {
+                    if (purpose.equals(CallCodes.callVoice)) {
                         out.write(String.valueOf(AudioConfig.CHUNK_SIZE) + "\n");
                     }
-                    DatagramSocket dSock = new DatagramSocket();
-                    out.write(String.valueOf(dSock.getPort()) + "\n");
+                    DatagramSocket dSockRec = new DatagramSocket();
+                    DatagramSocket dSockSend = new DatagramSocket();
+                    out.write(String.valueOf(dSockRec.getLocalPort()) + "\n");
                     out.flush();
 
-                    hs.dSockRecieve = dSock;
-                    hs.dSockSend = new DatagramSocket();
-                    hs.packetSize = chunkSize;
-                    hs.port = port;
+                    hs = new Handshake(responseName, purpose, sock, dSockRec, dSockSend, port, chunkSize);
+                } else {
+                    hs = new Handshake(responseName, purpose, sock);
                 }
 
-                for (CallHandler l : listeners)
-                {
+                for (CallHandler l : listeners) {
                     l.callRecieved(hs);
                 }
 
-                in = null;
-                out = null;
+                in.close();
+                out.close();
             }
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
 
             try {
-                if (out != null)
-                {
-                    out.write(CallCodes.responseErr + "\n");
+                if (out != null) {
+                    out.write(CallCodes.responseError + "\n");
                     out.flush();
                 }
-                main_sock.close();
             } catch (IOException ex) {
                 Logger.getLogger(MainSocket.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
 
-    public Boolean call(String addr, String name, String purpose)
-    {
-        Socket sock;
+    public synchronized Boolean call(String addr, String name, String purpose) {
+        CallTask task = new CallTask(addr, name, purpose);
+        task.run();
         try {
-            sock = new Socket(addr, PORT);
-            System.out.println(sock.getLocalPort());
-        } catch (IOException ex) {
+            wait();
+        } catch (InterruptedException ex) {
             Logger.getLogger(MainSocket.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        task.interrupt();
 
-            return false;
+        if (task.status) {
+            for (CallHandler l : listeners) {
+                l.callSent(task.result);
+            }
+        } else {
+            for (CallHandler l : listeners) {
+                l.callFailed(addr);
+            }
         }
 
-        try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
+        return task.status;
+    }
 
-            out.write(name + "\n");
-            out.write(purpose + "\n");
-            out.flush();
+    private class CallTask extends Thread {
 
-            if (in.readLine().equals(CallCodes.responseOK))
-            {
-                String responseName = in.readLine();
-                Handshake hs = new Handshake(responseName, purpose, sock);
+        private final String addr;
+        private final String name;
+        private final String purpose;
 
-                if (purpose.equals(CallCodes.videoCall) || purpose.equals(CallCodes.voiceCall))
-                {
-                    if (purpose.equals(CallCodes.videoCall))
-                    {
-                        out.write(String.valueOf(CameraManager.chunkSize) + "\n");
-                    }
-                    if (purpose.equals(CallCodes.voiceCall))
-                    {
-                        out.write(String.valueOf(AudioConfig.CHUNK_SIZE) + "\n");
-                    }
-                    DatagramSocket dSock = new DatagramSocket();
-                    out.write(String.valueOf(dSock.getPort()) + "\n");
-                    out.flush();
+        public Boolean status;
+        public Handshake result;
 
-                    int chunkSize = Integer.parseInt(in.readLine());
-                    int port = Integer.parseInt(in.readLine());
+        private static final long delay = 5000L;
 
-                    hs.dSockRecieve = dSock;
-                    hs.dSockSend = new DatagramSocket();
-                    hs.packetSize = chunkSize;
-                    hs.port = port;
-                }
+        public CallTask(String addr, String name, String purpose) {
+            this.addr = addr;
+            this.name = name;
+            this.purpose = purpose;
 
-                for (CallHandler l : listeners)
-                {
-                    l.callSent(hs);
-                }
-
-                return true;
-            }
-            else
-            {
-                System.out.println("Ne otvechaet pidoras");
-            }
-
-        } catch (IOException ex) {
-            Logger.getLogger(MainSocket.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
+            status = false;
         }
 
-        return false;
+        @Override
+        public void run() {
+            TimerTask interruptTask = new TimerTask() {
+                public void run() {
+                    finish();
+                }
+            ;
+            };
+            Timer interruptTimer = new Timer();
+            interruptTimer.schedule(interruptTask, delay);
+
+            Socket sock;
+            try {
+                sock = new Socket(addr, PORT);
+            } catch (IOException ex) {
+                Logger.getLogger(MainSocket.class.getName()).log(Level.SEVERE, null, ex);
+                finish();
+                return;
+            }
+
+            try {
+                BufferedReader in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+                BufferedWriter out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
+
+                out.write(name + "\n");
+                out.write(purpose + "\n");
+                out.flush();
+                if (in.readLine().equals(CallCodes.responseAccept)) {
+                    String responseName = in.readLine();
+
+                    if (purpose.equals(CallCodes.callVideo) || purpose.equals(CallCodes.callVoice)) {
+                        if (purpose.equals(CallCodes.callVideo)) {
+                            out.write(String.valueOf(CameraManager.chunkSize) + "\n");
+                        }
+                        if (purpose.equals(CallCodes.callVoice)) {
+                            out.write(String.valueOf(AudioConfig.CHUNK_SIZE) + "\n");
+                        }
+                        DatagramSocket dSockRec = new DatagramSocket();
+                        DatagramSocket dSockSend = new DatagramSocket();
+                        out.write(String.valueOf(dSockRec.getLocalPort()) + "\n");
+                        out.flush();
+
+                        int chunkSize = Integer.parseInt(in.readLine());
+                        int port = Integer.parseInt(in.readLine());
+                        result = new Handshake(responseName, purpose, sock, dSockRec, dSockSend, port, chunkSize);
+                    } else {
+                        result = new Handshake(responseName, purpose, sock);
+                    }
+                    status = true;
+                    finish();
+                } else {
+                    finish();
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(MainSocket.class.getName()).log(Level.SEVERE, null, ex);
+                finish();
+            }
+        }
+    }
+
+    private synchronized void finish() {
+        notify();
     }
 }

@@ -14,6 +14,7 @@ import java.net.Socket;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javaphone.EventInterfaces.SubtitleHandler;
 import javaphone.EventInterfaces.VideoHandler;
 import javax.imageio.ImageIO;
 
@@ -28,6 +29,7 @@ public class VideoReciever extends Thread {
     private final Socket source;
     private final DataInputStream in;
     private List<VideoHandler> listeners;
+    
     private final int chunk_size;
     private final DatagramSocket dSock;
     private DatagramPacket dPack;
@@ -47,9 +49,11 @@ public class VideoReciever extends Thread {
     public void addListener(VideoHandler to_add) {
         listeners.add(to_add);
     }
-
+    
+    
     @Override
     public void run() {
+        
         int bytesRead;
         byte[] chunk;
         BufferedImage frame;

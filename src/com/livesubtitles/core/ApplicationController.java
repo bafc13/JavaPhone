@@ -6,7 +6,11 @@ import com.livesubtitles.speech.SpeechRecognizer;
 import com.livesubtitles.ui.SubtitleDisplay;
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
+import javaphone.EventInterfaces.SubtitleHandler;
+import java.util.List;
+import javaphone.EventInterfaces.CallResultHandler;
 
 public class ApplicationController implements SpeechRecognitionListener {
     private final AudioCapture audioCapture;
@@ -16,8 +20,10 @@ public class ApplicationController implements SpeechRecognitionListener {
     private Timer resultDisplayTimer;
     private AtomicReference<String> lastFinalResult = new AtomicReference<>("");
     private volatile boolean showingFinalResult = false;
+    private List<SubtitleHandler> listeners;
 
     public ApplicationController(SpeechRecognizer speechRecognizer, SubtitleDisplay subtitleDisplay) {
+        listeners = new ArrayList<>();
         this.audioCapture = new AudioCapture();
         this.speechRecognizer = speechRecognizer;
         this.subtitleDisplay = subtitleDisplay;
@@ -32,7 +38,12 @@ public class ApplicationController implements SpeechRecognitionListener {
         });
         this.resultDisplayTimer.setRepeats(false);
     }
-
+    
+    public void addListener(SubtitleHandler to_add)
+    {
+        listeners.add(to_add);
+    }
+    
     public void start() {
         try {
             speechRecognizer.startRecognition(this);
@@ -48,13 +59,18 @@ public class ApplicationController implements SpeechRecognitionListener {
     private void processAudio() {
         while (audioCapture.isRecording()) {
             try {
-                byte[] audioChunk = audioCapture.getAudioChunk();
+                byte[] audioChunk = audioCapture.getAudioChunk(); 
                 speechRecognizer.processAudioChunk(audioChunk);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 break;
             }
         }
+    }
+    
+    public AudioCapture getMic()
+    {
+        return audioCapture;
     }
 
     public void stop() {
@@ -82,6 +98,11 @@ public class ApplicationController implements SpeechRecognitionListener {
     public void onFinalResult(String transcript) {
         if (isNullOrEmpty(transcript)) {
             return;
+        }
+        
+        for (SubtitleHandler sh : listeners)
+        {
+            sh.SubtitleLineRecorded(transcript);
         }
         
         lastFinalResult.set(transcript);

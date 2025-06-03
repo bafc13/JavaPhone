@@ -11,19 +11,35 @@ import java.net.*;
  * @author Andrey
  */
 public class Handshake {
-    public String name;
-    public String message;
-    public Socket sock;
-    public DatagramSocket dSockRecieve;
-    public DatagramSocket dSockSend;
-    public int port;
-    public int packetSize;
-    
-    
-    public Handshake(String n, String m, Socket s)
-    {
+
+    public final String name;
+    public final String message;
+    public final Socket sock;
+
+    public final DatagramSocket dSockReceive;
+    public final DatagramSocket dSockSend;
+    public final int port;
+    public final int packetSize;
+
+    public Handshake(String n, String m, Socket s) {
         name = n;
         message = m;
         sock = s;
+        
+        dSockReceive = null;
+        dSockSend = null;
+        port = -1;
+        packetSize = -1;
+    }
+
+    public Handshake(String n, String m, Socket s, DatagramSocket dsr, DatagramSocket dss, int p, int ps) {
+        name = n;
+        message = m;
+        sock = s;
+        
+        dSockReceive = dsr;
+        dSockSend = dss;
+        port = p;
+        packetSize = ps;
     }
 }
