@@ -19,6 +19,7 @@ class CustomDialog extends JDialog {
         setSize(300, 150);
         setLocationRelativeTo(parent);
         this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        this.setResizable(true);
 
         JLabel label1 = new JLabel("IP:");
         JLabel label2 = new JLabel("NICKNAME:");

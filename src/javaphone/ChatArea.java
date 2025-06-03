@@ -15,9 +15,7 @@ import java.net.URI;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javaphone.EventInterfaces.DMHandler;
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.JEditorPane;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -25,7 +23,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
@@ -50,7 +47,7 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
 
         dm.addListener(this);
         dm.addListener(mainJFrame.db);
-        
+       
         if (isCall == false) {
             this.setSize(screenSize.width / 2, screenSize.height / 2);
 
@@ -176,6 +173,11 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
             userPane.setBorder(new RoundedBorder(5));
         }
 
+        this.dm = dm;
+
+        dm.addListener(this);
+        dm.addListener(mainJFrame.db);
+//        dm.start();
         this.add(chatPanel);
         this.add(userPane);
     }
@@ -214,7 +216,7 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
     public void HandleDMText(int chatID, String address, String text) {
         if (dm.chatID != chatID)
             return;
-        
+
         String username = mainJFrame.db.getUsername(address);
 
         HTMLDocument doc = (HTMLDocument) editorPane.getDocument();
@@ -236,7 +238,7 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
     public void HandleDMFile(int chatID, String address, String fname) {
         if (dm.chatID != chatID)
             return;
-        
+
         // Do stuff
     }
 
