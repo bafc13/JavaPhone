@@ -338,7 +338,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
 
     @Override
     public void HandleVoiceRecorded(byte[] audioChunk) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        // DO NOTHING I GUESS
     }
 
     @Override
@@ -400,8 +400,11 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         if (chatID != this.chatID) {
             return;
         }
-
-        // Do stuff
+        
+        cameraPanel.cameraManager.addListener(vs);
+        vr.addListener(cameraPanel);
+        cameraPanel.addParticipant(dm.getIP());
+        cameraPanel.addCamera();
     }
 
     @Override

@@ -34,7 +34,7 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
     private final int chatID;
 
     private JLabel cameraScreen;
-    private CameraManager cameraManager;
+    public CameraManager cameraManager;
     private int camerasCount = 0;
     private int subtitleCount = 0;
     private int participantCount = 1;
@@ -134,7 +134,7 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
         participantCount++;
     }
     
-    private void addCamera() {
+    public void addCamera() {
         JPanel CameraPanel = new JPanel();
         JLabel CameraScreen;
         if (cameraMap.size() < 2) {
