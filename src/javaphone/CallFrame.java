@@ -368,7 +368,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
             Logger.getLogger(CallFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        this.controller = new ApplicationController(cameraPanel.getSpeechRecognizer(), subtitleMap.get(0));
+        this.controller = cameraPanel.getController();
 
         audioPlay = new AudioPlay(AudioConfig.getAudioFormat());
         voiceSender = vs;
@@ -425,6 +425,6 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
 
     @Override
     public void PingHappened(String address, String username) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+//        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

@@ -43,6 +43,7 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
 
     private SubtitleDisplay subtitleDisplay;
     private VoskSpeechRecognizer recognizer;
+    private ApplicationController controller;
 
     private JPanel horizontalPanel;
     private JPanel secondHorizontalPanel;
@@ -118,16 +119,15 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
         camerasCount++;
 
         this.recognizer = new VoskSpeechRecognizer();
+        controller = new ApplicationController(recognizer, subtitleDisplay);
+        this.setController(controller);
+        controller.start();
 
 
 //        this.videoSender = videoSender;
 //        this.videoReciever = videoReciever;
 //        this.videoReciever.addListener(this);
         videoEnabled = true;
-    }
-
-    public VoskSpeechRecognizer getSpeechRecognizer() {
-        return recognizer;
     }
 
     public void addParticipant(String ip) {
@@ -282,8 +282,13 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
         panelToAdd.add(panel, BorderLayout.SOUTH);
     }
 
+    public void setController(ApplicationController controller) {
+        this.controller = controller;
+    }
 
-
+    public ApplicationController getController() {
+        return controller;
+    }
 
 
     @Override
@@ -304,8 +309,8 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
 
     public void exitFromCall() {
         stopCamera();
-        if(cf.getController() != null) {
-            cf.getController().stop();
+        if(controller != null) {
+            controller.stop();
         }
     }
 

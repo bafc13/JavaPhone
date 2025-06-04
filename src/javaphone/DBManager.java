@@ -51,7 +51,7 @@ public class DBManager implements CallHandler, DMHandler {
     String sql_get_user = "SELECT name FROM users WHERE ip = ?";
 
     String sql_find_file_checksum = "SELECT id, path FROM media WHERE checksum = ?";
-    
+
     String sql_get_users = "SELECT ip, name FROM users";
 
     public DBManager() {
@@ -78,7 +78,7 @@ public class DBManager implements CallHandler, DMHandler {
             if (setUsername(ip, hs.name)) {
                 PreparedStatement stmt_ad = c.prepareStatement(sql_add_dm);
                 stmt_ad.executeUpdate();
-                
+
                 PreparedStatement stmt_fdc = c.prepareStatement(sql_find_dm_created);
                 ResultSet rs_fdc = stmt_fdc.executeQuery();
 
@@ -226,7 +226,7 @@ public class DBManager implements CallHandler, DMHandler {
     public void copyFile(String path) {
         File source = new File(path);
         File copy = new File("./files/" + source.getName());
-        try (InputStream in = new BufferedInputStream(new FileInputStream(source)); 
+        try (InputStream in = new BufferedInputStream(new FileInputStream(source));
             OutputStream out = new BufferedOutputStream(new FileOutputStream(copy))) {
 
             byte[] buffer = new byte[1024];
@@ -239,7 +239,7 @@ public class DBManager implements CallHandler, DMHandler {
             Logger.getLogger(DBManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public String findFileWithChecksum(String checksum)
     {
         try {
@@ -256,15 +256,15 @@ public class DBManager implements CallHandler, DMHandler {
         }
         return "";
     }
-    
+
     public List getFriends() {
         try {
             PreparedStatement stmt = c.prepareStatement(sql_get_users);
             ResultSet rs = stmt.executeQuery();
-            
+
             List<HashMap<String, String>> result = new ArrayList<>();
             int cur = 0;
-            
+
             while (rs.next()) {
                 result.add(new HashMap<>());
                 result.get(cur).put("ip", rs.getString(1));
@@ -275,10 +275,10 @@ public class DBManager implements CallHandler, DMHandler {
         } catch (SQLException ex) {
             Logger.getLogger(DBManager.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         return new ArrayList<>();
     }
-    
+
     public void addFile(String path) {
         String hash = countChecksum(path);
 
@@ -303,6 +303,6 @@ public class DBManager implements CallHandler, DMHandler {
 
     @Override
     public void callFailed(String ip) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+//        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }
