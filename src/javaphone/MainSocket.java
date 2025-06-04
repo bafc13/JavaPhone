@@ -113,7 +113,7 @@ public class MainSocket extends Thread {
             Logger.getLogger(MainSocket.class.getName()).log(Level.SEVERE, null, ex);
         }
         task.interrupt();
-
+        System.out.println(task.status);
         if (task.status) {
             for (CallHandler l : listeners) {
                 l.callSent(task.result);

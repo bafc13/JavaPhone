@@ -67,6 +67,7 @@ public class DBManager implements CallHandler, DMHandler {
 
     @Override
     public void callRecieved(Handshake hs) {
+        System.out.println("WRITE TO DB");
         String ip = hs.sock.getInetAddress().toString();
 
         try {
@@ -77,7 +78,7 @@ public class DBManager implements CallHandler, DMHandler {
             if (setUsername(ip, hs.name)) {
                 PreparedStatement stmt_ad = c.prepareStatement(sql_add_dm);
                 stmt_ad.executeUpdate();
-
+                
                 PreparedStatement stmt_fdc = c.prepareStatement(sql_find_dm_created);
                 ResultSet rs_fdc = stmt_fdc.executeQuery();
 
@@ -296,6 +297,7 @@ public class DBManager implements CallHandler, DMHandler {
 
     @Override
     public void callSent(Handshake hs) {
+        System.out.println("CALL SEND");
         callRecieved(hs);
     }
 

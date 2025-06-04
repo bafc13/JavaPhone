@@ -72,11 +72,7 @@ public class BasicCallHandler implements CallHandler {
             }
             case CallCodes.callPing -> {
                 String address = hs.sock.getInetAddress().toString().substring(1);
-                try {
-                    hs.sock.close();
-                } catch (IOException ex) {
-                    Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                
                 for (CallResultHandler cr : new ArrayList<>(listeners)) {
                     cr.PingHappened(address, hs.name);
                 }
@@ -133,11 +129,7 @@ public class BasicCallHandler implements CallHandler {
             }
             case CallCodes.callPing -> {
                 String address = hs.sock.getInetAddress().toString().substring(1);
-                try {
-                    hs.sock.close();
-                } catch (IOException ex) {
-                    Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                
                 for (CallResultHandler cr : new ArrayList<>(listeners)) {
                     cr.PingHappened(address, hs.name);
                 }

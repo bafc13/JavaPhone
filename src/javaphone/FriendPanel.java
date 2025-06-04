@@ -92,7 +92,7 @@ public class FriendPanel extends javax.swing.JPanel {
 
     private void ping() {
         System.out.println("PINGING FRIEND");
-        mainJFrame.mainSock.call(ip, mainJFrame.username, CallCodes.callPing);
+        mainJFrame.mainSock.call(ip.substring(1), mainJFrame.username, CallCodes.callPing);
     }
 
     public void refresh(Boolean userStatus, Boolean serverStatus, String username) {

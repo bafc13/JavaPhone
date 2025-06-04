@@ -69,9 +69,9 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
         mainSock = new MainSocket();
         basicCallHandler = new BasicCallHandler();
         mainSock.start();
-        mainSock.addListener(basicCallHandler);
         mainSock.addListener(db);
-
+        mainSock.addListener(basicCallHandler);
+        
         db.setUsername("localhost", username);
 
         basicCallHandler.addListener(this);
@@ -325,9 +325,9 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
             System.out.println("HUY BLYAT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         } else if (!ip.equals("") && !nick.equals("")) {
             System.out.println("\nhuy " + ip + " chlen " + nick + "\n");
-            mainSock.call(ip, nick, CallCodes.callDM);
+            mainSock.call(ip, username, CallCodes.callDM);
         } else {
-            mainSock.call(ip, nick, CallCodes.callDM);
+            mainSock.call(ip, username, CallCodes.callDM);
         }
     }//GEN-LAST:event_connectButtonActionPerformed
 
@@ -432,9 +432,10 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
                 addFriend(friend.get("ip"), friend.get("name"));
             }
         }
+        
         for (HashMap<String, String> friend : friends) {
             if (!friend.get("ip").contains("localhost")) {
-                mainSock.call(ip, username, CallCodes.callPing);
+                mainSock.call(friend.get("ip").substring(1), username, CallCodes.callPing);
             }
         }
     }
