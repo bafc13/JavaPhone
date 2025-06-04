@@ -100,10 +100,10 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         chatID = dm.getID();
         this.dm = dm;
         initCallFrame();
-        
+
         this.voiceSender = voiceSender;
         this.voiceReceiver = voiceReciever;
-        
+
         this.videoSender = videoSender;
         this.videoReceiver = videoReciever;
 
@@ -183,6 +183,11 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         });
         this.add(callButton, BorderLayout.NORTH);
     }
+
+    public ApplicationController getController() {
+        return controller;
+    }
+
 
     private void addCameraPanel() {
         //добавление панели для всех камер
@@ -363,7 +368,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
             Logger.getLogger(CallFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        this.controller = cameraPanel.getController();
+        this.controller = new ApplicationController(cameraPanel.getSpeechRecognizer(), subtitleMap.get(0));
 
         audioPlay = new AudioPlay(AudioConfig.getAudioFormat());
         voiceSender = vs;
@@ -402,7 +407,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         }
         videoSender = vs;
         videoReceiver = vr;
-        
+
         cameraPanel.cameraManager.addListener(vs);
         vr.addListener(cameraPanel);
         cameraPanel.addParticipant(dm.getIP());

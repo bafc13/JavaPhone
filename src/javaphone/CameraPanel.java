@@ -40,7 +40,7 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
     private int participantCount = 1;
     private Timer timer;
 
-    private ApplicationController controller;
+
     private SubtitleDisplay subtitleDisplay;
     private VoskSpeechRecognizer recognizer;
 
@@ -50,11 +50,11 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
     private LinkedHashMap<Integer, JLabel> cameraMap;
     private LinkedHashMap<Integer, SubtitleDisplay> subtitleMap;
     private LinkedHashMap<String, Integer> participants;
-    
+
     private VideoSender videoSender;
     private VideoReciever videoReciever;
     private Boolean videoEnabled;
-    
+
     private CallFrame cf;
 
     private Dimension screenSize;
@@ -64,10 +64,10 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
             LinkedHashMap<Integer, SubtitleDisplay> subtitleMap, int chatID,
             CallFrame cf) throws IOException {
         super();
-        
+
         participants = new LinkedHashMap<>();
         participants.put("localhost", 0);
-        
+
         this.cf = cf;
         this.horizontalPanel = horPanel;
         this.secondHorizontalPanel = secHorPanel;
@@ -118,9 +118,6 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
         camerasCount++;
 
         this.recognizer = new VoskSpeechRecognizer();
-        controller = new ApplicationController(recognizer, subtitleDisplay);
-        this.setController(controller);
-        controller.start();
 
 
 //        this.videoSender = videoSender;
@@ -128,14 +125,18 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
 //        this.videoReciever.addListener(this);
         videoEnabled = true;
     }
-    
+
+    public VoskSpeechRecognizer getSpeechRecognizer() {
+        return recognizer;
+    }
+
     public void addParticipant(String ip) {
         participants.put(ip, participantCount);
         participantCount++;
-        
+
         addCamera();
     }
-    
+
     public void addCamera() {
         JPanel CameraPanel = new JPanel();
         JLabel CameraScreen;
@@ -281,13 +282,9 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
         panelToAdd.add(panel, BorderLayout.SOUTH);
     }
 
-    public ApplicationController getController() {
-        return controller;
-    }
 
-    public void setController(ApplicationController controller) {
-        this.controller = controller;
-    }
+
+
 
     @Override
     public void HandleCameraFrameRecieved(int chatID, String address, BufferedImage frame) {
@@ -307,8 +304,8 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
 
     public void exitFromCall() {
         stopCamera();
-        if(controller != null) {
-            controller.stop();
+        if(cf.getController() != null) {
+            cf.getController().stop();
         }
     }
 
