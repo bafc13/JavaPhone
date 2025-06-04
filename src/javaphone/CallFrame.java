@@ -100,9 +100,10 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         chatID = dm.getID();
         this.dm = dm;
         initCallFrame();
+        
         this.voiceSender = voiceSender;
-
         this.voiceReceiver = voiceReciever;
+        
         this.videoSender = videoSender;
         this.videoReceiver = videoReciever;
 
@@ -143,7 +144,6 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
 
         voiceEnabled = false;
         videoEnabled = false;
-        mainJFrame.basicCallHandler.addListener(this);
     }
 
     private void initCall() throws IOException {
@@ -400,11 +400,12 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         if (chatID != this.chatID) {
             return;
         }
+        videoSender = vs;
+        videoReceiver = vr;
         
         cameraPanel.cameraManager.addListener(vs);
         vr.addListener(cameraPanel);
         cameraPanel.addParticipant(dm.getIP());
-        cameraPanel.addCamera();
     }
 
     @Override
