@@ -48,6 +48,7 @@ public class MainSocket extends Thread {
 
                 if (!purpose.equals(CallCodes.callPing)) {
                     out.write(CallCodes.responseWait + "\n");
+                    out.flush();
                     NotificationDialog nd = new NotificationDialog(JavaPhone.frame, purpose, responseName);
                     boolean res = nd.getResponse();
                     if (!res) {
