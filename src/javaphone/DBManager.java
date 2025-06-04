@@ -68,7 +68,7 @@ public class DBManager implements CallHandler, DMHandler {
     @Override
     public void callRecieved(Handshake hs) {
         System.out.println("WRITE TO DB");
-        String ip = hs.sock.getInetAddress().toString();
+        String ip = hs.sock.getInetAddress().toString().substring(1);
 
         try {
             PreparedStatement stmt_cue = c.prepareStatement(sql_check_user_exists);

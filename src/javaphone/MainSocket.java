@@ -87,9 +87,6 @@ public class MainSocket extends Thread {
                 for (CallHandler l : listeners) {
                     l.callRecieved(hs);
                 }
-
-                in.close();
-                out.close();
             }
         } catch (IOException e) {
 

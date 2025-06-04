@@ -21,8 +21,11 @@ public class CameraManager {
     public static int StyleCount = 0;
     private Timer timer;
 
-    private List<VideoHandler> listeners = new ArrayList<>();
+    private List<VideoHandler> listeners;
 
+    public CameraManager() {
+        listeners = new ArrayList<>();
+    }
 
     public void addListener(VideoHandler to_add)
     {

@@ -63,7 +63,7 @@ public class VoiceReciever extends Thread {
                 line = in.readUTF();
                 for (SubtitleHandler sh : subListeners)
                 {
-                    sh.SubtitleLineReceived(chatID, source.getInetAddress().toString(), line);
+                    sh.SubtitleLineReceived(chatID, source.getInetAddress().toString().substring(1), line);
                 }
             } catch (IOException ex) {
                 Logger.getLogger(VoiceReciever.class.getName()).log(Level.SEVERE, null, ex);
@@ -87,7 +87,7 @@ public class VoiceReciever extends Thread {
                 
                 for (VoiceHandler l : listeners)                  
                 {
-                    l.HandleVoiceRecieved(chatID, source.getInetAddress().toString(), dPack.getData());
+                    l.HandleVoiceRecieved(chatID, source.getInetAddress().toString().substring(1), dPack.getData());
                 }
             } catch (IOException ex) {
                 Logger.getLogger(VoiceReciever.class.getName()).log(Level.SEVERE, null, ex);

@@ -154,7 +154,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
 
         addMyCamera();
 
-        String ip = dm.getIP().substring(1);
+        String ip = dm.getIP();
         mainJFrame.mainSock.call(ip, mainJFrame.username, CallCodes.callVoice);
         mainJFrame.mainSock.call(ip, mainJFrame.username, CallCodes.callVideo);
     }

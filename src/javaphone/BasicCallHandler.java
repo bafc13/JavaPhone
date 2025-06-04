@@ -32,7 +32,7 @@ public class BasicCallHandler implements CallHandler {
 
     @Override
     public void callRecieved(Handshake hs) {
-        int id = mainJFrame.db.getDmId(hs.sock.getInetAddress().toString());
+        int id = mainJFrame.db.getDmId(hs.sock.getInetAddress().toString().substring(1));
 
         switch (hs.message) {
             case CallCodes.callDM -> {
@@ -85,7 +85,7 @@ public class BasicCallHandler implements CallHandler {
 
     @Override
     public void callSent(Handshake hs) {
-        int id = mainJFrame.db.getDmId(hs.sock.getInetAddress().toString());
+        int id = mainJFrame.db.getDmId(hs.sock.getInetAddress().toString().substring(1));
 
         switch (hs.message) {
             case CallCodes.callDM -> {

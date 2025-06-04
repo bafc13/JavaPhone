@@ -91,7 +91,7 @@ public class DirectMessenger extends Thread {
                 if (msg_type == type_text) {
                     msg = readTextMessage();
                     for (DMHandler l : listeners) {
-                        l.HandleDMText(chatID, source.getInetAddress().toString(), msg);
+                        l.HandleDMText(chatID, source.getInetAddress().toString().substring(1), msg);
                     }
                 } else if (msg_type == type_file) {
                     String checksum = in.readUTF();
@@ -100,13 +100,13 @@ public class DirectMessenger extends Thread {
                     if (!foundFile.equals("")) {
                         out.writeUTF(CallCodes.filePresent);
                         for (DMHandler l : listeners) {
-                            l.HandleDMFile(chatID, source.getInetAddress().toString(), foundFile);
+                            l.HandleDMFile(chatID, source.getInetAddress().toString().substring(1), foundFile);
                         }
                     } else {
                         out.writeUTF(CallCodes.filePresent);
                         msg = readFile();
                         for (DMHandler l : listeners) {
-                            l.HandleDMFile(chatID, source.getInetAddress().toString(), msg);
+                            l.HandleDMFile(chatID, source.getInetAddress().toString().substring(1), msg);
                         }
                     } 
                 }
@@ -121,7 +121,7 @@ public class DirectMessenger extends Thread {
     }
 
     public String getIP() {
-        return source.getInetAddress().toString();
+        return source.getInetAddress().toString().substring(1);
     }
 
     public void sendText(String msg) throws IOException {

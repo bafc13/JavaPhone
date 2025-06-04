@@ -435,7 +435,7 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
         
         for (HashMap<String, String> friend : friends) {
             if (!friend.get("ip").contains("localhost")) {
-                mainSock.call(friend.get("ip").substring(1), username, CallCodes.callPing);
+                mainSock.call(friend.get("ip"), username, CallCodes.callPing);
             }
         }
     }
