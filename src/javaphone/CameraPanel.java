@@ -132,6 +132,8 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
     public void addParticipant(String ip) {
         participants.put(ip, participantCount);
         participantCount++;
+        
+        addCamera();
     }
     
     public void addCamera() {
