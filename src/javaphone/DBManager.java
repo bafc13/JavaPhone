@@ -17,7 +17,7 @@ import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
-import java.util.Base64;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javaphone.EventInterfaces.*;
@@ -51,6 +51,8 @@ public class DBManager implements CallHandler, DMHandler {
     String sql_get_user = "SELECT name FROM users WHERE ip = ?";
 
     String sql_find_file_checksum = "SELECT id, path FROM media WHERE checksum = ?";
+    
+    String sql_get_users = "SELECT ip, name FROM users";
 
     public DBManager() {
         try {
@@ -252,6 +254,28 @@ public class DBManager implements CallHandler, DMHandler {
             Logger.getLogger(DBManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return "";
+    }
+    
+    public List getFriends() {
+        try {
+            PreparedStatement stmt = c.prepareStatement(sql_get_users);
+            ResultSet rs = stmt.executeQuery();
+            
+            List<HashMap<String, String>> result = new ArrayList<>();
+            int cur = 0;
+            
+            while (rs.next()) {
+                result.add(new HashMap<>());
+                result.get(cur).put("ip", rs.getString(1));
+                result.get(cur).put("name", rs.getString(2));
+                cur++;
+            }
+            return result;
+        } catch (SQLException ex) {
+            Logger.getLogger(DBManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return new ArrayList<>();
     }
     
     public void addFile(String path) {

@@ -413,4 +413,9 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     public void SubtitleLineRecorded(String line) {
         // System.out.println("Recorded: " + line);
     }
+
+    @Override
+    public void PingHappened(String address, String username) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }

@@ -6,6 +6,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javaphone.EventInterfaces.CallResultHandler;
@@ -34,6 +37,8 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
     private String nick;
     private JLabel resultLabel;
     public static String username;
+    
+    public static List<FriendPanel> friendsList;
 
     /**
      * Creates new form mainJFrame
@@ -57,7 +62,9 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
                 Logger.getLogger(mainJFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-
+        
+        friendsList = new ArrayList<>();
+        
         db = new DBManager();
         mainSock = new MainSocket();
         basicCallHandler = new BasicCallHandler();
@@ -84,14 +91,8 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
         serverPanel.setBorder(new RoundedBorder(3));
         serverPanel.setLayout(new BoxLayout(serverPanel, BoxLayout.Y_AXIS));
         connectionPanel.setBorder(new RoundedBorder(3));
-
-        addFriend();
-
-        NotificationDialog nd = new NotificationDialog(this, CallCodes.callDM, "bafc13");
-        boolean response = nd.getResponse();
-        System.out.println(response);
-        NotificationDialog nd1 = new NotificationDialog(this, CallCodes.callVideo, "bafc13");
-
+        
+        initFriends();
     }
 
     /**
@@ -415,14 +416,27 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
         });
     }
 
-    private void addFriend() {
-        FriendPanel fpanel = new FriendPanel(mainSock);
+    private void addFriend(String ip, String username) {
+        FriendPanel fpanel = new FriendPanel(ip, username);
+        
+        friendsList.add(fpanel);
+        
         serverPanel.add(fpanel);
-
         serverPanel.add(Box.createVerticalStrut(13));
-        FriendPanel fpanel1 = new FriendPanel(mainSock);
-        serverPanel.add(fpanel1);
-
+    }
+    
+    private void initFriends() {
+        List<HashMap<String, String>> friends = db.getFriends();
+        for (HashMap<String, String> friend : friends) {
+            if (!friend.get("ip").contains("localhost")) {
+                addFriend(friend.get("ip"), friend.get("name"));
+            }
+        }
+        for (HashMap<String, String> friend : friends) {
+            if (!friend.get("ip").contains("localhost")) {
+                mainSock.call(ip, username, CallCodes.callPing);
+            }
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -467,5 +481,23 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
 
     @Override
     public void VideoCreated(int chatID, VideoSender vs, VideoReciever vr) {
+    }
+
+    @Override
+    public void PingHappened(String address, String username) {
+        Boolean found = false;
+        
+        for (FriendPanel friend : friendsList) {
+            if (friend.ip.equals(address)) {
+                found = true;
+                if (username.equals("")) 
+                    friend.refresh(false, false, username);
+                else
+                    friend.refresh(true, false, username);
+            }
+        }
+        
+        if (!found && !username.equals(""))
+            addFriend(address, username);
     }
 }

@@ -19,61 +19,70 @@ import javaphone.EventInterfaces.CallResultHandler;
  * @author Andrey
  */
 public class BasicCallHandler implements CallHandler {
+
     private List<CallResultHandler> listeners;
-    
-    public BasicCallHandler()
-    {
+
+    public BasicCallHandler() {
         listeners = new ArrayList<>();
     }
-    
-    public void addListener(CallResultHandler to_add)
-    {
+
+    public void addListener(CallResultHandler to_add) {
         listeners.add(to_add);
     }
-    
+
     @Override
     public void callRecieved(Handshake hs) {
         int id = mainJFrame.db.getDmId(hs.sock.getInetAddress().toString());
-        
-        if (hs.message.equals(CallCodes.callDM))
-        {
-            try {
-                DirectMessenger dm = new DirectMessenger(id, true, hs.sock);
-                
-                for (CallResultHandler cr : new ArrayList<>(listeners))
-                {
-                    cr.DMCreated(id, dm);
+
+        switch (hs.message) {
+            case CallCodes.callDM -> {
+                try {
+                    DirectMessenger dm = new DirectMessenger(id, true, hs.sock);
+
+                    for (CallResultHandler cr : new ArrayList<>(listeners)) {
+                        cr.DMCreated(id, dm);
+                    }
+                } catch (IOException ex) {
+                    Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } catch (IOException ex) {
-                Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
-        else if (hs.message.equals(CallCodes.callVoice))
-        {
-            try {
-                VoiceSender vs = new VoiceSender(hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockSend, hs.port);
-                VoiceReciever vr = new VoiceReciever(id, hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockReceive);
-                
-                for (CallResultHandler cr : new ArrayList<>(listeners))
-                {
-                    cr.VoiceCreated(id, vs, vr);
+            case CallCodes.callVoice -> {
+                try {
+                    VoiceSender vs = new VoiceSender(hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockSend, hs.port);
+                    VoiceReciever vr = new VoiceReciever(id, hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockReceive);
+
+                    for (CallResultHandler cr : new ArrayList<>(listeners)) {
+                        cr.VoiceCreated(id, vs, vr);
+                    }
+                } catch (IOException ex) {
+                    Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } catch (IOException ex) {
-                Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
-        else if (hs.message.equals(CallCodes.callVideo))
-        {
-            try {
-                VideoSender vs = new VideoSender(hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockSend, hs.port);
-                VideoReciever vr = new VideoReciever(id, hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockReceive);
-                
-                for (CallResultHandler cr : new ArrayList<>(listeners))
-                {
-                    cr.VideoCreated(id, vs, vr);
+            case CallCodes.callVideo -> {
+                try {
+                    VideoSender vs = new VideoSender(hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockSend, hs.port);
+                    VideoReciever vr = new VideoReciever(id, hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockReceive);
+
+                    for (CallResultHandler cr : new ArrayList<>(listeners)) {
+                        cr.VideoCreated(id, vs, vr);
+                    }
+                } catch (IOException ex) {
+                    Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } catch (IOException ex) {
-                Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            case CallCodes.callPing -> {
+                String address = hs.sock.getInetAddress().toString().substring(1);
+                try {
+                    hs.sock.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                for (CallResultHandler cr : new ArrayList<>(listeners)) {
+                    cr.PingHappened(address, hs.name);
+                }
+            }
+            default -> {
+                System.out.println("Unknow call purpose");
             }
         }
     }
@@ -81,52 +90,67 @@ public class BasicCallHandler implements CallHandler {
     @Override
     public void callSent(Handshake hs) {
         int id = mainJFrame.db.getDmId(hs.sock.getInetAddress().toString());
-        
-        if (hs.message.equals(CallCodes.callDM))
-        {
-            try {
-                DirectMessenger dm = new DirectMessenger(id, false, hs.sock);
-                
-                for (CallResultHandler cr : new ArrayList<>(listeners))
-                {
-                    cr.DMCreated(id, dm);
+
+        switch (hs.message) {
+            case CallCodes.callDM -> {
+                try {
+                    DirectMessenger dm = new DirectMessenger(id, false, hs.sock);
+                    String address = hs.sock.getInetAddress().toString().substring(1);
+
+                    for (CallResultHandler cr : new ArrayList<>(listeners)) {
+                        cr.DMCreated(id, dm);
+                    }
+                    for (CallResultHandler cr : new ArrayList<>(listeners)) {
+                        cr.PingHappened(address, hs.name);
+                    }
+                } catch (IOException ex) {
+                    Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } catch (IOException ex) {
-                Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            case CallCodes.callVoice -> {
+                try {
+                    VoiceSender vs = new VoiceSender(hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockSend, hs.port);
+                    VoiceReciever vr = new VoiceReciever(id, hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockReceive);
+
+                    for (CallResultHandler cr : new ArrayList<>(listeners)) {
+                        cr.VoiceCreated(id, vs, vr);
+                    }
+                } catch (IOException ex) {
+                    Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            case CallCodes.callVideo -> {
+                try {
+                    VideoSender vs = new VideoSender(hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockSend, hs.port);
+                    VideoReciever vr = new VideoReciever(id, hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockReceive);
+
+                    for (CallResultHandler cr : new ArrayList<>(listeners)) {
+                        cr.VideoCreated(id, vs, vr);
+                    }
+                } catch (IOException ex) {
+                    Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            case CallCodes.callPing -> {
+                String address = hs.sock.getInetAddress().toString().substring(1);
+                try {
+                    hs.sock.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                for (CallResultHandler cr : new ArrayList<>(listeners)) {
+                    cr.PingHappened(address, hs.name);
+                }
+            }
+            default -> {
             }
         }
-        else if (hs.message.equals(CallCodes.callVoice))
-        {
-            try {
-                VoiceSender vs = new VoiceSender(hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockSend, hs.port);
-                VoiceReciever vr = new VoiceReciever(id, hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockReceive);
-                
-                for (CallResultHandler cr : new ArrayList<>(listeners))
-                {
-                    cr.VoiceCreated(id, vs, vr);
-                }
-            } catch (IOException ex) {
-                Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        else if (hs.message.equals(CallCodes.callVideo))
-        {
-            try {
-                VideoSender vs = new VideoSender(hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockSend, hs.port);
-                VideoReciever vr = new VideoReciever(id, hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockReceive);
-                
-                for (CallResultHandler cr : new ArrayList<>(listeners))
-                {
-                    cr.VideoCreated(id, vs, vr);
-                }
-            } catch (IOException ex) {
-                Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }   
+    }
 
     @Override
     public void callFailed(String ip) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        for (CallResultHandler cr : new ArrayList<>(listeners)) {
+            cr.PingHappened(ip, "");
+        }
     }
 }

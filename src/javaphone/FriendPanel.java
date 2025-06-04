@@ -6,6 +6,8 @@ package javaphone;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.util.Timer;
+import java.util.TimerTask;
 import static javaphone.mainJFrame.mainSock;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -18,25 +20,45 @@ import javax.swing.JLabel;
 public class FriendPanel extends javax.swing.JPanel {
 
     //обводку для FriendPanel и чуть дисты между элементами в панели
+    public static final String userStatusOnline = "В сети";
+    public static final String userStatusOffline = "Не в сети";
+    public static final String serverStatusOnline = "Хост";
+    public static final String serverStatusOffline = "Не хост";
+
+    public static final long refreshRate = 5000L;
+    
+    public String ip;
+    public String username;
 
     private JLabel nickname;
     private JLabel status;
     private JLabel isHost;
     private JButton connectButton;
     private JButton messageButton;
-    private MainSocket mainSock;
+    private Timer refreshTimer;
+    private TimerTask pingTask;
 
-    public FriendPanel(MainSocket mainSock){
+    public FriendPanel(String ip, String username) {
         super();
-        this.mainSock = mainSock;
 
+        this.ip = ip;
+        this.username = username;
+
+        pingTask = new TimerTask() {
+            public void run() {
+                ping();
+            }
+        ;
+        };
+        refreshTimer = new Timer();
+        
         this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-        nickname = new JLabel("bafc13");
+        nickname = new JLabel(username);
         nickname.setBorder(new RoundedBorder(3));
-        status = new JLabel("В сети");
-        status.setForeground(Color.green);
+        status = new JLabel(userStatusOffline);
+        status.setForeground(Color.red);
         status.setBorder(new RoundedBorder(3));
-        isHost = new JLabel("Не хост");
+        isHost = new JLabel(serverStatusOffline);
         isHost.setForeground(Color.red);
         isHost.setBorder(new RoundedBorder(3));
 
@@ -56,24 +78,42 @@ public class FriendPanel extends javax.swing.JPanel {
 
         this.setSize(600, 40);
         this.setAlignmentX(Component.LEFT_ALIGNMENT);
+        refreshTimer.schedule(pingTask, refreshRate, refreshRate);
     }
 
     private void connect() {
-        String ip = "212.21.21.21.2";
-        String nick = "bafc13";
-
-        //айпи с ником пиздим с бд и вызываем звонок
-        System.out.println("CONNECTING TO FRIEND ZZZ...");
-//        mainSock.call(ip, nick, CallCodes.callDM);
+        System.out.println("Not supported yet");
     }
 
     private void message() {
-        String ip = "212.21.21.21.2";
-        String nick = "bafc13";
-
-        //айпи с ником пиздим с бд и вызываем звонок
-        System.out.println("MESSEGING FRIEND");
-//        mainSock.call(ip, nick, CallCodes.callDM);
+        System.out.println("MESSAGING FRIEND");
+        mainJFrame.mainSock.call(ip, mainJFrame.username, CallCodes.callDM);
     }
 
+    private void ping() {
+        System.out.println("PINGING FRIEND");
+        mainJFrame.mainSock.call(ip, mainJFrame.username, CallCodes.callPing);
+    }
+
+    public void refresh(Boolean userStatus, Boolean serverStatus, String username) {
+        if (userStatus) {
+            status.setText(userStatusOnline);
+            status.setForeground(Color.green);
+        } else {
+            status.setText(userStatusOffline);
+            status.setForeground(Color.red);
+        }
+        if (serverStatus) {
+            isHost.setText(serverStatusOnline);
+            isHost.setForeground(Color.green);
+        } else {
+            isHost.setText(serverStatusOffline);
+            isHost.setForeground(Color.red);
+        }
+
+        if (!username.equals("")) {
+            this.username = username;
+            nickname.setText(username);
+        }
+    }
 }

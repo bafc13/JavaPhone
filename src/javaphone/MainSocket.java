@@ -45,17 +45,19 @@ public class MainSocket extends Thread {
                 out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
                 String responseName = in.readLine();
                 String purpose = in.readLine();
-                
-                out.write(CallCodes.responseWait + "\n");
-                NotificationDialog nd = new NotificationDialog(JavaPhone.frame, purpose, responseName);
-                boolean res = nd.getResponse();
-                if (!res) {
-                    out.write(CallCodes.responseRefuze + "\n");
-                    in.close();
-                    out.close();
-                    continue;
+
+                if (!purpose.equals(CallCodes.callPing)) {
+                    out.write(CallCodes.responseWait + "\n");
+                    NotificationDialog nd = new NotificationDialog(JavaPhone.frame, purpose, responseName);
+                    boolean res = nd.getResponse();
+                    if (!res) {
+                        out.write(CallCodes.responseRefuze + "\n");
+                        in.close();
+                        out.close();
+                        continue;
+                    }
                 }
-                
+
                 out.write(CallCodes.responseAccept + "\n");
                 out.flush();
                 out.write(mainJFrame.username + "\n");
@@ -103,7 +105,7 @@ public class MainSocket extends Thread {
 
     public synchronized Boolean call(String addr, String name, String purpose) {
         CallTask task = new CallTask(addr, name, purpose);
-        task.run();
+        task.start();
         try {
             wait();
         } catch (InterruptedException ex) {
@@ -146,16 +148,22 @@ public class MainSocket extends Thread {
 
         @Override
         public void run() {
-            TimerTask interruptTask = new TimerTask() {
+            TimerTask interruptTask1 = new TimerTask() {
+                public void run() {
+                    finish();
+                }
+            ;
+            };
+            TimerTask interruptTask2 = new TimerTask() {
                 public void run() {
                     finish();
                 }
             ;
             };
             Timer interruptOfflineTimer = new Timer();
-            interruptOfflineTimer.schedule(interruptTask, delayOffline);
+            interruptOfflineTimer.schedule(interruptTask1, delayOffline);
             Timer interruptResponseTimer = new Timer();
-            interruptResponseTimer.schedule(interruptTask, delayResponse);
+            interruptResponseTimer.schedule(interruptTask2, delayResponse);
 
             Socket sock;
             try {
@@ -173,10 +181,11 @@ public class MainSocket extends Thread {
                 out.write(name + "\n");
                 out.write(purpose + "\n");
                 out.flush();
-                
-                if (in.readLine().equals(CallCodes.responseWait))
+
+                if (!purpose.equals(CallCodes.callPing) && in.readLine().equals(CallCodes.responseWait)) {
                     interruptOfflineTimer.cancel();
-                
+                }
+
                 if (in.readLine().equals(CallCodes.responseAccept)) {
                     String responseName = in.readLine();
 
