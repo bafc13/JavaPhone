@@ -37,7 +37,7 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
     public CameraManager cameraManager;
     private int camerasCount = 0;
     private int subtitleCount = 0;
-    private int participantCount = 1;
+    private int participantCount = 0;
     private Timer timer;
 
 
@@ -67,7 +67,8 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
         super();
 
         participants = new LinkedHashMap<>();
-        participants.put("localhost", 0);
+        participants.put("localhost", participantCount);
+        participantCount++;
 
         this.cf = cf;
         this.horizontalPanel = horPanel;

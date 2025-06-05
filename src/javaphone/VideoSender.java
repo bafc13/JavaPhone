@@ -62,6 +62,7 @@ public class VideoSender implements VideoHandler, SubtitleHandler {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write(img, "jpg", baos);
+        System.out.println(baos.toByteArray().length);
         return baos.toByteArray();
     }
 
