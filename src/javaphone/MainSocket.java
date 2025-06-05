@@ -110,14 +110,14 @@ public class MainSocket extends Thread {
             Logger.getLogger(MainSocket.class.getName()).log(Level.SEVERE, null, ex);
         }
         task.interrupt();
-        System.out.println(task.status);
+        // System.out.println(task.status);
         if (task.status) {
             for (CallHandler l : new ArrayList<>(listeners)) {
                 l.callSent(task.result);
             }
         } else {
             for (CallHandler l : new ArrayList<>(listeners)) {
-                l.callFailed(addr);
+                l.callFailed(addr, purpose);
             }
         }
 
@@ -133,7 +133,7 @@ public class MainSocket extends Thread {
         public Boolean status;
         public Handshake result;
 
-        public static final long delayOffline = 5000L;
+        public static final long delayOffline = 50000L;
         public static final long delayResponse = 60000L;
 
         public CallTask(String addr, String name, String purpose) {

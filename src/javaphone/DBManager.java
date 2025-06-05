@@ -300,7 +300,7 @@ public class DBManager implements CallHandler, DMHandler {
     }
 
     @Override
-    public void callFailed(String ip) {
+    public void callFailed(String ip, String purpose) {
 //        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

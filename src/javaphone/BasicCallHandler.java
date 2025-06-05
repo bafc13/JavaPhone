@@ -140,7 +140,10 @@ public class BasicCallHandler implements CallHandler {
     }
 
     @Override
-    public void callFailed(String ip) {
+    public void callFailed(String ip, String purpose) {
+        if (!purpose.equals(CallCodes.callPing))
+            System.out.println("Failed to call " + ip);
+        
         for (CallResultHandler cr : new ArrayList<>(listeners)) {
             cr.PingHappened(ip, "");
         }
