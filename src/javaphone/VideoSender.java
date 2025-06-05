@@ -72,6 +72,7 @@ public class VideoSender implements VideoHandler, SubtitleHandler {
 
     @Override
     public void HandleCameraFrameRecorded(BufferedImage frame) {
+        System.out.println("Sending frame");
         try {
             if (frame != null) {
                 dPack = new DatagramPacket(convertToSend(frame), chunk_size, source.getInetAddress(), port);

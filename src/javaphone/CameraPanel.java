@@ -293,6 +293,7 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
 
     @Override
     public void HandleCameraFrameRecieved(int chatID, String address, BufferedImage frame) {
+        System.out.println("Received camera frame");
         if (this.chatID != chatID)
             return;
 

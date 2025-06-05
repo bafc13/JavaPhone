@@ -164,11 +164,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         callButton.setAlignmentY(Component.CENTER_ALIGNMENT);
         callButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         callButton.addActionListener((ActionEvent e) -> {
-            isCall = true;
-            chatUserPanel.removeAll();
-            this.getContentPane().removeAll();
-            CallFrame.this.repaint();
-            CallFrame.this.revalidate();
+            
             try {
                 initCall();
             } catch (IOException ex) {
@@ -350,6 +346,12 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         if (chatID != this.chatID) {
             return;
         }
+        isCall = true;
+        chatUserPanel.removeAll();
+        this.getContentPane().removeAll();
+        CallFrame.this.repaint();
+        CallFrame.this.revalidate();
+        
         this.setLayout(new BorderLayout());
 
         addCameraPanel();
@@ -405,6 +407,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         cameraPanel.cameraManager.addListener(vs);
         vr.addListener(cameraPanel);
         vr.start();
+        
         cameraPanel.addParticipant(dm.getIP());
         this.repaint();
         this.revalidate();
