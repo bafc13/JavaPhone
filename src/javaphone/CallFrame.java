@@ -147,13 +147,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     }
 
     private void initCall() throws IOException {
-        this.setLayout(new BorderLayout());
-
-        addCameraPanel();
-        addChatUserPanel();
-
-        addMyCamera();
-
+        
         String ip = dm.getIP();
         mainJFrame.mainSock.call(ip, mainJFrame.username, CallCodes.callVoice);
         mainJFrame.mainSock.call(ip, mainJFrame.username, CallCodes.callVideo);
@@ -358,10 +352,9 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         }
         this.setLayout(new BorderLayout());
 
-
         addCameraPanel();
         addChatUserPanel();
-
+        
         try {
             addMyCamera();
         } catch (IOException ex) {
@@ -397,7 +390,8 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         } catch (LineUnavailableException ex) {
             Logger.getLogger(CallFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        this.repaint();
+        this.revalidate();
     }
 
     @Override
@@ -410,7 +404,10 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
 
         cameraPanel.cameraManager.addListener(vs);
         vr.addListener(cameraPanel);
+        vr.start();
         cameraPanel.addParticipant(dm.getIP());
+        this.repaint();
+        this.revalidate();
     }
 
     @Override
@@ -425,6 +422,6 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
 
     @Override
     public void PingHappened(String address, String username) {
-//        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        // Do nothing
     }
 }

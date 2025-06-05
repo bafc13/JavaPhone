@@ -428,7 +428,7 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
     private void initFriends() {
         List<HashMap<String, String>> friends = db.getFriends();
         for (HashMap<String, String> friend : friends) {
-            if (!friend.get("ip").contains("localhost")) {
+            if (!friend.get("ip").contains("localhost") && !friend.get("ip").contains("127.0.0.1")) {
                 addFriend(friend.get("ip"), friend.get("name"));
             }
         }

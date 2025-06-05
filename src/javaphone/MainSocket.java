@@ -84,12 +84,12 @@ public class MainSocket extends Thread {
                     hs = new Handshake(responseName, purpose, sock);
                 }
 
-                for (CallHandler l : listeners) {
+                for (CallHandler l : new ArrayList<>(listeners)) {
                     l.callRecieved(hs);
                 }
             }
         } catch (IOException e) {
-
+            Logger.getLogger(MainSocket.class.getName()).log(Level.SEVERE, null, e);
             try {
                 if (out != null) {
                     out.write(CallCodes.responseError + "\n");
@@ -112,11 +112,11 @@ public class MainSocket extends Thread {
         task.interrupt();
         System.out.println(task.status);
         if (task.status) {
-            for (CallHandler l : listeners) {
+            for (CallHandler l : new ArrayList<>(listeners)) {
                 l.callSent(task.result);
             }
         } else {
-            for (CallHandler l : listeners) {
+            for (CallHandler l : new ArrayList<>(listeners)) {
                 l.callFailed(addr);
             }
         }
@@ -167,7 +167,7 @@ public class MainSocket extends Thread {
             try {
                 sock = new Socket(addr, PORT);
             } catch (IOException ex) {
-                Logger.getLogger(MainSocket.class.getName()).log(Level.SEVERE, null, ex);
+                //Logger.getLogger(MainSocket.class.getName()).log(Level.SEVERE, null, ex);
                 finish();
                 return;
             }

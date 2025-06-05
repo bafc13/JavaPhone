@@ -67,7 +67,6 @@ public class DBManager implements CallHandler, DMHandler {
 
     @Override
     public void callRecieved(Handshake hs) {
-        System.out.println("WRITE TO DB");
         String ip = hs.sock.getInetAddress().toString().substring(1);
 
         try {
@@ -297,7 +296,6 @@ public class DBManager implements CallHandler, DMHandler {
 
     @Override
     public void callSent(Handshake hs) {
-        System.out.println("CALL SEND");
         callRecieved(hs);
     }
 
