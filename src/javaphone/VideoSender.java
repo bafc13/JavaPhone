@@ -25,8 +25,8 @@ import javax.imageio.ImageIO;
  */
 public class VideoSender implements VideoHandler, SubtitleHandler {
 
-    public static final int w = 1280;
-    public static final int h = 720;
+    public static final int w = 854;
+    public static final int h = 480;
     private int chunk_size;
     private final Socket source;
     private final DataOutputStream out;
@@ -62,7 +62,7 @@ public class VideoSender implements VideoHandler, SubtitleHandler {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write(img, "jpg", baos);
-        System.out.println(baos.toByteArray().length);
+        // System.out.println(baos.toByteArray().length);
         return baos.toByteArray();
     }
 
@@ -73,10 +73,11 @@ public class VideoSender implements VideoHandler, SubtitleHandler {
 
     @Override
     public void HandleCameraFrameRecorded(BufferedImage frame) {
-        System.out.println("Sending frame");
+        // System.out.println("Sending frame");
         try {
+            byte[] buf = convertToSend(frame);
             if (frame != null) {
-                dPack = new DatagramPacket(convertToSend(frame), chunk_size, source.getInetAddress(), port);
+                dPack = new DatagramPacket(buf, buf.length, source.getInetAddress(), port);
                 dSock.send(dPack);
             }
             else
