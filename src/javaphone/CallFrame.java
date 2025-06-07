@@ -28,7 +28,7 @@ import javax.swing.Timer;
  *
  * @author bafc13
  */
-public final class CallFrame extends javax.swing.JFrame implements VideoHandler, VoiceHandler, CallResultHandler, SubtitleHandler {
+public final class CallFrame extends javax.swing.JFrame implements VideoHandler, VoiceHandler, CallResultHandler, SubtitleHandler, NotificationHandler {
 
     private Dimension screenSize;
     private final int chatID;
@@ -149,8 +149,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     private void initCall() throws IOException {
         
         String ip = dm.getIP();
-        MainWindow.mainSock.call(ip, MainWindow.username, CallCodes.callVoice);
-        MainWindow.mainSock.call(ip, MainWindow.username, CallCodes.callVideo);
+        MainWindow.mainSock.call(ip, MainWindow.username, CallCodes.callVoiceVideo);
     }
 
     private void initChat() {
@@ -247,6 +246,8 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         if (cameraPanel != null) {
             cameraPanel.exitFromCall();
         }
+        MainWindow.connectionInfo.get(chatID).hasWindow = false;
+        
         super.dispose();
     }
 
@@ -426,5 +427,27 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     @Override
     public void PingHappened(String address, String username) {
         // Do nothing
+    }
+
+    @Override
+    public void messageReceived(int chatID, String senderIP, String content, Boolean isFile) {
+        if (this.chatID != chatID) {
+            // Do nothing. It's none of this window's business
+            return;
+        }
+        
+        // IDK do something
+    }
+
+    @Override
+    public Boolean callReceived(int chatID, String senderIP) {
+        if (this.chatID != chatID) {
+            // Do nothing. It's none of this window's business
+            return true;
+        }
+        
+        // Replace call button with accept and reject buttons or something like that
+        // IMPORTANT : this method should automatically return false after CallCodes.delayResponse ms
+        return false;
     }
 }

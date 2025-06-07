@@ -56,12 +56,7 @@ public class NotificationDialog extends JDialog {
                 acceptButton.setText("пообщаться");
                 rejectButton.setText("отклонить общение");
                 break;
-            case CallCodes.callVideo:
-                reasonToNotify = " звонит вам по видео";
-                acceptButton.setText("ответить");
-                rejectButton.setText("отклонить вызов");
-                break;
-            case CallCodes.callVoice:
+            case CallCodes.callVoiceVideo:
                 reasonToNotify = " звонит вам";
                 acceptButton.setText("ответить");
                 rejectButton.setText("отклонить вызов");

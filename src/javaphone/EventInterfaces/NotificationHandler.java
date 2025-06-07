@@ -9,5 +9,6 @@ package javaphone.EventInterfaces;
  * @author Andrey
  */
 public interface NotificationHandler {
-    public void NotificationRecieved();
+    public void messageReceived(int chatID, String senderIP, String content, Boolean isFile);
+    public Boolean callReceived(int chatID, String senderIP);
 }

@@ -10,6 +10,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javaphone.EventInterfaces.DMHandler;
+import javaphone.EventInterfaces.NotificationHandler;
 
 /**
  *
@@ -25,21 +26,30 @@ public class DirectMessenger extends Thread {
     public static int type_text = 100;
     public static int type_file = 200;
     public int chatID;
+    public String senderIP;
 
     private List<DMHandler> listeners;
+    private List<NotificationHandler> notificationListeners;
 
     public DirectMessenger(int id, Boolean is_host, Socket s) throws IOException {
-        chatID = id; // TODO: recieve id from database
+        chatID = id;
         this.is_host = is_host;
         source = s;
         in = new DataInputStream(s.getInputStream());
         out = new DataOutputStream(s.getOutputStream());
 
+        senderIP = source.getInetAddress().toString().substring(1);
+
         listeners = new ArrayList<>();
+        notificationListeners = new ArrayList<>();
     }
 
     public void addListener(DMHandler to_add) {
         listeners.add(to_add);
+    }
+
+    public void addNotificationListener(NotificationHandler to_add) {
+        notificationListeners.add(to_add);
     }
 
     private String readTextMessage() {
@@ -54,24 +64,32 @@ public class DirectMessenger extends Thread {
 
     private String readFile() {
         try {
-            int msg_size = in.readInt();
-            byte[] b = new byte[msg_size];
-            int bytes_read = in.read(b, 0, msg_size);
-            String fname = new String(b);
+            String hash = in.readUTF();
+            String path = MainWindow.db.findFileWithChecksum(hash);
+            if (path.equals("")) {
+                out.writeUTF(CallCodes.fileRequired);
+                int msg_size = in.readInt();
+                byte[] b = new byte[msg_size];
+                int bytes_read = in.read(b, 0, msg_size);
+                String fname = new String(b);
 
-            long size = in.readLong();
-            int bytes = 0;
-            FileOutputStream fs = new FileOutputStream("files/" + fname);
+                long size = in.readLong();
+                int bytes = 0;
+                FileOutputStream fs = new FileOutputStream("./files/" + fname);
 
-            byte[] buffer = new byte[4 * 1024];
-            while (size > 0 && (bytes = in.read(buffer, 0, (int) Math.min(buffer.length, size))) != -1) {
+                byte[] buffer = new byte[4 * 1024];
+                while (size > 0 && (bytes = in.read(buffer, 0, (int) Math.min(buffer.length, size))) != -1) {
 
-                fs.write(buffer, 0, bytes);
-                size -= bytes;
+                    fs.write(buffer, 0, bytes);
+                    size -= bytes;
+                }
+                fs.close();
+
+                return "./files/" + fname;
+            } else {
+                out.writeUTF(CallCodes.filePresent);
+                return path;
             }
-            fs.close();
-
-            return "files/" + fname;
         } catch (IOException ex) {
             Logger.getLogger(DirectMessenger.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -91,7 +109,10 @@ public class DirectMessenger extends Thread {
                 if (msg_type == type_text) {
                     msg = readTextMessage();
                     for (DMHandler l : listeners) {
-                        l.HandleDMText(chatID, source.getInetAddress().toString().substring(1), msg);
+                        l.HandleDMText(chatID, senderIP, msg);
+                    }
+                    for (NotificationHandler nh : notificationListeners) {
+                        nh.messageReceived(chatID, senderIP, msg, false);
                     }
                 } else if (msg_type == type_file) {
                     String checksum = in.readUTF();
@@ -99,16 +120,17 @@ public class DirectMessenger extends Thread {
 
                     if (!foundFile.equals("")) {
                         out.writeUTF(CallCodes.filePresent);
-                        for (DMHandler l : listeners) {
-                            l.HandleDMFile(chatID, source.getInetAddress().toString().substring(1), foundFile);
-                        }
+                        msg = foundFile;
                     } else {
                         out.writeUTF(CallCodes.filePresent);
                         msg = readFile();
-                        for (DMHandler l : listeners) {
-                            l.HandleDMFile(chatID, source.getInetAddress().toString().substring(1), msg);
-                        }
-                    } 
+                    }
+                    for (DMHandler l : listeners) {
+                        l.HandleDMFile(chatID, senderIP, msg);
+                    }
+                    for (NotificationHandler nh : notificationListeners) {
+                        nh.messageReceived(chatID, senderIP, msg, true);
+                    }
                 }
             }
         } catch (IOException ex) {
@@ -165,7 +187,7 @@ public class DirectMessenger extends Thread {
         }
 
         for (DMHandler l : listeners) {
-            l.HandleDMFile(chatID, "localhost", fname);
+            l.HandleDMFile(chatID, "localhost", "./files/" + fname);
         }
     }
 }

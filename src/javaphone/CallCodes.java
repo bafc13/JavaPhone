@@ -10,8 +10,7 @@ package javaphone;
  */
 public class CallCodes {
     public static final String callDM = "dm";
-    public static final String callVoice = "voice";
-    public static final String callVideo = "video";
+    public static final String callVoiceVideo = "voice";
     public static final String callPing = "ping";
     
     public static final String responseAccept = "ACCEPT";

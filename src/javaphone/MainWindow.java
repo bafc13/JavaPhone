@@ -498,10 +498,27 @@ public class MainWindow extends javax.swing.JFrame implements CallResultHandler,
             addFriend(address, username);
         }
     }
+    
+    
+    @Override
+    public void messageReceived(int chatID, String senderIP, String content, Boolean isFile) {
+        ConnectionInfo ci = connectionInfo.get(chatID);
+        if (ci != null && ci.hasWindow){
+            // Do nothing. There already is a window where notification should be shown
+        }
+        
+        // Just show notification
+    }
 
     @Override
-    public void NotificationRecieved() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public Boolean callReceived(int chatID, String senderIP) {
+        ConnectionInfo ci = connectionInfo.get(chatID);
+        if (ci != null && ci.hasWindow){
+            // Do nothing. There already is a window where notification should be shown
+            return true;
+        }
+        // 
+        return false;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

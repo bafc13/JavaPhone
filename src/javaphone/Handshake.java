@@ -16,30 +16,47 @@ public class Handshake {
     public final String message;
     public final Socket sock;
 
-    public final DatagramSocket dSockReceive;
-    public final DatagramSocket dSockSend;
-    public final int port;
-    public final int packetSize;
+    public final DatagramSocket dSockRecVoice;
+    public final DatagramSocket dSockSndVoice;
+    public final DatagramSocket dSockRecVideo;
+    public final DatagramSocket dSockSndVideo;
+    public final int voicePort;
+    public final int videoPort;
+    
+    public final int voiceChunkSize;
+    public final int videoChunkSize;
 
     public Handshake(String n, String m, Socket s) {
         name = n;
         message = m;
         sock = s;
         
-        dSockReceive = null;
-        dSockSend = null;
-        port = -1;
-        packetSize = -1;
+        dSockRecVoice = null;
+        dSockSndVoice = null;
+        dSockRecVideo = null;
+        dSockSndVideo = null;
+        
+        voicePort = -1;
+        videoPort = -1;
+        
+        voiceChunkSize = -1;
+        videoChunkSize = -1;
     }
 
-    public Handshake(String n, String m, Socket s, DatagramSocket dsr, DatagramSocket dss, int p, int ps) {
+    public Handshake(String n, String m, Socket s, DatagramSocket dsrVo, DatagramSocket dssVo, DatagramSocket dsrVi, DatagramSocket dssVi, int portVo, int portVi, int psVo, int psVi) {
         name = n;
         message = m;
         sock = s;
         
-        dSockReceive = dsr;
-        dSockSend = dss;
-        port = p;
-        packetSize = ps;
+        dSockRecVoice = dsrVo;
+        dSockSndVoice = dssVo;
+        dSockRecVideo = dsrVi;
+        dSockSndVideo = dsrVi;
+        
+        voicePort = portVo;
+        videoPort = portVi;
+        
+        voiceChunkSize = psVo;
+        videoChunkSize = psVi;
     }
 }

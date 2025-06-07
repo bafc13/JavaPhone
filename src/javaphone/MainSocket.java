@@ -12,6 +12,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javaphone.EventInterfaces.CallHandler;
+import javaphone.EventInterfaces.NotificationHandler;
 
 /**
  *
@@ -23,14 +24,21 @@ public class MainSocket extends Thread {
 
     private final ServerSocket mainSock;
     private List<CallHandler> listeners;
+    private List<NotificationHandler> notificationListeners;
 
     public MainSocket() throws IOException {
         listeners = new ArrayList<>();
+        notificationListeners = new ArrayList<>();
+        
         mainSock = new ServerSocket(PORT);
     }
 
     public void addListener(CallHandler to_add) {
         listeners.add(to_add);
+    }
+    
+    public void addNotificationListener(NotificationHandler to_add) {
+        notificationListeners.add(to_add);
     }
 
     @Override
@@ -41,22 +49,33 @@ public class MainSocket extends Thread {
             while (true) {
                 Handshake hs;
                 Socket sock = mainSock.accept();
+                String ip = sock.getInetAddress().toString().substring(1);
+                
                 in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
                 out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
                 String responseName = in.readLine();
                 String purpose = in.readLine();
 
-                if (!purpose.equals(CallCodes.callPing)) {
+                if (purpose.equals(CallCodes.callVoiceVideo)) {
                     out.write(CallCodes.responseWait + "\n");
                     out.flush();
-                    NotificationDialog nd = new NotificationDialog(JavaPhone.frame, purpose, responseName);
-                    boolean res = nd.getResponse();
+                    
+                    boolean res = true;
+                    for (NotificationHandler nh : notificationListeners) {                      
+                         res = res && nh.callReceived(MainWindow.db.getDmId(ip), ip);                       
+                    }
+                    
                     if (!res) {
-                        out.write(CallCodes.responseRefuze + "\n");
+                        out.write(CallCodes.responseRefuze);
+                        out.flush();
+                        
                         in.close();
                         out.close();
+                        sock.close();
+                        
                         continue;
                     }
+                    
                 }
 
                 out.write(CallCodes.responseAccept + "\n");
@@ -64,22 +83,25 @@ public class MainSocket extends Thread {
                 out.write(MainWindow.username + "\n");
                 out.flush();
 
-                if (purpose.equals(CallCodes.callVideo) || purpose.equals(CallCodes.callVoice)) {
-                    int chunkSize = Integer.parseInt(in.readLine());
-                    int port = Integer.parseInt(in.readLine());
+                if (purpose.equals(CallCodes.callVoiceVideo)) {
+                    int voiceChunkSize = Integer.parseInt(in.readLine());
+                    int videoChunkSize = Integer.parseInt(in.readLine());
+                    int voicePort = Integer.parseInt(in.readLine());
+                    int videoPort = Integer.parseInt(in.readLine());
 
-                    if (purpose.equals(CallCodes.callVideo)) {
-                        out.write(String.valueOf(CameraManager.chunkSize) + "\n");
-                    }
-                    if (purpose.equals(CallCodes.callVoice)) {
-                        out.write(String.valueOf(AudioConfig.CHUNK_SIZE) + "\n");
-                    }
-                    DatagramSocket dSockRec = new DatagramSocket();
-                    DatagramSocket dSockSend = new DatagramSocket();
-                    out.write(String.valueOf(dSockRec.getLocalPort()) + "\n");
+                    out.write(String.valueOf(AudioConfig.CHUNK_SIZE) + "\n");
+                    out.write(String.valueOf(CameraManager.chunkSize) + "\n");
+
+                    DatagramSocket dSockRecVoice = new DatagramSocket();
+                    DatagramSocket dSockSndVoice = new DatagramSocket();
+                    DatagramSocket dSockRecVideo = new DatagramSocket();
+                    DatagramSocket dSockSndVideo = new DatagramSocket();
+
+                    out.write(String.valueOf(dSockRecVoice.getLocalPort()) + "\n");
+                    out.write(String.valueOf(dSockRecVideo.getLocalPort()) + "\n");
                     out.flush();
 
-                    hs = new Handshake(responseName, purpose, sock, dSockRec, dSockSend, port, chunkSize);
+                    hs = new Handshake(responseName, purpose, sock, dSockRecVoice, dSockSndVoice, dSockRecVideo, dSockSndVideo, voicePort, videoPort, voiceChunkSize, videoChunkSize);
                 } else {
                     hs = new Handshake(responseName, purpose, sock);
                 }
@@ -133,9 +155,6 @@ public class MainSocket extends Thread {
         public Boolean status;
         public Handshake result;
 
-        public static final long delayOffline = 50000L;
-        public static final long delayResponse = 60000L;
-
         public CallTask(String addr, String name, String purpose) {
             this.addr = addr;
             this.name = name;
@@ -146,22 +165,15 @@ public class MainSocket extends Thread {
 
         @Override
         public void run() {
-            TimerTask interruptTask1 = new TimerTask() {
+            TimerTask interruptTask = new TimerTask() {
                 public void run() {
                     finish();
                 }
             ;
             };
-            TimerTask interruptTask2 = new TimerTask() {
-                public void run() {
-                    finish();
-                }
-            ;
-            };
-            Timer interruptOfflineTimer = new Timer();
-            interruptOfflineTimer.schedule(interruptTask1, delayOffline);
-            Timer interruptResponseTimer = new Timer();
-            interruptResponseTimer.schedule(interruptTask2, delayResponse);
+
+            Timer interruptTimer = new Timer();
+            interruptTimer.schedule(interruptTask, CallCodes.delayOffline);
 
             Socket sock;
             try {
@@ -180,34 +192,42 @@ public class MainSocket extends Thread {
                 out.write(purpose + "\n");
                 out.flush();
 
-                if (!purpose.equals(CallCodes.callPing) && in.readLine().equals(CallCodes.responseWait)) {
-                    interruptOfflineTimer.cancel();
+                if (purpose.equals(CallCodes.callVoiceVideo) && in.readLine().equals(CallCodes.responseWait)) {
+                    interruptTimer.purge();
+                    interruptTimer.schedule(interruptTask, CallCodes.delayResponse);
                 }
 
                 if (in.readLine().equals(CallCodes.responseAccept)) {
                     String responseName = in.readLine();
 
-                    if (purpose.equals(CallCodes.callVideo) || purpose.equals(CallCodes.callVoice)) {
-                        if (purpose.equals(CallCodes.callVideo)) {
-                            out.write(String.valueOf(CameraManager.chunkSize) + "\n");
-                        }
-                        if (purpose.equals(CallCodes.callVoice)) {
-                            out.write(String.valueOf(AudioConfig.CHUNK_SIZE) + "\n");
-                        }
-                        DatagramSocket dSockRec = new DatagramSocket();
-                        DatagramSocket dSockSend = new DatagramSocket();
-                        out.write(String.valueOf(dSockRec.getLocalPort()) + "\n");
-                        out.flush();
+                    if (purpose.equals(CallCodes.callVoiceVideo)) {
+                        out.write(String.valueOf(AudioConfig.CHUNK_SIZE) + "\n");
+                        out.write(String.valueOf(CameraManager.chunkSize) + "\n");
 
-                        int chunkSize = Integer.parseInt(in.readLine());
-                        int port = Integer.parseInt(in.readLine());
-                        result = new Handshake(responseName, purpose, sock, dSockRec, dSockSend, port, chunkSize);
+                        DatagramSocket dSockRecVoice = new DatagramSocket();
+                        DatagramSocket dSockSndVoice = new DatagramSocket();
+                        DatagramSocket dSockRecVideo = new DatagramSocket();
+                        DatagramSocket dSockSndVideo = new DatagramSocket();
+
+                        out.write(String.valueOf(dSockRecVoice.getLocalPort()) + "\n");
+                        out.write(String.valueOf(dSockRecVideo.getLocalPort()) + "\n");
+                        out.flush();
+                        
+                        int voiceChunkSize = Integer.parseInt(in.readLine());
+                        int videoChunkSize = Integer.parseInt(in.readLine());
+                        int voicePort = Integer.parseInt(in.readLine());
+                        int videoPort = Integer.parseInt(in.readLine());
+
+                        result = new Handshake(responseName, purpose, sock, dSockRecVoice, dSockSndVoice, dSockRecVideo, dSockSndVideo, voicePort, videoPort, voiceChunkSize, videoChunkSize);
                     } else {
                         result = new Handshake(responseName, purpose, sock);
                     }
                     status = true;
                     finish();
                 } else {
+                    in.close();
+                    out.close();
+                    sock.close();
                     finish();
                 }
             } catch (IOException ex) {

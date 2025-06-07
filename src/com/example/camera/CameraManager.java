@@ -15,7 +15,7 @@ import javaphone.EventInterfaces.VideoHandler;
 import javax.swing.Timer;
 
 public class CameraManager {
-    public static int chunkSize = 0;
+    public static int chunkSize = 65000;
     private VideoCapture camera;
     private boolean isCameraActive = false;
     public static int StyleCount = 0;

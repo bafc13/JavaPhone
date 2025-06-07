@@ -21,7 +21,7 @@ import javaphone.EventInterfaces.CallResultHandler;
 public class BasicCallHandler implements CallHandler {
 
     private List<CallResultHandler> listeners;
-
+    
     public BasicCallHandler() {
         listeners = new ArrayList<>();
     }
@@ -47,25 +47,18 @@ public class BasicCallHandler implements CallHandler {
                     Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            case CallCodes.callVoice -> {
+            case CallCodes.callVoiceVideo -> {
                 try {
-                    VoiceSender vs = new VoiceSender(hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockSend, hs.port);
-                    VoiceReciever vr = new VoiceReciever(id, hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockReceive);
+                    VoiceSender voiceSender = new VoiceSender(hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockSndVoice, hs.voicePort);
+                    VoiceReciever voiceReceiver = new VoiceReciever(id, hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockRecVoice);
+                    VideoSender videoSender = new VideoSender(hs.sock, 65000, hs.dSockSndVoice, hs.voicePort);
+                    VideoReciever videoReceiver = new VideoReciever(id, hs.sock, 65000, hs.dSockRecVoice);
 
                     for (CallResultHandler cr : new ArrayList<>(listeners)) {
-                        cr.VoiceCreated(id, vs, vr);
+                        cr.VoiceCreated(id, voiceSender, voiceReceiver);
                     }
-                } catch (IOException ex) {
-                    Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            case CallCodes.callVideo -> {
-                try {
-                    VideoSender vs = new VideoSender(hs.sock, 65000, hs.dSockSend, hs.port);
-                    VideoReciever vr = new VideoReciever(id, hs.sock, 65000, hs.dSockReceive);
-
                     for (CallResultHandler cr : new ArrayList<>(listeners)) {
-                        cr.VideoCreated(id, vs, vr);
+                        cr.VideoCreated(id, videoSender, videoReceiver);
                     }
                 } catch (IOException ex) {
                     Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -104,25 +97,18 @@ public class BasicCallHandler implements CallHandler {
                     Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            case CallCodes.callVoice -> {
+            case CallCodes.callVoiceVideo -> {
                 try {
-                    VoiceSender vs = new VoiceSender(hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockSend, hs.port);
-                    VoiceReciever vr = new VoiceReciever(id, hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockReceive);
+                    VoiceSender voiceSender = new VoiceSender(hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockSndVoice, hs.voicePort);
+                    VoiceReciever voiceReceiver = new VoiceReciever(id, hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockRecVoice);
+                    VideoSender videoSender = new VideoSender(hs.sock, 65000, hs.dSockSndVoice, hs.voicePort);
+                    VideoReciever videoReceiver = new VideoReciever(id, hs.sock, 65000, hs.dSockRecVoice);
 
                     for (CallResultHandler cr : new ArrayList<>(listeners)) {
-                        cr.VoiceCreated(id, vs, vr);
+                        cr.VoiceCreated(id, voiceSender, voiceReceiver);
                     }
-                } catch (IOException ex) {
-                    Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            case CallCodes.callVideo -> {
-                try {
-                    VideoSender vs = new VideoSender(hs.sock, 65000, hs.dSockSend, hs.port);
-                    VideoReciever vr = new VideoReciever(id, hs.sock, 65000, hs.dSockReceive);
-
                     for (CallResultHandler cr : new ArrayList<>(listeners)) {
-                        cr.VideoCreated(id, vs, vr);
+                        cr.VideoCreated(id, videoSender, videoReceiver);
                     }
                 } catch (IOException ex) {
                     Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
