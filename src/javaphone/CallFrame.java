@@ -377,10 +377,10 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         controller.getMic().addListener(voiceSender);
         controller.addListener(voiceSender);
 
-        controller.addListener(this);
+        //controller.addListener(this);
 
         voiceReceiver.addListener(this);
-        voiceReceiver.addSubListener(this);
+        voiceReceiver.addSubListener(cameraPanel);
 
         voiceReceiver.addSubListener(log);
         controller.addListener(log);

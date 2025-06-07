@@ -16,6 +16,7 @@ import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import javaphone.EventInterfaces.SubtitleHandler;
 import javaphone.EventInterfaces.VideoHandler;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -29,7 +30,7 @@ import javax.swing.Timer;
  *
  * @author bafc13
  */
-public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
+public class CameraPanel extends javax.swing.JPanel implements VideoHandler, SubtitleHandler {
 
     private final int chatID;
 
@@ -108,8 +109,6 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
         subtitleDisplay.getView().setMaximumSize(new Dimension(400, 50));
         southPanel.add(subtitleDisplay.getView());
 
-        subtitleMap.put(subtitleCount, subtitleDisplay);
-        subtitleCount++;
 
         addControlPanel(southPanel);
 
@@ -164,7 +163,7 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
             subtitleMap.put(subtitleCount, subtitleDisplay);
             subtitleCount++;
 
-            addControlPanel(southPanel);
+            //addControlPanel(southPanel);
 
             CameraPanel.add(southPanel, BorderLayout.SOUTH);
             horizontalPanel.add(CameraPanel);
@@ -193,7 +192,7 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
             subtitleCount++;
 
             southPanel.add(subtitleDisplay.getView());
-            addControlPanel(southPanel);
+            //addControlPanel(southPanel);
 
             CameraPanel.add(southPanel, BorderLayout.SOUTH);
 
@@ -298,6 +297,7 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
             return;
 
         int cameraID = participants.get(address);
+        System.out.println(cameraID);
         BufferedImage img = resizeToCameraFrame(frame, cameraID);
         updateFrame(img, cameraID);
     }
@@ -332,10 +332,10 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
     private void updateFrame(BufferedImage image, int cameraID) {
         if (image != null) {
             ImageIcon icon = new ImageIcon(image);
-            cameraScreen.setIcon(icon);
+            cameraMap.get(cameraID).setIcon(icon);
         } else {
-            cameraScreen.setIcon(null);
-            cameraScreen.setText("Zzzzz...");
+            cameraMap.get(cameraID).setIcon(null);
+            cameraMap.get(cameraID).setText("Zzzzz...");
         }
     }
 
@@ -367,6 +367,21 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler {
         }
 
         return img;
+    }
+
+    @Override
+    public void SubtitleLineRecorded(String line) {
+        // throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void SubtitleLineReceived(int chatID, String address, String line) {
+        if (this.chatID != chatID)
+            return;
+
+        int subID = participants.get(address);
+        System.out.println(subID);
+        subtitleMap.get(subID).updateText(line, true);
     }
 
 }

@@ -61,8 +61,8 @@ public class BasicCallHandler implements CallHandler {
             }
             case CallCodes.callVideo -> {
                 try {
-                    VideoSender vs = new VideoSender(hs.sock, 200000, hs.dSockSend, hs.port);
-                    VideoReciever vr = new VideoReciever(id, hs.sock, 200000, hs.dSockReceive);
+                    VideoSender vs = new VideoSender(hs.sock, 65000, hs.dSockSend, hs.port);
+                    VideoReciever vr = new VideoReciever(id, hs.sock, 65000, hs.dSockReceive);
 
                     for (CallResultHandler cr : new ArrayList<>(listeners)) {
                         cr.VideoCreated(id, vs, vr);
@@ -118,8 +118,8 @@ public class BasicCallHandler implements CallHandler {
             }
             case CallCodes.callVideo -> {
                 try {
-                    VideoSender vs = new VideoSender(hs.sock, 200000, hs.dSockSend, hs.port);
-                    VideoReciever vr = new VideoReciever(id, hs.sock, 200000, hs.dSockReceive);
+                    VideoSender vs = new VideoSender(hs.sock, 65000, hs.dSockSend, hs.port);
+                    VideoReciever vr = new VideoReciever(id, hs.sock, 65000, hs.dSockReceive);
 
                     for (CallResultHandler cr : new ArrayList<>(listeners)) {
                         cr.VideoCreated(id, vs, vr);
