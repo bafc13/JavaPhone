@@ -95,7 +95,7 @@ public class DirectMessenger extends Thread {
                     }
                 } else if (msg_type == type_file) {
                     String checksum = in.readUTF();
-                    String foundFile = mainJFrame.db.findFileWithChecksum(checksum);
+                    String foundFile = MainWindow.db.findFileWithChecksum(checksum);
 
                     if (!foundFile.equals("")) {
                         out.writeUTF(CallCodes.filePresent);
@@ -135,11 +135,11 @@ public class DirectMessenger extends Thread {
     }
 
     public void sendFile(String path, String fname) throws Exception {
-        mainJFrame.db.addFile(path + "/" + fname);
+        MainWindow.db.addFile(path + "/" + fname);
 
         out.writeInt(type_file);
 
-        String hash = mainJFrame.db.countChecksum("./files/" + fname);
+        String hash = MainWindow.db.countChecksum("./files/" + fname);
         out.writeUTF(hash);
         String response = in.readUTF();
 

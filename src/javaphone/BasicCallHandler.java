@@ -32,7 +32,7 @@ public class BasicCallHandler implements CallHandler {
 
     @Override
     public void callRecieved(Handshake hs) {
-        int id = mainJFrame.db.getDmId(hs.sock.getInetAddress().toString().substring(1));
+        int id = MainWindow.db.getDmId(hs.sock.getInetAddress().toString().substring(1));
         if (!hs.message.equals(CallCodes.callPing))
             System.out.println("Received call to chat " + String.valueOf(id));
         switch (hs.message) {
@@ -86,7 +86,7 @@ public class BasicCallHandler implements CallHandler {
 
     @Override
     public void callSent(Handshake hs) {
-        int id = mainJFrame.db.getDmId(hs.sock.getInetAddress().toString().substring(1));
+        int id = MainWindow.db.getDmId(hs.sock.getInetAddress().toString().substring(1));
 
         switch (hs.message) {
             case CallCodes.callDM -> {

@@ -49,7 +49,7 @@ public class WriterToFile implements SubtitleHandler {
     @Override
     public void SubtitleLineRecorded(String line){
         // Получаем имя пользователя по IP-адресу
-        String username = mainJFrame.db.getUsername("localhost");
+        String username = MainWindow.db.getUsername("localhost");
         
         // Форматируем строку для записи в лог
         String logLine = String.format("%s: %s", username, line);
@@ -72,7 +72,7 @@ public class WriterToFile implements SubtitleHandler {
             return;
         
         // Получаем имя пользователя по IP-адресу
-        String username = mainJFrame.db.getUsername(ipAddress);
+        String username = MainWindow.db.getUsername(ipAddress);
         
         // Форматируем строку для записи в лог
         String logLine = String.format("%s: %s", username, line);

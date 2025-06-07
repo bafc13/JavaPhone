@@ -12,6 +12,8 @@ import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javaphone.EventInterfaces.DMHandler;
@@ -170,12 +172,14 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
         }
 
         this.dm = dm;
-
+        
         dm.addListener(this);
-        dm.addListener(mainJFrame.db);
+        dm.addListener(MainWindow.db);
 //        dm.start();
         this.add(chatPanel);
         this.add(userPane);
+        
+        loadHistory();
     }
 
     private void addHyperlinkListener() {
@@ -207,27 +211,35 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
             }
         });
     }
-
-    @Override
-    public void HandleDMText(int chatID, String address, String text) {
-        if (dm.chatID != chatID)
-            return;
-
-        String username = mainJFrame.db.getUsername(address);
-
+    
+    private void loadHistory() {
+        List<HashMap<String, String>> history = MainWindow.db.getChatHistory(dm.chatID);
+        for (HashMap<String, String> msg : history) {
+            addMessage(msg.get("name"), msg.get("message"));
+        }
+    }
+    
+    private void addMessage(String username, String content) {
         HTMLDocument doc = (HTMLDocument) editorPane.getDocument();
         try {
             doc.insertAfterEnd(
                     doc.getCharacterElement(doc.getLength()),
-                    username + ": " + text + "<br>"
+                    username + ": " + content + "<br>"
             );
         } catch (BadLocationException ex) {
             Logger.getLogger(ChatArea.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(ChatArea.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    @Override
+    public void HandleDMText(int chatID, String address, String text) {
+        if (dm.chatID != chatID)
+            return;
 
-        inputField.setText("");
+        String username = MainWindow.db.getUsername(address);
+        addMessage(username, text);
     }
 
     @Override
@@ -242,6 +254,7 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
         if (!"".equals(inputField.getText())) {
             try {
                 dm.sendText(inputField.getText());
+                inputField.setText("");
             } catch (IOException ex) {
                 Logger.getLogger(CallFrame.class.getName()).log(Level.SEVERE, null, ex);
             }

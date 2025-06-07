@@ -8,7 +8,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.util.Timer;
 import java.util.TimerTask;
-import static javaphone.mainJFrame.mainSock;
+import static javaphone.MainWindow.mainSock;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -86,12 +86,28 @@ public class FriendPanel extends javax.swing.JPanel {
     }
 
     private void message() {
-        System.out.println("MESSAGING FRIEND");
-        mainJFrame.mainSock.call(ip, mainJFrame.username, CallCodes.callDM);
+        int chatID = MainWindow.db.getDmId(ip);
+        if (chatID == -1) {
+            System.out.println("WTF NO CHAT WITH USER " + username);
+            return;
+        }
+        
+        ConnectionInfo ci = MainWindow.connectionInfo.get(chatID);
+        if (ci != null && ci.dm != null) {
+            MainWindow.openChat(chatID);
+        } else if (ci != null) {
+            ci.toOpen = true;
+            MainWindow.mainSock.call(ip, MainWindow.username, CallCodes.callDM);
+        } else {
+            MainWindow.connectionInfo.put(chatID, new ConnectionInfo(true));
+            MainWindow.mainSock.call(ip, MainWindow.username, CallCodes.callDM);
+        }
+        
+        
     }
 
     private void ping() {
-        mainJFrame.mainSock.call(ip, mainJFrame.username, CallCodes.callPing);
+        MainWindow.mainSock.call(ip, MainWindow.username, CallCodes.callPing);
     }
 
     public void refresh(Boolean userStatus, Boolean serverStatus, String username) {

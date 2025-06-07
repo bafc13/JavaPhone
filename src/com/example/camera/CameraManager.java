@@ -37,7 +37,7 @@ public class CameraManager {
             camera = new VideoCapture(0); // 0 - индекс камеры по умолчанию
             isCameraActive = camera.isOpened();
         }
-        timer = new Timer(30, e -> {
+        timer = new Timer(60, e -> {
             getCurrentFrame();
         });
         timer.start();

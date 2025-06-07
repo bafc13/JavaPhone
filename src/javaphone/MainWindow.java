@@ -8,10 +8,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javaphone.EventInterfaces.CallResultHandler;
+import javaphone.EventInterfaces.NotificationHandler;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
@@ -27,7 +29,7 @@ import javax.swing.SwingConstants;
  *
  * @author bafc13
  */
-public class mainJFrame extends javax.swing.JFrame implements CallResultHandler {
+public class MainWindow extends javax.swing.JFrame implements CallResultHandler, NotificationHandler {
 
     public static DBManager db;
     public static MainSocket mainSock;
@@ -37,13 +39,14 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
     private String nick;
     private JLabel resultLabel;
     public static String username;
-    
+
     public static List<FriendPanel> friendsList;
+    public static LinkedHashMap<Integer, ConnectionInfo> connectionInfo;
 
     /**
      * Creates new form mainJFrame
      */
-    public mainJFrame() throws IOException {
+    public MainWindow() throws IOException {
         initComponents();
         this.setTitle("JavaPhone");
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -59,19 +62,21 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
             try {
                 SettingsFrame sf = new SettingsFrame();
             } catch (IOException ex) {
-                Logger.getLogger(mainJFrame.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
+
         friendsList = new ArrayList<>();
-        
+        connectionInfo = new LinkedHashMap<>();
+
         db = new DBManager();
         mainSock = new MainSocket();
         basicCallHandler = new BasicCallHandler();
-        mainSock.start();
+        
         mainSock.addListener(db);
         mainSock.addListener(basicCallHandler);
-        
+        mainSock.start();
+
         db.setUsername("localhost", username);
 
         basicCallHandler.addListener(this);
@@ -91,7 +96,7 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
         serverPanel.setBorder(new RoundedBorder(3));
         serverPanel.setLayout(new BoxLayout(serverPanel, BoxLayout.Y_AXIS));
         connectionPanel.setBorder(new RoundedBorder(3));
-        
+
         initFriends();
     }
 
@@ -372,7 +377,7 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
         try {
             SettingsFrame sf = new SettingsFrame();
         } catch (IOException ex) {
-            Logger.getLogger(mainJFrame.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_settingsButtonActionPerformed
 
@@ -393,14 +398,15 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(mainJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(mainJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(mainJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(mainJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
@@ -408,9 +414,9 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
             @Override
             public void run() {
                 try {
-                    new mainJFrame().setVisible(true);
+                    new MainWindow().setVisible(true);
                 } catch (IOException ex) {
-                    Logger.getLogger(mainJFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
@@ -418,13 +424,13 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
 
     private void addFriend(String ip, String username) {
         FriendPanel fpanel = new FriendPanel(ip, username);
-        
+
         friendsList.add(fpanel);
-        
+
         serverPanel.add(fpanel);
         serverPanel.add(Box.createVerticalStrut(13));
     }
-    
+
     private void initFriends() {
         List<HashMap<String, String>> friends = db.getFriends();
         for (HashMap<String, String> friend : friends) {
@@ -432,12 +438,70 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
                 addFriend(friend.get("ip"), friend.get("name"));
             }
         }
-        
+
         for (HashMap<String, String> friend : friends) {
             if (!friend.get("ip").contains("localhost")) {
                 mainSock.call(friend.get("ip"), username, CallCodes.callPing);
             }
         }
+    }
+
+    public static void openChat(int chatID) {
+        ConnectionInfo ci = connectionInfo.get(chatID);
+        try {
+            CallFrame cf = new CallFrame(ci.dm);
+        } catch (IOException ex) {
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        ci.hasWindow = true;
+        ci.toOpen = false;
+    }
+
+    @Override
+    public void DMCreated(int chatID, DirectMessenger dm) {
+        ConnectionInfo ci = connectionInfo.get(chatID);
+        if (ci == null) {
+            System.out.println("WTF NO INFO ABOUT CONNECTION WITH CHAT " + String.valueOf(chatID));
+            connectionInfo.put(chatID, new ConnectionInfo(dm));
+        } else {
+            ci.dm = dm;
+            if (ci.toOpen) {
+                openChat(chatID);
+            }
+        }
+    }
+
+    @Override
+    public void VoiceCreated(int chatID, VoiceSender vs, VoiceReciever vr) {
+    }
+
+    @Override
+    public void VideoCreated(int chatID, VideoSender vs, VideoReciever vr) {
+    }
+
+    @Override
+    public void PingHappened(String address, String username) {
+        Boolean found = false;
+
+        for (FriendPanel friend : friendsList) {
+            if (friend.ip.equals(address)) {
+                found = true;
+                if (username.equals("")) {
+                    friend.refresh(false, false, username);
+                } else {
+                    friend.refresh(true, false, username);
+                }
+            }
+        }
+
+        if (!found && !username.equals("")) {
+            addFriend(address, username);
+        }
+    }
+
+    @Override
+    public void NotificationRecieved() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -466,39 +530,4 @@ public class mainJFrame extends javax.swing.JFrame implements CallResultHandler 
     private javax.swing.JScrollPane serverScrollPanel;
     private javax.swing.JButton settingsButton;
     // End of variables declaration//GEN-END:variables
-
-    @Override
-    public void DMCreated(int chatID, DirectMessenger dm) {
-        try {
-            CallFrame cf = new CallFrame(dm);
-        } catch (IOException ex) {
-            Logger.getLogger(mainJFrame.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    @Override
-    public void VoiceCreated(int chatID, VoiceSender vs, VoiceReciever vr) {
-    }
-
-    @Override
-    public void VideoCreated(int chatID, VideoSender vs, VideoReciever vr) {
-    }
-
-    @Override
-    public void PingHappened(String address, String username) {
-        Boolean found = false;
-        
-        for (FriendPanel friend : friendsList) {
-            if (friend.ip.equals(address)) {
-                found = true;
-                if (username.equals("")) 
-                    friend.refresh(false, false, username);
-                else
-                    friend.refresh(true, false, username);
-            }
-        }
-        
-        if (!found && !username.equals(""))
-            addFriend(address, username);
-    }
 }

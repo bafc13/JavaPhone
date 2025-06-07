@@ -61,7 +61,7 @@ public class MainSocket extends Thread {
 
                 out.write(CallCodes.responseAccept + "\n");
                 out.flush();
-                out.write(mainJFrame.username + "\n");
+                out.write(MainWindow.username + "\n");
                 out.flush();
 
                 if (purpose.equals(CallCodes.callVideo) || purpose.equals(CallCodes.callVoice)) {

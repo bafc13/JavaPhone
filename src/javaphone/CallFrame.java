@@ -116,7 +116,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     }
 
     private void initCallFrame() throws IOException {
-        mainJFrame.basicCallHandler.addListener(this);
+        MainWindow.basicCallHandler.addListener(this);
 
         this.setTitle("Call");
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -149,8 +149,8 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     private void initCall() throws IOException {
         
         String ip = dm.getIP();
-        mainJFrame.mainSock.call(ip, mainJFrame.username, CallCodes.callVoice);
-        mainJFrame.mainSock.call(ip, mainJFrame.username, CallCodes.callVideo);
+        MainWindow.mainSock.call(ip, MainWindow.username, CallCodes.callVoice);
+        MainWindow.mainSock.call(ip, MainWindow.username, CallCodes.callVideo);
     }
 
     private void initChat() {
