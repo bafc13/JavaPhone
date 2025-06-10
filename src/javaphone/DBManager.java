@@ -260,6 +260,7 @@ public class DBManager implements CallHandler, DMHandler {
     public List getChatHistory(int chatID) {
         try {
             PreparedStatement stmt = c.prepareStatement(sql_get_chat_history);
+            stmt.setInt(1, chatID);
             ResultSet rs = stmt.executeQuery();
 
             List<HashMap<String, String>> result = new ArrayList<>();
@@ -271,6 +272,8 @@ public class DBManager implements CallHandler, DMHandler {
                 result.get(cur).put("message", rs.getString(2));
                 cur++;
             }
+            //System.out.println("chatID " + String.valueOf(chatID));
+            //System.out.println("cur " + String.valueOf(cur));
             return result;
         } catch (SQLException ex) {
             Logger.getLogger(DBManager.class.getName()).log(Level.SEVERE, null, ex);
