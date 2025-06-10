@@ -4,6 +4,7 @@
  */
 package javaphone;
 
+import com.example.camera.CameraManager;
 import com.livesubtitles.audio.AudioConfig;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -50,9 +51,9 @@ public class BasicCallHandler implements CallHandler {
             case CallCodes.callVoiceVideo -> {
                 try {
                     VoiceSender voiceSender = new VoiceSender(hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockSndVoice, hs.voicePort);
-                    VoiceReciever voiceReceiver = new VoiceReciever(id, hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockRecVoice);
-                    VideoSender videoSender = new VideoSender(hs.sock, 65000, hs.dSockSndVoice, hs.voicePort);
-                    VideoReciever videoReceiver = new VideoReciever(id, hs.sock, 65000, hs.dSockRecVoice);
+                    VoiceReciever voiceReceiver = new VoiceReciever(id, hs.sock, hs.voiceChunkSize, hs.dSockRecVoice);
+                    VideoSender videoSender = new VideoSender(hs.sock, CameraManager.chunkSize, hs.dSockSndVideo, hs.videoPort);
+                    VideoReciever videoReceiver = new VideoReciever(id, hs.sock, hs.videoChunkSize, hs.dSockRecVideo);
 
                     for (CallResultHandler cr : new ArrayList<>(listeners)) {
                         cr.VoiceCreated(id, voiceSender, voiceReceiver);

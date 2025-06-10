@@ -165,7 +165,13 @@ public class MainSocket extends Thread {
 
         @Override
         public void run() {
-            TimerTask interruptTask = new TimerTask() {
+            TimerTask interruptTask1 = new TimerTask() {
+                public void run() {
+                    finish();
+                }
+            ;
+            };
+            TimerTask interruptTask2 = new TimerTask() {
                 public void run() {
                     finish();
                 }
@@ -173,7 +179,7 @@ public class MainSocket extends Thread {
             };
 
             Timer interruptTimer = new Timer();
-            interruptTimer.schedule(interruptTask, CallCodes.delayOffline);
+            interruptTimer.schedule(interruptTask1, CallCodes.delayOffline);
 
             Socket sock;
             try {
@@ -194,7 +200,7 @@ public class MainSocket extends Thread {
 
                 if (purpose.equals(CallCodes.callVoiceVideo) && in.readLine().equals(CallCodes.responseWait)) {
                     interruptTimer.purge();
-                    interruptTimer.schedule(interruptTask, CallCodes.delayResponse);
+                    interruptTimer.schedule(interruptTask2, CallCodes.delayResponse);
                 }
 
                 if (in.readLine().equals(CallCodes.responseAccept)) {

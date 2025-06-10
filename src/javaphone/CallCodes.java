@@ -20,4 +20,7 @@ public class CallCodes {
     
     public static final String filePresent = "PRESENT";
     public static final String fileRequired = "REQUIRE";
+    
+    public static final long delayOffline = 5000L;
+    public static final long delayResponse = 60000L;
 }

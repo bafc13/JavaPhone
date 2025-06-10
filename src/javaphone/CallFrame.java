@@ -74,7 +74,6 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         chatID = dm.getID();
         this.dm = dm;
 
-        dm.start();
         initCallFrame();
 
         // System.out.println("INITIALIZED WITH DM");
