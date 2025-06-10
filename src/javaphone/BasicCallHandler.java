@@ -22,7 +22,7 @@ import javaphone.EventInterfaces.CallResultHandler;
 public class BasicCallHandler implements CallHandler {
 
     private List<CallResultHandler> listeners;
-    
+
     public BasicCallHandler() {
         listeners = new ArrayList<>();
     }
@@ -34,8 +34,9 @@ public class BasicCallHandler implements CallHandler {
     @Override
     public void callRecieved(Handshake hs) {
         int id = MainWindow.db.getDmId(hs.sock.getInetAddress().toString().substring(1));
-        if (!hs.message.equals(CallCodes.callPing))
+        if (!hs.message.equals(CallCodes.callPing)) {
             System.out.println("Received call to chat " + String.valueOf(id));
+        }
         switch (hs.message) {
             case CallCodes.callDM -> {
                 try {
@@ -54,7 +55,10 @@ public class BasicCallHandler implements CallHandler {
                     VoiceReciever voiceReceiver = new VoiceReciever(id, hs.sock, hs.voiceChunkSize, hs.dSockRecVoice);
                     VideoSender videoSender = new VideoSender(hs.sock, CameraManager.chunkSize, hs.dSockSndVideo, hs.videoPort);
                     VideoReciever videoReceiver = new VideoReciever(id, hs.sock, hs.videoChunkSize, hs.dSockRecVideo);
-
+                    System.out.println("Voice port to send: " + String.valueOf(hs.voicePort));
+                    System.out.println("Video port to send: " + String.valueOf(hs.videoPort));
+                    System.out.println("Voice port to receive: " + String.valueOf(hs.dSockRecVoice.getLocalPort()));
+                    System.out.println("Video port to receive: " + String.valueOf(hs.dSockRecVideo.getLocalPort()));
                     for (CallResultHandler cr : new ArrayList<>(listeners)) {
                         cr.VoiceCreated(id, voiceSender, voiceReceiver);
                     }
@@ -67,7 +71,7 @@ public class BasicCallHandler implements CallHandler {
             }
             case CallCodes.callPing -> {
                 String address = hs.sock.getInetAddress().toString().substring(1);
-                
+
                 for (CallResultHandler cr : new ArrayList<>(listeners)) {
                     cr.PingHappened(address, hs.name);
                 }
@@ -104,7 +108,10 @@ public class BasicCallHandler implements CallHandler {
                     VoiceReciever voiceReceiver = new VoiceReciever(id, hs.sock, AudioConfig.CHUNK_SIZE, hs.dSockRecVoice);
                     VideoSender videoSender = new VideoSender(hs.sock, 65000, hs.dSockSndVoice, hs.voicePort);
                     VideoReciever videoReceiver = new VideoReciever(id, hs.sock, 65000, hs.dSockRecVoice);
-
+                    System.out.println("Voice port to send: " + String.valueOf(hs.voicePort));
+                    System.out.println("Video port to send: " + String.valueOf(hs.videoPort));
+                    System.out.println("Voice port to receive: " + String.valueOf(hs.dSockRecVoice.getLocalPort()));
+                    System.out.println("Video port to receive: " + String.valueOf(hs.dSockRecVideo.getLocalPort()));
                     for (CallResultHandler cr : new ArrayList<>(listeners)) {
                         cr.VoiceCreated(id, voiceSender, voiceReceiver);
                     }
@@ -117,7 +124,7 @@ public class BasicCallHandler implements CallHandler {
             }
             case CallCodes.callPing -> {
                 String address = hs.sock.getInetAddress().toString().substring(1);
-                
+
                 for (CallResultHandler cr : new ArrayList<>(listeners)) {
                     cr.PingHappened(address, hs.name);
                 }
@@ -129,9 +136,10 @@ public class BasicCallHandler implements CallHandler {
 
     @Override
     public void callFailed(String ip, String purpose) {
-        if (!purpose.equals(CallCodes.callPing))
+        if (!purpose.equals(CallCodes.callPing)) {
             System.out.println("Failed to call " + ip);
-        
+        }
+
         for (CallResultHandler cr : new ArrayList<>(listeners)) {
             cr.PingHappened(ip, "");
         }

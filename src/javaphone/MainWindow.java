@@ -473,6 +473,7 @@ public class MainWindow extends javax.swing.JFrame implements CallResultHandler,
             }
         }
         dm.addNotificationListener(this);
+        dm.start();
     }
 
     @Override
