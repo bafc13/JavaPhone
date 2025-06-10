@@ -436,6 +436,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
             return;
         }
         
+        System.out.println("Message notificetion from chat window");
         // IDK do something
     }
 
@@ -445,9 +446,9 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
             // Do nothing. It's none of this window's business
             return true;
         }
-        
+        System.out.println("Call notification from chat window (accepted automatically)");
         // Replace call button with accept and reject buttons or something like that
         // IMPORTANT : this method should automatically return false after CallCodes.delayResponse ms
-        return false;
+        return true;
     }
 }

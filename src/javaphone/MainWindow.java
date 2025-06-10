@@ -35,8 +35,6 @@ public class MainWindow extends javax.swing.JFrame implements CallResultHandler,
     public static MainSocket mainSock;
     public static BasicCallHandler basicCallHandler;
 
-    private String ip;
-    private String nick;
     private JLabel resultLabel;
     public static String username;
 
@@ -75,6 +73,8 @@ public class MainWindow extends javax.swing.JFrame implements CallResultHandler,
         
         mainSock.addListener(db);
         mainSock.addListener(basicCallHandler);
+        mainSock.addNotificationListener(this);
+        
         mainSock.start();
 
         db.setUsername("localhost", username);
@@ -313,7 +313,8 @@ public class MainWindow extends javax.swing.JFrame implements CallResultHandler,
     }// </editor-fold>//GEN-END:initComponents
 
     private void createConferenceButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createConferenceButtonActionPerformed
-        mainSock.call(ip, nick, CallCodes.callDM);
+        System.out.println("Servers are not supported yet :(");
+        // mainSock.call(ip, nick, CallCodes.callDM);
     }//GEN-LAST:event_createConferenceButtonActionPerformed
 
     private void connectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectButtonActionPerformed
@@ -323,16 +324,16 @@ public class MainWindow extends javax.swing.JFrame implements CallResultHandler,
         CustomDialog dialog = new CustomDialog(this);
         dialog.setVisible(true);
 
-        ip = dialog.getField1Value();
-        nick = dialog.getField2Value();
+        String ipToConnect = dialog.getField1Value();
+        String nickname = dialog.getField2Value();
 
-        if (ip.equals("CLOSE") && nick.equals("OPER")) {
-            System.out.println("HUY BLYAT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        } else if (!ip.equals("") && !nick.equals("")) {
-            System.out.println("\nhuy " + ip + " chlen " + nick + "\n");
-            mainSock.call(ip, username, CallCodes.callDM);
+        if (ipToConnect.equals("CLOSE") && nickname.equals("OPER")) {
+            //System.out.println("HUY BLYAT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        } else if (!ipToConnect.equals("") && !nickname.equals("")) {
+            //System.out.println("\nhuy " + ip + " chlen " + nick + "\n");
+            mainSock.call(ipToConnect, username, CallCodes.callDM);
         } else {
-            mainSock.call(ip, username, CallCodes.callDM);
+            mainSock.call(ipToConnect, username, CallCodes.callDM);
         }
     }//GEN-LAST:event_connectButtonActionPerformed
 
@@ -450,6 +451,8 @@ public class MainWindow extends javax.swing.JFrame implements CallResultHandler,
         ConnectionInfo ci = connectionInfo.get(chatID);
         try {
             CallFrame cf = new CallFrame(ci.dm);
+            ci.dm.addNotificationListener(cf);
+            mainSock.addNotificationListener(cf);
         } catch (IOException ex) {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -469,6 +472,7 @@ public class MainWindow extends javax.swing.JFrame implements CallResultHandler,
                 openChat(chatID);
             }
         }
+        dm.addNotificationListener(this);
     }
 
     @Override
@@ -506,7 +510,7 @@ public class MainWindow extends javax.swing.JFrame implements CallResultHandler,
         if (ci != null && ci.hasWindow){
             // Do nothing. There already is a window where notification should be shown
         }
-        
+        System.out.println("Message notification from MainWindow (no window for this chat)");
         // Just show notification
     }
 
@@ -517,7 +521,9 @@ public class MainWindow extends javax.swing.JFrame implements CallResultHandler,
             // Do nothing. There already is a window where notification should be shown
             return true;
         }
-        // 
+        System.out.println("Call notification from MainWindow (no window for this chat)");
+        // Show some piece of interface with Accept/Reject buttons and return wich button was pressed
+        // IMPORTANT : this method should automatically return false after CallCodes.delayResponse ms
         return false;
     }
 
