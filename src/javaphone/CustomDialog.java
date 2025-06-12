@@ -10,8 +10,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 class CustomDialog extends JDialog {
-    private JTextField field1;
-    private JTextField field2;
+    private JTextField ipInput;
+    private String action;
 
     public CustomDialog(JFrame parent) {
         super(parent, "Ввод данных", true); // Модальное окно
@@ -22,44 +22,41 @@ class CustomDialog extends JDialog {
         this.setResizable(true);
 
         JLabel label1 = new JLabel("IP:");
-        JLabel label2 = new JLabel("NICKNAME:");
-        field1 = new JTextField();
-        field2 = new JTextField();
-        JButton okButton = new JButton("OK");
+        ipInput = new JTextField();
+        JButton dmButton = new JButton("Write");
+        JButton pingButton = new JButton("Ping");
 
 
-        okButton.addActionListener(e -> decision());
+        dmButton.addActionListener(e -> decision(CallCodes.callDM));
+        dmButton.addActionListener(e -> decision(CallCodes.callPing));
 
         add(label1);
-        add(field1);
-        add(label2);
-        add(field2);
+        add(ipInput);
         add(new JLabel());
-        add(okButton);
+        add(dmButton);
+        add(pingButton);
     }
 
     @Override
     public void dispose() {
-        field1.setText("CLOSE");
-        field2.setText("OPER");
+        ipInput.setText("");
         super.dispose();
     }
 
-    private void decision(){
-        if(field1.getText().equals("") && field2.getText().equals("")){
+    private void decision(String action){
+        this.action = action;
+        if(ipInput.getText().equals("")){
             this.dispose();
-        } else if (field1.getText().equals("") || field2.getText().equals("")){
-            JOptionPane.showMessageDialog(this, "Введите второе поле!");
         } else {
             super.dispose();
         }
     }
 
     public String getField1Value() {
-        return field1.getText();
+        return ipInput.getText();
     }
-
-    public String getField2Value() {
-        return field2.getText();
+    
+    public String getActionValue() {
+        return action;
     }
 }

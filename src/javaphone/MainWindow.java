@@ -325,15 +325,12 @@ public class MainWindow extends javax.swing.JFrame implements CallResultHandler,
         dialog.setVisible(true);
 
         String ipToConnect = dialog.getField1Value();
-        String nickname = dialog.getField2Value();
+        String action = dialog.getActionValue();
 
-        if (ipToConnect.equals("CLOSE") && nickname.equals("OPER")) {
-            //System.out.println("HUY BLYAT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        } else if (!ipToConnect.equals("") && !nickname.equals("")) {
-            //System.out.println("\nhuy " + ip + " chlen " + nick + "\n");
-            mainSock.call(ipToConnect, username, CallCodes.callDM);
+        if (ipToConnect.equals("") || action.equals("")) {
+            System.out.println("Wrong values: ip = " + ipToConnect + "; action = " + action + ";");
         } else {
-            mainSock.call(ipToConnect, username, CallCodes.callDM);
+            mainSock.call(ipToConnect, username, action);
         }
     }//GEN-LAST:event_connectButtonActionPerformed
 
