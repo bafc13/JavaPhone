@@ -31,7 +31,7 @@ public class SettingsFrame extends javax.swing.JFrame {
 
     public SettingsFrame() throws IOException {
         initComponents();
-        this.setTitle("Call");
+        this.setTitle("Settings");
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setResizable(true);
         this.setLocationRelativeTo(null);
@@ -57,7 +57,8 @@ public class SettingsFrame extends javax.swing.JFrame {
         }
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        this.setSize(screenSize.width / 8, screenSize.height / 7);
+        this.setSize(screenSize.width / 10, screenSize.height / 15);
+        
 
 
         setLayout(new GridLayout(2, 2, 5, 5));

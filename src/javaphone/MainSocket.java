@@ -29,14 +29,14 @@ public class MainSocket extends Thread {
     public MainSocket() throws IOException {
         listeners = new ArrayList<>();
         notificationListeners = new ArrayList<>();
-        
+
         mainSock = new ServerSocket(PORT);
     }
 
     public void addListener(CallHandler to_add) {
         listeners.add(to_add);
     }
-    
+
     public void addNotificationListener(NotificationHandler to_add) {
         notificationListeners.add(to_add);
     }
@@ -50,7 +50,7 @@ public class MainSocket extends Thread {
                 Handshake hs;
                 Socket sock = mainSock.accept();
                 String ip = sock.getInetAddress().toString().substring(1);
-                
+
                 in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
                 out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
                 String responseName = in.readLine();
@@ -59,23 +59,23 @@ public class MainSocket extends Thread {
                 if (purpose.equals(CallCodes.callVoiceVideo)) {
                     out.write(CallCodes.responseWait + "\n");
                     out.flush();
-                    
+
                     boolean res = true;
-                    for (NotificationHandler nh : notificationListeners) {                      
-                         res = res && nh.callReceived(MainWindow.db.getDmId(ip), ip);                       
+                    for (NotificationHandler nh : notificationListeners) {
+                        res = res && nh.callReceived(MainWindow.db.getDmId(ip), ip);
                     }
-                    
+
                     if (!res) {
                         out.write(CallCodes.responseRefuze);
                         out.flush();
-                        
+
                         in.close();
                         out.close();
                         sock.close();
-                        
+
                         continue;
                     }
-                    
+
                 }
 
                 out.write(CallCodes.responseAccept + "\n");
@@ -132,6 +132,7 @@ public class MainSocket extends Thread {
             Logger.getLogger(MainSocket.class.getName()).log(Level.SEVERE, null, ex);
         }
         task.interrupt();
+        task.interruptTimer.cancel();
         // System.out.println(task.status);
         if (task.status) {
             for (CallHandler l : new ArrayList<>(listeners)) {
@@ -154,6 +155,7 @@ public class MainSocket extends Thread {
 
         public Boolean status;
         public Handshake result;
+        public Timer interruptTimer;
 
         public CallTask(String addr, String name, String purpose) {
             this.addr = addr;
@@ -166,19 +168,21 @@ public class MainSocket extends Thread {
         @Override
         public void run() {
             TimerTask interruptTask1 = new TimerTask() {
+                @Override
                 public void run() {
                     finish();
                 }
             ;
             };
             TimerTask interruptTask2 = new TimerTask() {
+                @Override
                 public void run() {
                     finish();
                 }
             ;
             };
 
-            Timer interruptTimer = new Timer();
+            interruptTimer = new Timer();
             interruptTimer.schedule(interruptTask1, CallCodes.delayOffline);
 
             Socket sock;
@@ -218,7 +222,7 @@ public class MainSocket extends Thread {
                         out.write(String.valueOf(dSockRecVoice.getLocalPort()) + "\n");
                         out.write(String.valueOf(dSockRecVideo.getLocalPort()) + "\n");
                         out.flush();
-                        
+
                         int voiceChunkSize = Integer.parseInt(in.readLine());
                         int videoChunkSize = Integer.parseInt(in.readLine());
                         int voicePort = Integer.parseInt(in.readLine());
@@ -241,9 +245,11 @@ public class MainSocket extends Thread {
                 finish();
             }
         }
+
     }
 
     private synchronized void finish() {
         notify();
     }
+
 }

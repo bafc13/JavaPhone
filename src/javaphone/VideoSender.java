@@ -25,8 +25,8 @@ import javax.imageio.ImageIO;
  */
 public class VideoSender implements VideoHandler, SubtitleHandler {
 
-    public static final int w = 854;
-    public static final int h = 480;
+    public static final int w = 600;
+    public static final int h = 400;
     private int chunk_size;
     private final Socket source;
     private final DataOutputStream out;
@@ -86,7 +86,7 @@ public class VideoSender implements VideoHandler, SubtitleHandler {
                 dSock.send(dPack);
             }
         } catch (Exception ex) {
-            Logger.getLogger(VoiceReciever.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(VoiceReciever.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

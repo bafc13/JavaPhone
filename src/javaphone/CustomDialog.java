@@ -15,8 +15,8 @@ class CustomDialog extends JDialog {
 
     public CustomDialog(JFrame parent) {
         super(parent, "Ввод данных", true); // Модальное окно
-        setLayout(new GridLayout(3, 2, 5, 5));
-        setSize(300, 150);
+        setLayout(new GridLayout(2, 2, 5, 5));
+        setSize(300, 110);
         setLocationRelativeTo(parent);
         this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         this.setResizable(true);
@@ -32,7 +32,6 @@ class CustomDialog extends JDialog {
 
         add(label1);
         add(ipInput);
-        add(new JLabel());
         add(dmButton);
         add(pingButton);
     }

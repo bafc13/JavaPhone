@@ -164,6 +164,7 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler, Sub
             subtitleCount++;
 
             //addControlPanel(southPanel);
+            southPanel.add(new JPanel(), BorderLayout.SOUTH);
 
             CameraPanel.add(southPanel, BorderLayout.SOUTH);
             horizontalPanel.add(CameraPanel);
@@ -193,7 +194,8 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler, Sub
 
             southPanel.add(subtitleDisplay.getView());
             // addControlPanel(southPanel);
-
+            southPanel.add(new JPanel(), BorderLayout.SOUTH);
+            
             CameraPanel.add(southPanel, BorderLayout.SOUTH);
 
             cameraMap.put(camerasCount, CameraScreen);

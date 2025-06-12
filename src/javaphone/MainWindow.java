@@ -438,7 +438,7 @@ public class MainWindow extends javax.swing.JFrame implements CallResultHandler,
         }
 
         for (HashMap<String, String> friend : friends) {
-            if (!friend.get("ip").contains("localhost")) {
+            if (!friend.get("ip").contains("localhost") && !friend.get("ip").contains("127.0.0.1")) {
                 mainSock.call(friend.get("ip"), username, CallCodes.callPing);
             }
         }
