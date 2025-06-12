@@ -57,8 +57,8 @@ public class SettingsFrame extends javax.swing.JFrame {
         }
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        this.setSize(screenSize.width / 10, screenSize.height / 15);
-        
+        this.setSize(320, 135);
+
 
 
         setLayout(new GridLayout(2, 2, 5, 5));
@@ -77,7 +77,7 @@ public class SettingsFrame extends javax.swing.JFrame {
             MainWindow.username = field1.getText();
             textFileWriter.flush();
         }
-        
+
         this.dispose();
     }
 

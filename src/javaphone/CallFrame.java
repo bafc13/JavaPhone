@@ -12,6 +12,7 @@ import com.livesubtitles.ui.SubtitleDisplay;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import static java.lang.Thread.sleep;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
@@ -49,7 +50,8 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
 
     private JPanel horizontalPanel;
     private JPanel secondHorizontalPanel = new JPanel();
-    ;
+    private JPanel callPanel;
+
     private JPanel chatUserPanel;
     private ChatArea chatArea;
 
@@ -146,7 +148,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     }
 
     private void initCall() throws IOException {
-        
+
         String ip = dm.getIP();
         MainWindow.mainSock.call(ip, MainWindow.username, CallCodes.callVoiceVideo);
     }
@@ -154,6 +156,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     private void initChat() {
         addChatUserPanel();
 
+        callPanel = new JPanel();
         JButton callButton = new JButton();
         callButton.setText("Начать звонок");
         callButton.setSize(200, 75);
@@ -162,20 +165,20 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         callButton.setAlignmentY(Component.CENTER_ALIGNMENT);
         callButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         callButton.addActionListener((ActionEvent e) -> {
-            
+
             try {
                 initCall();
             } catch (IOException ex) {
                 Logger.getLogger(CallFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
-        this.add(callButton, BorderLayout.NORTH);
+        callPanel.add(callButton, BorderLayout.CENTER);
+        this.add(callPanel, BorderLayout.NORTH);
     }
 
     public ApplicationController getController() {
         return controller;
     }
-
 
     private void addCameraPanel() {
         //добавление панели для всех камер
@@ -246,7 +249,8 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
             cameraPanel.exitFromCall();
         }
         MainWindow.connectionInfo.get(chatID).hasWindow = false;
-        
+        audioPlay.stop();
+
         super.dispose();
     }
 
@@ -351,12 +355,12 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         this.getContentPane().removeAll();
         CallFrame.this.repaint();
         CallFrame.this.revalidate();
-        
+
         this.setLayout(new BorderLayout());
 
         addCameraPanel();
         addChatUserPanel();
-        
+
         try {
             addMyCamera();
         } catch (IOException ex) {
@@ -378,7 +382,6 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         controller.addListener(voiceSender);
 
         //controller.addListener(this);
-
         voiceReceiver.addListener(this);
         voiceReceiver.addSubListener(cameraPanel);
 
@@ -407,7 +410,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         cameraPanel.cameraManager.addListener(vs);
         vr.addListener(cameraPanel);
         vr.start();
-        
+
         cameraPanel.addParticipant(dm.getIP());
         this.repaint();
         this.revalidate();
@@ -432,19 +435,39 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     public void messageReceived(int chatID, String senderIP, String content, Boolean isFile) {
         if (this.chatID != chatID) {
             // Do nothing. It's none of this window's business
+            //haha, xd
             return;
         }
-        
-        System.out.println("Message notificetion from chat window");
+
+        System.out.println("Message notification from chat window");
         // IDK do something
     }
 
     @Override
     public Boolean callReceived(int chatID, String senderIP) {
         if (this.chatID != chatID) {
-            // Do nothing. It's none of this window's business
             return true;
         }
+
+        callPanel = new IncomingCallPanel();
+        this.repaint();
+        this.revalidate();
+            if (callPanel instanceof IncomingCallPanel) {
+                IncomingCallPanel customPanel = (IncomingCallPanel) callPanel;
+                while (customPanel.accept != 1 || customPanel.decline != 1) {
+                    try {
+                        sleep(20);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(CallFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                if (customPanel.accept == 1) {
+                    return true;
+                } else if (customPanel.decline == 1) {
+                    return false;
+                }
+            }
+
         System.out.println("Call notification from chat window (accepted automatically)");
         // Replace call button with accept and reject buttons or something like that
         // IMPORTANT : this method should automatically return false after CallCodes.delayResponse ms

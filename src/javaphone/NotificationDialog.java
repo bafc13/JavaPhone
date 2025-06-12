@@ -5,7 +5,9 @@
 package javaphone;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -23,13 +25,17 @@ public class NotificationDialog extends JDialog {
     private boolean response = false;
 
     public NotificationDialog(JFrame parent, String callCode, String nickname) {
-        super(parent, "Уведомление", true);
+        super(parent, "Уведомление", false);
         this.nickname = nickname;
         this.callCode = callCode;
 
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension dialogDimension = new Dimension(300, 150);
+
+
         setLayout(new BorderLayout());
-        setSize(300, 150);
-        setLocationRelativeTo(parent);
+        setSize(dialogDimension);
+        setLocation(screenSize.width - dialogDimension.width, screenSize.height - dialogDimension.height);
         this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         this.setResizable(true);
 

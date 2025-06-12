@@ -41,7 +41,6 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler, Sub
     private int participantCount = 0;
     private Timer timer;
 
-
     private SubtitleDisplay subtitleDisplay;
     private VoskSpeechRecognizer recognizer;
     private ApplicationController controller;
@@ -61,7 +60,6 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler, Sub
 
     private Dimension screenSize;
 
-
     public CameraPanel(JPanel horPanel, JPanel secHorPanel, LinkedHashMap<Integer, JLabel> cameraMap,
             LinkedHashMap<Integer, SubtitleDisplay> subtitleMap, int chatID,
             CallFrame cf) throws IOException {
@@ -79,6 +77,24 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler, Sub
         this.subtitleMap = subtitleMap;
         screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
+        addMyCameraPanel();
+
+        this.recognizer = new VoskSpeechRecognizer();
+        controller = new ApplicationController(recognizer, subtitleDisplay);
+        this.setController(controller);
+        controller.start();
+
+        videoEnabled = true;
+    }
+
+    public void addParticipant(String ip) {
+        participants.put(ip, participantCount);
+        participantCount++;
+
+        addCamera();
+    }
+
+    private void addMyCameraPanel() {
         //панель для своей камеры
         JPanel myCameraPanel = new JPanel();
         myCameraPanel.setBorder(BorderFactory.createEmptyBorder(3, 0, 3, 0));
@@ -109,7 +125,6 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler, Sub
         subtitleDisplay.getView().setMaximumSize(new Dimension(400, 50));
         southPanel.add(subtitleDisplay.getView());
 
-
         addControlPanel(southPanel);
 
         myCameraPanel.add(southPanel, BorderLayout.SOUTH);
@@ -117,85 +132,43 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler, Sub
 
         cameraMap.put(camerasCount, cameraScreen);
         camerasCount++;
-
-        this.recognizer = new VoskSpeechRecognizer();
-        controller = new ApplicationController(recognizer, subtitleDisplay);
-        this.setController(controller);
-        controller.start();
-
-
-//        this.videoSender = videoSender;
-//        this.videoReciever = videoReciever;
-//        this.videoReciever.addListener(this);
-        videoEnabled = true;
     }
 
-    public void addParticipant(String ip) {
-        participants.put(ip, participantCount);
-        participantCount++;
+    private void addCameraPanel(JPanel CameraPanel, JLabel CameraScreen) {
+        JPanel southPanel;
+        southPanel = new JPanel();
+        southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.Y_AXIS));
 
-        addCamera();
-    }
+        CameraPanel.setBorder(BorderFactory.createEmptyBorder(3, 0, 3, 0));
+        CameraPanel.setLayout(new BoxLayout(CameraPanel, BoxLayout.Y_AXIS));
 
-    public void addCamera() {
-        JPanel CameraPanel = new JPanel();
-        JLabel CameraScreen;
+        CameraScreen.setText("Zzzzz...");
+        CameraScreen.setAlignmentX(Component.CENTER_ALIGNMENT);
+        CameraScreen.setBorder(new RoundedBorder(3));
+
+        subtitleDisplay = new SubtitleDisplay();
+        subtitleDisplay.getView().setMaximumSize(new Dimension(400, 50));
+        southPanel.add(subtitleDisplay.getView());
+        subtitleMap.put(subtitleCount, subtitleDisplay);
+        subtitleCount++;
+        southPanel.add(new JPanel(), BorderLayout.SOUTH);
+
         if (cameraMap.size() < 2) {
-
-            CameraPanel.setBorder(BorderFactory.createEmptyBorder(3, 0, 3, 0));
-            CameraPanel.setLayout(new BoxLayout(CameraPanel, BoxLayout.Y_AXIS));
-
-            JPanel southPanel = new JPanel();
-            southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.Y_AXIS));
-
-            CameraScreen = new JLabel("Zzzzz...");
-            CameraScreen.setAlignmentX(Component.CENTER_ALIGNMENT);
-            CameraScreen.setBorder(new RoundedBorder(3));
             CameraScreen.setMinimumSize(new Dimension(600, 400));
             CameraScreen.setPreferredSize(new Dimension(600, 400));
             CameraScreen.setMaximumSize(new Dimension(600, 400));
             CameraPanel.add(CameraScreen);
-
-            subtitleDisplay = new SubtitleDisplay();
-            subtitleDisplay.getView().setMaximumSize(new Dimension(400, 50));
-            southPanel.add(subtitleDisplay.getView());
-
-            subtitleMap.put(subtitleCount, subtitleDisplay);
-            subtitleCount++;
-
-            //addControlPanel(southPanel);
-            southPanel.add(new JPanel(), BorderLayout.SOUTH);
 
             CameraPanel.add(southPanel, BorderLayout.SOUTH);
             horizontalPanel.add(CameraPanel);
 
             cameraMap.put(camerasCount, CameraScreen);
             camerasCount++;
-
             horizontalPanel.repaint();
             horizontalPanel.revalidate();
         } else if (cameraMap.size() < 4) {
-            CameraPanel.setBorder(BorderFactory.createEmptyBorder(3, 0, 3, 0));
-            CameraPanel.setLayout(new BoxLayout(CameraPanel, BoxLayout.Y_AXIS));
-
-            JPanel southPanel = new JPanel();
-            southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.Y_AXIS));
-
-            CameraScreen = new JLabel("Zzzzz...");
-            CameraScreen.setAlignmentX(Component.CENTER_ALIGNMENT);
-            CameraScreen.setBorder(new RoundedBorder(3));
-
             CameraPanel.add(CameraScreen);
 
-            subtitleDisplay = new SubtitleDisplay();
-            subtitleDisplay.getView().setMaximumSize(new Dimension(400, 50));
-            subtitleMap.put(subtitleCount, subtitleDisplay);
-            subtitleCount++;
-
-            southPanel.add(subtitleDisplay.getView());
-            // addControlPanel(southPanel);
-            southPanel.add(new JPanel(), BorderLayout.SOUTH);
-            
             CameraPanel.add(southPanel, BorderLayout.SOUTH);
 
             cameraMap.put(camerasCount, CameraScreen);
@@ -211,34 +184,13 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler, Sub
             });
 
             horizontalPanel.add(CameraPanel);
-
             horizontalPanel.repaint();
             horizontalPanel.revalidate();
         } else {
             if (cameraMap.size() == 4) {
                 cf.addSecondCameraPanel();
             }
-
-            CameraPanel.setBorder(BorderFactory.createEmptyBorder(3, 0, 3, 0));
-            CameraPanel.setLayout(new BoxLayout(CameraPanel, BoxLayout.Y_AXIS));
-
-            JPanel southPanel = new JPanel();
-            southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.Y_AXIS));
-
-            CameraScreen = new JLabel("Zzzzz...");
-            CameraScreen.setAlignmentX(Component.CENTER_ALIGNMENT);
-            CameraScreen.setBorder(new RoundedBorder(3));
-
             CameraPanel.add(CameraScreen);
-
-            subtitleDisplay = new SubtitleDisplay();
-            subtitleDisplay.getView().setMaximumSize(new Dimension(400, 50));
-            southPanel.add(subtitleDisplay.getView());
-
-            subtitleMap.put(subtitleCount, subtitleDisplay);
-            subtitleCount++;
-
-            addControlPanel(southPanel);
 
             CameraPanel.add(southPanel, BorderLayout.SOUTH);
 
@@ -254,10 +206,16 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler, Sub
             CameraScreen.setMinimumSize(new Dimension(width, height));
 
             secondHorizontalPanel.add(CameraPanel);
-
             secondHorizontalPanel.repaint();
             secondHorizontalPanel.revalidate();
         }
+    }
+
+    public void addCamera() {
+        JPanel CameraPanel = new JPanel();
+        JLabel CameraScreen = new JLabel();
+
+        addCameraPanel(CameraPanel, CameraScreen);
     }
 
     private void addControlPanel(JPanel panelToAdd) {
@@ -266,7 +224,6 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler, Sub
         JButton startBtn = new JButton("Вкл камеру");
         JButton stopBtn = new JButton("Выкл камеру");
         JButton maskBtn = new JButton("Фильтр");
-        JButton addBtn = new JButton("Добавить");
 
         startBtn.addActionListener(e -> startCamera());
         startBtn.setBorder(new RoundedBorder(2));
@@ -274,12 +231,10 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler, Sub
         stopBtn.setBorder(new RoundedBorder(2));
         maskBtn.addActionListener(e -> nextStyle());
         maskBtn.setBorder(new RoundedBorder(2));
-        addBtn.addActionListener(e -> addCamera());
 
         panel.add(startBtn);
         panel.add(stopBtn);
         panel.add(maskBtn);
-        panel.add(addBtn);
 
         panelToAdd.add(panel, BorderLayout.SOUTH);
     }
@@ -292,11 +247,11 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler, Sub
         return controller;
     }
 
-
     @Override
     public void HandleCameraFrameRecieved(int chatID, String address, BufferedImage frame) {
-        if (this.chatID != chatID)
+        if (this.chatID != chatID) {
             return;
+        }
 
         int cameraID = participants.get(address);
         System.out.println(cameraID);
@@ -312,7 +267,7 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler, Sub
 
     public void exitFromCall() {
         stopCamera();
-        if(controller != null) {
+        if (controller != null) {
             controller.stop();
         }
     }
@@ -348,8 +303,7 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler, Sub
         }
     }
 
-        private BufferedImage resizeToCameraFrame(BufferedImage frame, int cameraID)
-    {
+    private BufferedImage resizeToCameraFrame(BufferedImage frame, int cameraID) {
         int w = cameraMap.get(cameraID).getWidth();
         int h = cameraMap.get(cameraID).getHeight();
         BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
@@ -378,12 +332,12 @@ public class CameraPanel extends javax.swing.JPanel implements VideoHandler, Sub
 
     @Override
     public void SubtitleLineReceived(int chatID, String address, String line) {
-        if (this.chatID != chatID)
+        if (this.chatID != chatID) {
             return;
+        }
 
         int subID = participants.get(address);
         System.out.println(subID);
         subtitleMap.get(subID).updateText(line, true);
     }
-
 }
