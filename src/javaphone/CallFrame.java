@@ -250,7 +250,11 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
             cameraPanel.exitFromCall();
         }
         MainWindow.connectionInfo.get(chatID).hasWindow = false;
-        audioPlay.stop();
+
+        if(audioPlay != null){
+            audioPlay.stop();
+        }
+
 
         super.dispose();
     }
