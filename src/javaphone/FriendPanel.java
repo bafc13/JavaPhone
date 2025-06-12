@@ -6,9 +6,19 @@ package javaphone;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.Socket;
+import java.net.SocketException;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static javaphone.MainWindow.mainSock;
+import javax.swing.Box;
+import javax.swing.Box.Filler;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -35,50 +45,64 @@ public class FriendPanel extends javax.swing.JPanel {
     private JLabel isHost;
     private JButton connectButton;
     private JButton messageButton;
-    private Timer refreshTimer;
-    private TimerTask pingTask;
+    
+    private ConnectionChecker cc;
 
-    public FriendPanel(String ip, String username) {
+    public FriendPanel(String ip, String username, Socket sock) {
         super();
 
         this.ip = ip;
         this.username = username;
-
-        pingTask = new TimerTask() {
-            public void run() {
-                ping();
-            }
-        ;
-        };
-        refreshTimer = new Timer();
         
         this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         nickname = new JLabel(username);
         nickname.setBorder(new RoundedBorder(3));
+        nickname.setMaximumSize(new Dimension(200, 20));
+        nickname.setMinimumSize(new Dimension(200, 20));
+        
         status = new JLabel(userStatusOffline);
         status.setForeground(Color.red);
         status.setBorder(new RoundedBorder(3));
+        status.setMaximumSize(new Dimension(100, 20));
+        status.setMinimumSize(new Dimension(100, 20));
+        
         isHost = new JLabel(serverStatusOffline);
         isHost.setForeground(Color.red);
         isHost.setBorder(new RoundedBorder(3));
-
+        isHost.setMaximumSize(new Dimension(100, 20));
+        isHost.setMinimumSize(new Dimension(100, 20));
+        
         connectButton = new JButton("Позвонить");
         connectButton.addActionListener(e -> connect());
         connectButton.setBorder(new RoundedBorder(3));
-
+        connectButton.setMaximumSize(new Dimension(100, 20));
+        connectButton.setMinimumSize(new Dimension(100, 20));
+        
         messageButton = new JButton("Написать");
         messageButton.addActionListener(e -> message());
         messageButton.setBorder(new RoundedBorder(3));
-
+        messageButton.setMaximumSize(new Dimension(100, 20));
+        messageButton.setMinimumSize(new Dimension(100, 20));
+        
+        // Filler filler = new Filler(new Dimension(5, 5), new Dimension(5, 5), new Dimension(5, 5));
+        
         this.add(nickname);
+        this.add(new Filler(new Dimension(5, 5), new Dimension(5, 5), new Dimension(5, 5)));
         this.add(status);
+        this.add(new Filler(new Dimension(5, 5), new Dimension(5, 5), new Dimension(5, 5)));
         this.add(isHost);
+        this.add(new Filler(new Dimension(5, 5), new Dimension(5, 5), new Dimension(5, 5)));
         this.add(connectButton);
+        this.add(new Filler(new Dimension(5, 5), new Dimension(5, 5), new Dimension(5, 5)));
         this.add(messageButton);
+        this.setBorder(new RoundedBorder(5));
 
-        this.setSize(600, 40);
         this.setAlignmentX(Component.LEFT_ALIGNMENT);
-        refreshTimer.schedule(pingTask, refreshRate, refreshRate);
+        
+        if (sock != null) {
+            cc = new ConnectionChecker(sock, this);
+            cc.start();
+        }
     }
 
     private void connect() {
@@ -129,6 +153,38 @@ public class FriendPanel extends javax.swing.JPanel {
         if (!username.equals("")) {
             this.username = username;
             nickname.setText(username);
+        }
+    }
+    
+    public void setSocket(Socket sock) {
+        if (cc != null && cc.isAlive()) {
+            cc.interrupt();
+        }
+        
+        cc = new ConnectionChecker(sock, this);
+        cc.start();
+    }
+    
+    
+    private class ConnectionChecker extends Thread {
+        Socket sock;
+        FriendPanel parent;
+        
+        public ConnectionChecker(Socket sock, FriendPanel parent) {
+            this.sock = sock;
+            this.parent = parent;
+        }
+        
+        @Override
+        public void run() {
+            parent.refresh(Boolean.TRUE, Boolean.FALSE, username);
+            try {
+                BufferedReader in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+                in.readLine();
+            } catch (Exception ex) {
+                // Logger.getLogger(FriendPanel.class.getName()).log(Level.SEVERE, null, ex);
+                parent.refresh(Boolean.FALSE, Boolean.FALSE, username);
+            } 
         }
     }
 }

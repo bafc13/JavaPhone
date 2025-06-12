@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -420,8 +421,8 @@ public class MainWindow extends javax.swing.JFrame implements CallResultHandler,
         });
     }
 
-    private void addFriend(String ip, String username) {
-        FriendPanel fpanel = new FriendPanel(ip, username);
+    private void addFriend(String ip, String username, Socket sock) {
+        FriendPanel fpanel = new FriendPanel(ip, username, sock);
 
         friendsList.add(fpanel);
 
@@ -433,7 +434,7 @@ public class MainWindow extends javax.swing.JFrame implements CallResultHandler,
         List<HashMap<String, String>> friends = db.getFriends();
         for (HashMap<String, String> friend : friends) {
             if (!friend.get("ip").contains("localhost") && !friend.get("ip").contains("127.0.0.1")) {
-                addFriend(friend.get("ip"), friend.get("name"));
+                addFriend(friend.get("ip"), friend.get("name"), null);
             }
         }
 
@@ -482,22 +483,18 @@ public class MainWindow extends javax.swing.JFrame implements CallResultHandler,
     }
 
     @Override
-    public void PingHappened(String address, String username) {
+    public void PingHappened(String address, String username, Socket sock) {
         Boolean found = false;
 
         for (FriendPanel friend : friendsList) {
             if (friend.ip.equals(address)) {
                 found = true;
-                if (username.equals("")) {
-                    friend.refresh(false, false, username);
-                } else {
-                    friend.refresh(true, false, username);
-                }
+                friend.setSocket(sock);
             }
         }
 
         if (!found && !username.equals("")) {
-            addFriend(address, username);
+            addFriend(address, username, sock);
         }
     }
     

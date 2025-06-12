@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import static java.lang.Thread.sleep;
+import java.net.Socket;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
@@ -427,7 +428,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     }
 
     @Override
-    public void PingHappened(String address, String username) {
+    public void PingHappened(String address, String username, Socket sock) {
         // Do nothing
     }
 

@@ -73,7 +73,7 @@ public class BasicCallHandler implements CallHandler {
                 String address = hs.sock.getInetAddress().toString().substring(1);
 
                 for (CallResultHandler cr : new ArrayList<>(listeners)) {
-                    cr.PingHappened(address, hs.name);
+                    cr.PingHappened(address, hs.name, hs.sock);
                 }
             }
             default -> {
@@ -96,7 +96,7 @@ public class BasicCallHandler implements CallHandler {
                         cr.DMCreated(id, dm);
                     }
                     for (CallResultHandler cr : new ArrayList<>(listeners)) {
-                        cr.PingHappened(address, hs.name);
+                        cr.PingHappened(address, hs.name, hs.sock);
                     }
                 } catch (IOException ex) {
                     Logger.getLogger(BasicCallHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -126,7 +126,7 @@ public class BasicCallHandler implements CallHandler {
                 String address = hs.sock.getInetAddress().toString().substring(1);
 
                 for (CallResultHandler cr : new ArrayList<>(listeners)) {
-                    cr.PingHappened(address, hs.name);
+                    cr.PingHappened(address, hs.name, hs.sock);
                 }
             }
             default -> {
@@ -141,7 +141,7 @@ public class BasicCallHandler implements CallHandler {
         }
 
         for (CallResultHandler cr : new ArrayList<>(listeners)) {
-            cr.PingHappened(ip, "");
+            cr.PingHappened(ip, "", null);
         }
     }
 }
