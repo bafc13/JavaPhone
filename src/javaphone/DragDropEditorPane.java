@@ -49,7 +49,7 @@ public class DragDropEditorPane extends JEditorPane {
                                 .append(file.getName())
                                 .append("</a>")
                                 .append("<br>");
-                        dm.sendFile(path, file.getName());
+                        dm.sendFileHash(path, file.getName());
                     }
 
                     doc.insertAfterEnd(

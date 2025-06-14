@@ -18,8 +18,10 @@ public class CallCodes {
     public static final String responseRefuze = "REFUZE";
     public static final String responseWait = "WAIT";
     
-    public static final String filePresent = "PRESENT";
-    public static final String fileRequired = "REQUIRE";
+    public static final String dmText = "DMTEXT";
+    public static final String dmFile = "DMFILE";
+    public static final String filePresent = "FILEPRESENT";
+    public static final String fileRequired = "FILEREQUIRE";
     
     public static final long delayOffline = 5000L;
     public static final long delayResponse = 60000L;

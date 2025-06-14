@@ -23,8 +23,7 @@ public class DirectMessenger extends Thread {
     private final Socket source;
     private final DataInputStream in;
     private final DataOutputStream out;
-    public static int type_text = 100;
-    public static int type_file = 200;
+
     public int chatID;
     public String senderIP;
 
@@ -69,7 +68,9 @@ public class DirectMessenger extends Thread {
             if (path.equals("")) {
                 out.writeUTF(CallCodes.fileRequired);
                 out.flush();
-                
+                out.writeUTF(hash);
+                out.flush();
+
                 String fname = in.readUTF();
 
                 long size = in.readLong();
@@ -88,6 +89,8 @@ public class DirectMessenger extends Thread {
             } else {
                 out.writeUTF(CallCodes.filePresent);
                 out.flush();
+                out.writeUTF(hash);
+                out.flush();
                 return path;
             }
         } catch (IOException ex) {
@@ -99,29 +102,48 @@ public class DirectMessenger extends Thread {
 
     @Override
     public void run() {
-        int msg_type;
+        String msgCode;
 
         byte[] b;
         String msg;
         try {
             while (true) {
-                msg_type = in.readInt();
-                if (msg_type == type_text) {
-                    msg = readTextMessage();
-                    for (DMHandler l : listeners) {
-                        l.HandleDMText(chatID, senderIP, msg);
+                msgCode = in.readUTF();
+                switch (msgCode) {
+                    case CallCodes.dmText -> {
+                        msg = readTextMessage();
+                        for (DMHandler l : listeners) {
+                            l.HandleDMText(chatID, senderIP, msg);
+                        }
+                        for (NotificationHandler nh : notificationListeners) {
+                            nh.messageReceived(chatID, senderIP, msg, false);
+                        }
                     }
-                    for (NotificationHandler nh : notificationListeners) {
-                        nh.messageReceived(chatID, senderIP, msg, false);
+                    case CallCodes.dmFile -> {
+                        msg = readFile();
+                        for (DMHandler l : listeners) {
+                            l.HandleDMFile(chatID, senderIP, msg);
+                        }
+                        for (NotificationHandler nh : notificationListeners) {
+                            nh.messageReceived(chatID, senderIP, msg, true);
+                        }
                     }
-                } else if (msg_type == type_file) {
-                    msg = readFile();
-                    for (DMHandler l : listeners) {
-                        l.HandleDMFile(chatID, senderIP, msg);
+                    case CallCodes.fileRequired -> {
+                        String hash = in.readUTF();
+                        msg = sendFile(hash);
+                        for (DMHandler l : listeners) {
+                            l.HandleDMFile(chatID, "localhost", msg);
+                        }
                     }
-                    for (NotificationHandler nh : notificationListeners) {
-                        nh.messageReceived(chatID, senderIP, msg, true);
+                    case CallCodes.filePresent -> {
+                        String hash = in.readUTF();
+                        msg = MainWindow.db.findFileWithChecksum(hash);
+                        for (DMHandler l : listeners) {
+                            l.HandleDMFile(chatID, "localhost", msg);
+                        }
                     }
+                    default ->
+                        System.out.println("WTF wrong call code");
                 }
             }
         } catch (IOException ex) {
@@ -138,7 +160,7 @@ public class DirectMessenger extends Thread {
     }
 
     public void sendText(String msg) throws IOException {
-        out.writeInt(type_text);
+        out.writeUTF(CallCodes.dmText);
         out.writeUTF(msg);
         out.flush();
 
@@ -147,25 +169,27 @@ public class DirectMessenger extends Thread {
         }
     }
 
-    public void sendFile(String path, String fname) throws Exception {
+    public void sendFileHash(String path, String fname) throws Exception {
         MainWindow.db.addFile(path + "/" + fname);
 
-        out.writeInt(type_file);
+        out.writeUTF(CallCodes.dmFile);
         out.flush();
         String hash = MainWindow.db.countChecksum("./files/" + fname);
-        System.out.println(hash);
-        out.writeUTF("huesos");
-        out.flush();
-        String response = in.readUTF();
-        
-        if (response.equals(CallCodes.fileRequired)) {
-            System.out.println("File required, sending");
-            int bytes = 0;
-            // Open the File where he located in your pc
-            File file = new File(path + "/" + fname);
-            FileInputStream fs = new FileInputStream(file);
 
-            out.writeUTF(fname);
+        out.writeUTF(hash);
+        out.flush();
+    }
+
+    public String sendFile(String hash) {
+
+        FileInputStream fs = null;
+        try {
+            int bytes = 0;
+            String path = MainWindow.db.findFileWithChecksum(hash);
+            // Open the File where he located in your pc
+            File file = new File(path);
+            fs = new FileInputStream(file);
+            out.writeUTF(file.getName());
             // Here we send the File to Server
             out.writeLong(file.length());
             // Here we  break file into chunks
@@ -178,12 +202,18 @@ public class DirectMessenger extends Thread {
             System.out.println("Wrote file");
             // close the file here
             fs.close();
-        } else {
-            System.out.println("File is not needed");
+            return path;
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(DirectMessenger.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(DirectMessenger.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                fs.close();
+            } catch (IOException ex) {
+                Logger.getLogger(DirectMessenger.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
-
-        for (DMHandler l : listeners) {
-            l.HandleDMFile(chatID, "localhost", "./files/" + fname);
-        }
+        return "";
     }
 }
