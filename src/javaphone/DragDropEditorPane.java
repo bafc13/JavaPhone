@@ -11,16 +11,23 @@ import javax.swing.text.html.HTMLDocument;
 
 public class DragDropEditorPane extends JEditorPane {
 
-    private DirectMessenger dm;
+    
     public DragDropEditorPane(DirectMessenger dm) {
         setContentType("text/html");
         setEditable(false);
         setFont(new Font("Arial Unicode MS", Font.BOLD, 16));
-        new DropTarget(this, new FileDropHandler());
+        
+        new DropTarget(this, new FileDropHandler(dm));
+        
     }
 
     private class FileDropHandler extends DropTargetAdapter {
-
+        private DirectMessenger dm;
+        public FileDropHandler(DirectMessenger dm) {
+            System.out.println("Ty dolboeb? dm!=null");
+            this.dm = dm;
+        }
+                
         @Override
         public void drop(DropTargetDropEvent dtde) {
             try {
@@ -34,7 +41,7 @@ public class DragDropEditorPane extends JEditorPane {
 
                     StringBuilder html = new StringBuilder();
                     for (File file : files) {
-                        String path = file.getAbsolutePath();
+                        String path = file.getParent();
                         html.append("Кто-то отправил файлик: ")
                                 .append("<a href='file:///")
                                 .append(path.replace("\\", "/").replace(" ", "%20")) // Для Windows

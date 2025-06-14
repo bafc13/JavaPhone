@@ -226,8 +226,7 @@ public class DBManager implements CallHandler, DMHandler {
     public void copyFile(String path) {
         File source = new File(path);
         File copy = new File("./files/" + source.getName());
-        try (InputStream in = new BufferedInputStream(new FileInputStream(source));
-            OutputStream out = new BufferedOutputStream(new FileOutputStream(copy))) {
+        try (InputStream in = new BufferedInputStream(new FileInputStream(source)); OutputStream out = new BufferedOutputStream(new FileOutputStream(copy))) {
 
             byte[] buffer = new byte[1024];
             int lengthRead;
@@ -235,13 +234,16 @@ public class DBManager implements CallHandler, DMHandler {
                 out.write(buffer, 0, lengthRead);
                 out.flush();
             }
+            in.close();
+            out.close();
         } catch (IOException ex) {
             Logger.getLogger(DBManager.class.getName()).log(Level.SEVERE, null, ex);
+
         }
+        System.out.println("Ty dolboeb? File copied");
     }
 
-    public String findFileWithChecksum(String checksum)
-    {
+    public String findFileWithChecksum(String checksum) {
         try {
             PreparedStatement stmt = c.prepareStatement(sql_find_file_checksum);
             stmt.setString(1, checksum);
@@ -281,7 +283,7 @@ public class DBManager implements CallHandler, DMHandler {
 
         return new ArrayList<>();
     }
-    
+
     public List getFriends() {
         try {
             PreparedStatement stmt = c.prepareStatement(sql_get_users);
@@ -311,8 +313,11 @@ public class DBManager implements CallHandler, DMHandler {
             PreparedStatement stmt = c.prepareStatement(sql_find_file_checksum);
             stmt.setString(1, hash);
             ResultSet rs = stmt.executeQuery();
-            if (rs.isBeforeFirst()) {
+            if (!rs.isBeforeFirst()) {
+                System.out.println("Ty dolboeb? File to copy");
                 copyFile(path);
+            } else {
+                System.out.println("Ty dolboeb? File is here already");
             }
 
         } catch (SQLException ex) {

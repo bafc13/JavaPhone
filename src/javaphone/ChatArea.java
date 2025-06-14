@@ -45,7 +45,7 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
 
     public ChatArea(Dimension screenSize, boolean isCall, DirectMessenger dm) {
         super();
-
+        this.dm = dm;
         if (isCall == false) {
             this.setSize(screenSize.width / 2, screenSize.height / 2);
         } else {
@@ -73,8 +73,6 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
         chatPanel.add(inputField);
 
         initUserPane(isCall, screenSize);
-
-        this.dm = dm;
 
         dm.addListener(this);
         dm.addListener(MainWindow.db);
