@@ -131,6 +131,7 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
         userArea.setWrapStyleWord(true);
         userArea.append(MainWindow.db.getUsername("localhost") + "\n");
         userArea.append(MainWindow.db.getUsername(dm.getIP()) + "\n");
+        
         userPane = new JScrollPane(userArea);
         userPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         if (isCall == false) {

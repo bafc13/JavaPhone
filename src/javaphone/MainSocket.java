@@ -66,6 +66,7 @@ public class MainSocket extends Thread {
                     }
 
                     if (!res) {
+                        System.out.println("Refuzed");
                         out.write(CallCodes.responseRefuze);
                         out.flush();
 
@@ -132,7 +133,7 @@ public class MainSocket extends Thread {
             Logger.getLogger(MainSocket.class.getName()).log(Level.SEVERE, null, ex);
         }
         task.interrupt();
-        task.interruptTimer.cancel();
+        task.interruptTimerOffline.cancel();
         // System.out.println(task.status);
         if (task.status) {
             for (CallHandler l : new ArrayList<>(listeners)) {
@@ -155,7 +156,8 @@ public class MainSocket extends Thread {
 
         public Boolean status;
         public Handshake result;
-        public Timer interruptTimer;
+        public Timer interruptTimerOffline;
+        public Timer interruptTimerRefuze;
 
         public CallTask(String addr, String name, String purpose) {
             this.addr = addr;
@@ -182,8 +184,10 @@ public class MainSocket extends Thread {
             ;
             };
 
-            interruptTimer = new Timer();
-            interruptTimer.schedule(interruptTask1, CallCodes.delayOffline);
+            interruptTimerOffline = new Timer();
+            interruptTimerOffline.schedule(interruptTask1, CallCodes.delayOffline);
+            interruptTimerRefuze = new Timer();
+            interruptTimerRefuze.schedule(interruptTask2, CallCodes.delayResponse);
 
             Socket sock;
             try {
@@ -203,8 +207,8 @@ public class MainSocket extends Thread {
                 out.flush();
 
                 if (purpose.equals(CallCodes.callVoiceVideo) && in.readLine().equals(CallCodes.responseWait)) {
-                    interruptTimer.purge();
-                    interruptTimer.schedule(interruptTask2, CallCodes.delayResponse);
+                    interruptTimerOffline.cancel();
+                    interruptTimerOffline.purge();
                 }
 
                 if (in.readLine().equals(CallCodes.responseAccept)) {

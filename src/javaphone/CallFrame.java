@@ -251,10 +251,9 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         }
         MainWindow.connectionInfo.get(chatID).hasWindow = false;
 
-        if(audioPlay != null){
+        if (audioPlay != null) {
             audioPlay.stop();
         }
-
 
         super.dispose();
     }
@@ -453,25 +452,30 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         if (this.chatID != chatID) {
             return true;
         }
-
+        System.out.println("Call received");
         callPanel = new IncomingCallPanel();
+        callPanel.repaint();
         this.repaint();
         this.revalidate();
-            if (callPanel instanceof IncomingCallPanel) {
-                IncomingCallPanel customPanel = (IncomingCallPanel) callPanel;
-                while (customPanel.accept != 1 || customPanel.decline != 1) {
-                    try {
-                        sleep(20);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(CallFrame.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+        int waited = 0;
+        if (callPanel instanceof IncomingCallPanel) {
+            IncomingCallPanel customPanel = (IncomingCallPanel) callPanel;
+            while (customPanel.accept != 1 || customPanel.decline != 1) {
+                try {
+                    sleep(20);
+                    waited += 20;
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(CallFrame.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                if (customPanel.accept == 1) {
-                    return true;
-                } else if (customPanel.decline == 1) {
+                if (waited >= CallCodes.delayResponse)
                     return false;
-                }
             }
+            if (customPanel.accept == 1) {
+                return true;
+            } else if (customPanel.decline == 1) {
+                return false;
+            }
+        }
 
         System.out.println("Call notification from chat window (accepted automatically)");
         // Replace call button with accept and reject buttons or something like that
