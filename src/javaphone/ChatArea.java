@@ -129,6 +129,8 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
         userArea.setFont(new Font("Arial Unicode MS", Font.BOLD, 20));
         userArea.setLineWrap(true);
         userArea.setWrapStyleWord(true);
+        userArea.append(MainWindow.db.getUsername("localhost") + "\n");
+        userArea.append(MainWindow.db.getUsername(dm.getIP()) + "\n");
         userPane = new JScrollPane(userArea);
         userPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         if (isCall == false) {
@@ -141,7 +143,10 @@ public class ChatArea extends javax.swing.JPanel implements DMHandler {
             userPane.setMaximumSize(new Dimension(screenSize.width / 4 - 100, screenSize.height / 3 - 100));
         }
         userArea.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
         userPane.setBorder(new RoundedBorder(5));
+        
+        
     }
 
     private void addHyperlinkListener() {

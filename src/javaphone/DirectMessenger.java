@@ -65,9 +65,9 @@ public class DirectMessenger extends Thread {
         try {
             String hash = in.readUTF();
             String path = MainWindow.db.findFileWithChecksum(hash);
+            
             if (path.equals("")) {
                 out.writeInt(CallCodes.fileRequired);
-                out.flush();
                 out.writeUTF(hash);
                 out.flush();
 
@@ -88,7 +88,6 @@ public class DirectMessenger extends Thread {
                 return "./files/" + fname;
             } else {
                 out.writeInt(CallCodes.filePresent);
-                out.flush();
                 out.writeUTF(hash);
                 out.flush();
                 return path;
@@ -109,6 +108,7 @@ public class DirectMessenger extends Thread {
         try {
             while (true) {
                 msgCode = in.readInt();
+                System.out.println(msgCode);
                 switch (msgCode) {
                     case CallCodes.dmText -> {
                         msg = readTextMessage();
@@ -129,9 +129,10 @@ public class DirectMessenger extends Thread {
                         }
                     }
                     case CallCodes.fileRequired -> {
-                        
+                        // I hate this shit. Packet with hash is ignored for some unknown reason
                         String hash = in.readUTF();
-                        System.out.println("got hash");
+                        System.out.println("got hash ");
+                        System.out.println(hash);
                         msg = sendFile(hash);
                         for (DMHandler l : listeners) {
                             l.HandleDMFile(chatID, "localhost", msg);
@@ -175,7 +176,6 @@ public class DirectMessenger extends Thread {
         MainWindow.db.addFile(path + "/" + fname);
 
         out.writeInt(CallCodes.dmFile);
-        out.flush();
         String hash = MainWindow.db.countChecksum("./files/" + fname);
 
         out.writeUTF(hash);
