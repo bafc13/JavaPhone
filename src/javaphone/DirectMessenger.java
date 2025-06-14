@@ -68,10 +68,9 @@ public class DirectMessenger extends Thread {
             String path = MainWindow.db.findFileWithChecksum(hash);
             if (path.equals("")) {
                 out.writeUTF(CallCodes.fileRequired);
-                int msg_size = in.readInt();
-                byte[] b = new byte[msg_size];
-                int bytes_read = in.read(b, 0, msg_size);
-                String fname = new String(b);
+                out.flush();
+                
+                String fname = in.readUTF();
 
                 long size = in.readLong();
                 int bytes = 0;
@@ -88,6 +87,7 @@ public class DirectMessenger extends Thread {
                 return "./files/" + fname;
             } else {
                 out.writeUTF(CallCodes.filePresent);
+                out.flush();
                 return path;
             }
         } catch (IOException ex) {
@@ -115,16 +115,7 @@ public class DirectMessenger extends Thread {
                         nh.messageReceived(chatID, senderIP, msg, false);
                     }
                 } else if (msg_type == type_file) {
-                    String checksum = in.readUTF();
-                    String foundFile = MainWindow.db.findFileWithChecksum(checksum);
-
-                    if (!foundFile.equals("")) {
-                        out.writeUTF(CallCodes.filePresent);
-                        msg = foundFile;
-                    } else {
-                        out.writeUTF(CallCodes.filePresent);
-                        msg = readFile();
-                    }
+                    msg = readFile();
                     for (DMHandler l : listeners) {
                         l.HandleDMFile(chatID, senderIP, msg);
                     }
@@ -160,19 +151,21 @@ public class DirectMessenger extends Thread {
         MainWindow.db.addFile(path + "/" + fname);
 
         out.writeInt(type_file);
-
+        out.flush();
         String hash = MainWindow.db.countChecksum("./files/" + fname);
-        out.writeUTF(hash);
+        System.out.println(hash);
+        out.writeUTF("huesos");
+        out.flush();
         String response = in.readUTF();
-
+        
         if (response.equals(CallCodes.fileRequired)) {
+            System.out.println("File required, sending");
             int bytes = 0;
             // Open the File where he located in your pc
             File file = new File(path + "/" + fname);
             FileInputStream fs = new FileInputStream(file);
 
-            out.writeInt(fname.length());
-            out.writeBytes(fname);
+            out.writeUTF(fname);
             // Here we send the File to Server
             out.writeLong(file.length());
             // Here we  break file into chunks
@@ -182,8 +175,11 @@ public class DirectMessenger extends Thread {
                 out.write(buffer, 0, bytes);
                 out.flush();
             }
+            System.out.println("Wrote file");
             // close the file here
             fs.close();
+        } else {
+            System.out.println("File is not needed");
         }
 
         for (DMHandler l : listeners) {
