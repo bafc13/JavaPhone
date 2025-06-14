@@ -66,7 +66,7 @@ public class DirectMessenger extends Thread {
             String hash = in.readUTF();
             String path = MainWindow.db.findFileWithChecksum(hash);
             if (path.equals("")) {
-                out.writeUTF(CallCodes.fileRequired);
+                out.writeInt(CallCodes.fileRequired);
                 out.flush();
                 out.writeUTF(hash);
                 out.flush();
@@ -87,7 +87,7 @@ public class DirectMessenger extends Thread {
 
                 return "./files/" + fname;
             } else {
-                out.writeUTF(CallCodes.filePresent);
+                out.writeInt(CallCodes.filePresent);
                 out.flush();
                 out.writeUTF(hash);
                 out.flush();
@@ -102,13 +102,13 @@ public class DirectMessenger extends Thread {
 
     @Override
     public void run() {
-        String msgCode;
+        int msgCode;
 
         byte[] b;
         String msg;
         try {
             while (true) {
-                msgCode = in.readUTF();
+                msgCode = in.readInt();
                 switch (msgCode) {
                     case CallCodes.dmText -> {
                         msg = readTextMessage();
@@ -129,7 +129,9 @@ public class DirectMessenger extends Thread {
                         }
                     }
                     case CallCodes.fileRequired -> {
+                        
                         String hash = in.readUTF();
+                        System.out.println("got hash");
                         msg = sendFile(hash);
                         for (DMHandler l : listeners) {
                             l.HandleDMFile(chatID, "localhost", msg);
@@ -160,7 +162,7 @@ public class DirectMessenger extends Thread {
     }
 
     public void sendText(String msg) throws IOException {
-        out.writeUTF(CallCodes.dmText);
+        out.writeInt(CallCodes.dmText);
         out.writeUTF(msg);
         out.flush();
 
@@ -172,7 +174,7 @@ public class DirectMessenger extends Thread {
     public void sendFileHash(String path, String fname) throws Exception {
         MainWindow.db.addFile(path + "/" + fname);
 
-        out.writeUTF(CallCodes.dmFile);
+        out.writeInt(CallCodes.dmFile);
         out.flush();
         String hash = MainWindow.db.countChecksum("./files/" + fname);
 
