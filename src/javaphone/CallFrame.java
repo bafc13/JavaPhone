@@ -52,6 +52,7 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
     private JPanel horizontalPanel;
     private JPanel secondHorizontalPanel = new JPanel();
     private JPanel callPanel;
+    private IncomingCallPanel acceptPanel;
 
     private JPanel chatUserPanel;
     private ChatArea chatArea;
@@ -452,15 +453,32 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
         if (this.chatID != chatID) {
             return true;
         }
+//        this.remove(callPanel);
+        Container container = this.getContentPane();
+        container.remove(callPanel);
+        callPanel = null;
+
+//        this.repaint();
+//        this.revalidate();
+
         System.out.println("Call received");
-        callPanel = new IncomingCallPanel();
-        callPanel.repaint();
+//        callPanel = new IncomingCallPanel();
+        acceptPanel = new IncomingCallPanel();
+        acceptPanel.setSize(screenSize.width, 100);
+        acceptPanel.setMaximumSize(new Dimension(500, 100));
+        acceptPanel.setPreferredSize(new Dimension(500, 100));
+        acceptPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
+        acceptPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        this.add(acceptPanel, BorderLayout.NORTH);
+
         this.repaint();
         this.revalidate();
+
         int waited = 0;
-        if (callPanel instanceof IncomingCallPanel) {
-            IncomingCallPanel customPanel = (IncomingCallPanel) callPanel;
-            while (customPanel.accept != 1 || customPanel.decline != 1) {
+
+            while (acceptPanel.accept != 1 && acceptPanel.decline != 1) {
+                System.out.println("WHILE IN PROCESS");
                 try {
                     sleep(20);
                     waited += 20;
@@ -470,12 +488,12 @@ public final class CallFrame extends javax.swing.JFrame implements VideoHandler,
                 if (waited >= CallCodes.delayResponse)
                     return false;
             }
-            if (customPanel.accept == 1) {
+            if (acceptPanel.accept == 1) {
+                System.out.println("accept = 1");
                 return true;
-            } else if (customPanel.decline == 1) {
+            } else if (acceptPanel.decline == 1) {
                 return false;
             }
-        }
 
         System.out.println("Call notification from chat window (accepted automatically)");
         // Replace call button with accept and reject buttons or something like that

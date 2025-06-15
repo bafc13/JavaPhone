@@ -13,18 +13,24 @@ public class IncomingCallPanel extends JPanel {
     public int decline = 0;
 
     public IncomingCallPanel() {
-        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+        this.setAlignmentY(Component.CENTER_ALIGNMENT);
+        this.setAlignmentX(Component.CENTER_ALIGNMENT);
+        this.setPreferredSize(new Dimension(1920, 100));
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 
         label = new JLabel("Вам звонят", SwingConstants.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 18));
-        this.add(label);
-        this.add(Box.createHorizontalStrut(10));
+        panel.add(label);
+        panel.add(Box.createHorizontalStrut(10));
 
         acceptButton = new JButton("Принять звонок");
         declineButton = new JButton("Отклонить звонок");
-        this.add(acceptButton);
-        this.add(declineButton);
+        panel.add(acceptButton);
+        panel.add(declineButton);
 
+        this.add(panel, BorderLayout.CENTER);
         acceptButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -35,7 +41,7 @@ public class IncomingCallPanel extends JPanel {
         declineButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                accept = 1;
+                decline = 1;
             }
         });
 

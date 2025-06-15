@@ -75,6 +75,9 @@ public class MainSocket extends Thread {
                         sock.close();
 
                         continue;
+                    } else {
+
+                        System.out.println("ACCEPTED CALL");
                     }
 
                 }
